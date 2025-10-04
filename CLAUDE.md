@@ -23,6 +23,14 @@ This is a TypeScript Next.js 15 application with two main features:
 
 1. **AI-powered travel agents** - Chat interfaces with AI agents (RAG, MCP tools, etc.)
 2. **Paywalled itinerary teaser** - Visual teaser page for custom travel itineraries derived from Wanderlog data
+3. **Website Design** - The website and header must be high quality and with pictures in cards hover have shadows and that are eye catching and always represent something about the destination. The site very visually appealing, including the font used.
+4. **Header** - The header must contain pictures based on the destination the person will be visiting and be vibrant and eye catching
+5. **Sections** - Have in order the sections, catchy description of this trip, hotels, and fights. Each card for the hotels the user will pick from should have the star ratings and prices. The card should have an image of the place that is available but it should be blurred a little. And the name of the site should not be the actual name of the flights or hotel but a description of the type of hotel and flight.
+6. **Choices** - The card or options that are chosen should be active and the other options not chosen should be greyed outl
+7. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
+8. **Trip Summary** - The trip summary section should also have the price of the trip but also show a seperate price of 299.00 to unlock the details of the trip. Show the prices without the fee and the price with the fee included in the total
+9. **Always Check Images** - Always double check images to make sure they are truly representative of the destination. Correct and choose another image if necessary on initial setup.
+
 
 ### Core Stack
 

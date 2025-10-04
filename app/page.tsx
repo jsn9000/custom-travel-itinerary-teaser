@@ -1,429 +1,425 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Lock, MapPin, Calendar, Clock, Sparkles, Star } from "lucide-react";
-import { TeaserPayload, TeaserStop } from "./api/teaser/route";
+import { useState, useEffect } from "react";
+import { Lock, Star, Plane, Building2, Check } from "lucide-react";
 
-export default function TeaserPage() {
-  const [teaserData, setTeaserData] = useState<TeaserPayload | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
-  const [showPricing, setShowPricing] = useState(false);
+interface HotelOption {
+  id: string;
+  type: string;
+  stars: number;
+  price: number;
+  image: string;
+  description: string;
+}
 
+interface FlightOption {
+  id: string;
+  type: string;
+  price: number;
+  duration: string;
+  stops: string;
+  image: string;
+  description: string;
+}
+
+const hotelOptions: HotelOption[] = [
+  {
+    id: "h1",
+    type: "Luxury Beachfront Resort",
+    stars: 5,
+    price: 450,
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+    description: "5-star oceanfront property with private beach access",
+  },
+  {
+    id: "h2",
+    type: "Boutique Mediterranean Villa",
+    stars: 4,
+    price: 320,
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+    description: "Charming 4-star villa in the heart of the coastal village",
+  },
+  {
+    id: "h3",
+    type: "Modern Harbor View Hotel",
+    stars: 4,
+    price: 280,
+    image: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800",
+    description: "Contemporary 4-star hotel overlooking the marina",
+  },
+];
+
+const flightOptions: FlightOption[] = [
+  {
+    id: "f1",
+    type: "Premium Direct Flight",
+    price: 850,
+    duration: "8h 45m",
+    stops: "Nonstop",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
+    description: "Direct premium service with extra legroom",
+  },
+  {
+    id: "f2",
+    type: "Standard Direct Flight",
+    price: 620,
+    duration: "8h 55m",
+    stops: "Nonstop",
+    image: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=800",
+    description: "Comfortable direct flight with standard amenities",
+  },
+  {
+    id: "f3",
+    type: "Economy Connection Flight",
+    price: 480,
+    duration: "12h 20m",
+    stops: "1 stop",
+    image: "https://images.unsplash.com/photo-1583500557349-fb5238f8d946?w=800",
+    description: "Budget-friendly option with one layover",
+  },
+];
+
+// Mediterranean activity images - high-quality destination photos
+const bannerImages = [
+  {
+    url: "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=1920&q=80",
+    title: "Mediterranean Dining Experience",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1920&q=80",
+    title: "Sailing the Azure Coast",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=1920&q=80",
+    title: "Ancient Architecture",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=80",
+    title: "Vineyard Sunset",
+  },
+];
+
+export default function TravelSelection() {
+  const [selectedHotel, setSelectedHotel] = useState<string>("h1");
+  const [selectedFlight, setSelectedFlight] = useState<string>("f1");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Auto-rotate banner images every 4 seconds
   useEffect(() => {
-    async function fetchTeaser() {
-      try {
-        const response = await fetch("/api/teaser");
-        const data = await response.json();
-        setTeaserData(data);
-      } catch (error) {
-        console.error("Failed to load teaser:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchTeaser();
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handleUnlock = async (priceId: string) => {
-    if (!email) {
-      alert("Please enter your email address");
-      return;
-    }
+  const selectedHotelData = hotelOptions.find((h) => h.id === selectedHotel);
+  const selectedFlightData = flightOptions.find((f) => f.id === selectedFlight);
 
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          itineraryId: "teaser-001",
-          email,
-          priceId,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success && data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        alert(data.message || "Checkout failed");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Failed to process checkout");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your adventure...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!teaserData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600">Failed to load itinerary preview</p>
-      </div>
-    );
-  }
+  const hotelCost = (selectedHotelData?.price || 0) * 7;
+  const flightCost = selectedFlightData?.price || 0;
+  const tripCost = hotelCost + flightCost;
+  const unlockFee = 299.0;
+  const totalCost = tripCost + unlockFee;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-      {/* Navy Blue Top Navigation */}
-      <nav className="bg-[#1e3a8a] text-white shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="text-2xl font-bold tracking-tight">
-                ✈️ Mediterranean Adventure
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                setShowPricing(true);
-                setTimeout(() => {
-                  document
-                    .getElementById("pricing")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }, 100);
+      {/* Hero Header with Rotating Banner */}
+      <header className="relative overflow-hidden">
+        {/* Rotating Background Images */}
+        <div className="relative h-[400px] md:h-[500px]">
+          {bannerImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentImageIndex ? "opacity-100" : "opacity-0"
+              }`}
+              style={{
+                backgroundImage: `url("${image.url}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
-              className="bg-white text-[#1e3a8a] px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-md hover:shadow-lg"
             >
-              <Lock className="w-4 h-4 inline mr-2" />
-              Unlock Trip
-            </button>
-          </div>
-        </div>
-      </nav>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
+            </div>
+          ))}
 
-      {/* Hero Section */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-[#1e3a8a] via-blue-700 to-cyan-600 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'
-          }}></div>
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Sparkles className="w-7 h-7 animate-pulse" />
-              <span className="text-lg font-semibold uppercase tracking-wider bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-                Exclusive Preview
-              </span>
-            </div>
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight drop-shadow-lg">
-              {teaserData.tripTitle}
+          {/* Content Overlay */}
+          <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-4">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-center drop-shadow-2xl">
+              Your Mediterranean Escape Awaits
             </h1>
-            <p className="text-2xl md:text-3xl font-light mb-8 text-blue-100">
-              An Unforgettable Journey Through Paradise
+            <p className="text-xl md:text-2xl font-light mb-3 text-white/90 text-center drop-shadow-lg">
+              7 Days of Sun, Sea, and Unforgettable Memories
             </p>
-            <div className="flex items-center justify-center gap-6 text-xl mb-10">
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-                <Calendar className="w-6 h-6" />
-                <span>{teaserData.tripDates}</span>
-              </div>
-              <span className="text-white/60">•</span>
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-                <MapPin className="w-6 h-6" />
-                <span>{teaserData.days.length} Days</span>
-              </div>
-            </div>
-            <div className="mt-8">
-              <button
-                onClick={() => {
-                  setShowPricing(true);
-                  setTimeout(() => {
-                    document
-                      .getElementById("pricing")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }, 100);
-                }}
-                className="bg-white text-[#1e3a8a] px-10 py-5 rounded-full font-bold text-xl hover:bg-blue-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105 transform"
-              >
-                <Lock className="w-6 h-6 inline mr-3" />
-                Unlock Full Itinerary
-              </button>
+            <p className="text-lg text-white/80 max-w-3xl mx-auto text-center drop-shadow-lg">
+              June 10-17, 2025
+            </p>
+
+            {/* Activity Indicator */}
+            <div className="absolute bottom-8 flex gap-2">
+              {bannerImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex
+                      ? "w-8 bg-white"
+                      : "w-2 bg-white/50 hover:bg-white/75"
+                  }`}
+                  aria-label={`View image ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Timeline Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-b from-transparent to-blue-50/30">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-4">
-            Day-by-Day Preview
+      {/* Trip Description Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-white rounded-3xl shadow-2xl p-10 border-2 border-blue-100 hover:shadow-3xl hover:-translate-y-2 transition-all duration-300 ease-in-out">
+          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-6 text-center">
+            Experience the Magic of the Mediterranean
           </h2>
-          <p className="text-gray-700 text-lg max-w-3xl mx-auto">
-            Each stop has been carefully selected and perfectly timed to create an unforgettable Mediterranean experience
+          <p className="text-lg text-gray-700 leading-relaxed mb-6">
+            Embark on an extraordinary 7-day journey through the sun-drenched
+            shores of the Mediterranean. Discover pristine beaches with
+            crystal-clear azure waters, explore ancient villages perched on
+            cliffsides, and indulge in world-class cuisine at seaside tavernas.
           </p>
-        </div>
-
-        <div className="space-y-10">
-          {teaserData.days.map((day, dayIndex) => (
-            <div
-              key={dayIndex}
-              className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-blue-100 hover:shadow-3xl transition-shadow"
-            >
-              <div className="bg-gradient-to-r from-[#1e3a8a] via-blue-700 to-cyan-600 text-white p-8">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-                    <span className="text-2xl font-bold">{day.label}</span>
-                  </div>
-                </div>
-                <h3 className="text-2xl font-semibold mb-2">{day.summary}</h3>
-                <p className="text-blue-100 text-sm">
-                  {day.stops.length} carefully curated experiences
-                </p>
-              </div>
-
-              <div className="p-8 bg-gradient-to-br from-blue-50/50 to-white">
-                <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
-                  {day.stops.map((stop, stopIndex) => (
-                    <StopCard key={stop.id} stop={stop} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
+          <p className="text-lg text-gray-700 leading-relaxed">
+            From private boat excursions to hidden grottos, wine tastings at
+            family vineyards, and sunset dinners overlooking the sea, every
+            moment has been carefully curated to create memories that will last
+            a lifetime. Choose your perfect accommodation and flight options
+            below to complete your dream vacation.
+          </p>
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-b from-blue-50/30 to-transparent">
+      {/* Hotels Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-[#1e3a8a] mb-4">
-            Experience Highlights
+            Select Your Accommodation
           </h2>
-          <p className="text-gray-700 text-lg">
-            Stunning preview images from your curated Mediterranean destinations
+          <p className="text-lg text-gray-700">
+            Choose from our handpicked selection of Mediterranean properties
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-            <div
-              key={index}
-              className="aspect-square rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all hover:scale-105 transform border-2 border-blue-100"
-            >
-              <img
-                src={`/api/og/teaser?stop=${index}`}
-                alt={`Preview ${index}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Trust Indicators */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl p-12 border-2 border-blue-100">
-          <h3 className="text-3xl font-bold text-center mb-12 text-[#1e3a8a]">
-            Why Our Mediterranean Itineraries?
-          </h3>
-          <div className="grid md:grid-cols-3 gap-10">
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <Star className="w-10 h-10 text-[#1e3a8a]" />
-              </div>
-              <h4 className="font-bold text-xl mb-3 text-[#1e3a8a]">Expert Curated</h4>
-              <p className="text-gray-700">
-                Hand-picked by Mediterranean travel experts with decades of local knowledge and insider connections
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <Clock className="w-10 h-10 text-[#1e3a8a]" />
-              </div>
-              <h4 className="font-bold text-xl mb-3 text-[#1e3a8a]">Time-Optimized</h4>
-              <p className="text-gray-700">
-                Perfectly timed itineraries that maximize your experience while avoiding crowds and peak times
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <MapPin className="w-10 h-10 text-[#1e3a8a]" />
-              </div>
-              <h4 className="font-bold text-xl mb-3 text-[#1e3a8a]">Insider Access</h4>
-              <p className="text-gray-700">
-                Exclusive reservations, hidden gems, and local spots that only insiders know about
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+        <div className="grid md:grid-cols-3 gap-8">
+          {hotelOptions.map((hotel) => {
+            const isSelected = selectedHotel === hotel.id;
+            return (
+              <div
+                key={hotel.id}
+                onClick={() => setSelectedHotel(hotel.id)}
+                className={`relative cursor-pointer rounded-3xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-3 hover:shadow-3xl border-4 ${
+                  isSelected
+                    ? "border-orange-500 opacity-100 scale-105"
+                    : "border-gray-200 opacity-60 grayscale-[50%] hover:opacity-80"
+                }`}
+              >
+                {isSelected && (
+                  <div className="absolute top-4 right-4 z-10 bg-orange-500 text-white rounded-full p-3 shadow-lg">
+                    <Check className="w-6 h-6" />
+                  </div>
+                )}
 
-      {/* Pricing Section */}
-      {showPricing && (
-        <section
-          id="pricing"
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Unlock Your Complete Itinerary
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Get instant access to all locations, bookings, and insider tips
-            </p>
-          </div>
-
-          <div className="max-w-lg mx-auto">
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-[#1e3a8a]">
-              <div className="bg-gradient-to-br from-[#1e3a8a] via-blue-700 to-cyan-600 text-white p-8 text-center">
-                <h3 className="text-3xl font-bold mb-3">Complete Access</h3>
-                <div className="text-5xl font-bold mb-2">$49</div>
-                <p className="text-blue-100 text-lg">One-time payment • Instant access</p>
-              </div>
-
-              <div className="p-8">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-start gap-3">
-                    <svg
-                      className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-700">
-                      Complete venue names and addresses
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg
-                      className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-700">
-                      Exact times and booking confirmations
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg
-                      className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-700">
-                      Interactive map with GPS coordinates
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg
-                      className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-700">
-                      Contact info and insider tips
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg
-                      className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-700">
-                      Printable PDF & mobile access
-                    </span>
-                  </li>
-                </ul>
-
-                <div className="space-y-4">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                <div className="relative h-64">
+                  <img
+                    src={hotel.image}
+                    alt={hotel.type}
+                    className="w-full h-full object-cover"
+                    style={{ filter: "blur(2px)" }}
                   />
-                  <button
-                    onClick={() => handleUnlock("price_full_access")}
-                    className="w-full bg-gradient-to-r from-[#1e3a8a] via-blue-700 to-cyan-600 text-white px-6 py-5 rounded-xl font-bold text-xl hover:from-[#1a2f6e] hover:via-blue-800 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105"
-                  >
-                    🔓 Unlock Full Access Now
-                  </button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="flex items-center gap-1 mb-2">
+                      {Array.from({ length: hotel.stars }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-5 h-5 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <p className="text-center text-sm text-gray-600 mt-6 font-medium">
-                  🔒 Secure payment • ⚡ Instant access • ✅ 30-day money-back guarantee
-                </p>
+                <div className="bg-white p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-xl font-bold text-gray-900 flex-1">
+                      {hotel.type}
+                    </h3>
+                    <Building2 className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <p className="text-gray-600 mb-4">{hotel.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-3xl font-bold text-[#1e3a8a]">
+                        ${hotel.price}
+                      </span>
+                      <span className="text-gray-600"> /night</span>
+                    </div>
+                    <div className="text-right text-sm text-gray-500">
+                      7 nights
+                      <div className="font-bold text-gray-900">
+                        ${hotel.price * 7}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Flights Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-4">
+            Select Your Flight
+          </h2>
+          <p className="text-lg text-gray-700">
+            Choose the flight option that best suits your schedule and budget
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {flightOptions.map((flight) => {
+            const isSelected = selectedFlight === flight.id;
+            return (
+              <div
+                key={flight.id}
+                onClick={() => setSelectedFlight(flight.id)}
+                className={`relative cursor-pointer rounded-3xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-3 hover:shadow-3xl border-4 ${
+                  isSelected
+                    ? "border-orange-500 opacity-100 scale-105"
+                    : "border-gray-200 opacity-60 grayscale-[50%] hover:opacity-80"
+                }`}
+              >
+                {isSelected && (
+                  <div className="absolute top-4 right-4 z-10 bg-orange-500 text-white rounded-full p-3 shadow-lg">
+                    <Check className="w-6 h-6" />
+                  </div>
+                )}
+
+                <div className="relative h-64">
+                  <img
+                    src={flight.image}
+                    alt={flight.type}
+                    className="w-full h-full object-cover"
+                    style={{ filter: "blur(2px)" }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+
+                <div className="bg-white p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-xl font-bold text-gray-900 flex-1">
+                      {flight.type}
+                    </h3>
+                    <Plane className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <p className="text-gray-600 mb-4">{flight.description}</p>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-semibold">{flight.duration}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Stops:</span>
+                      <span className="font-semibold">{flight.stops}</span>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="text-center">
+                      <span className="text-3xl font-bold text-[#1e3a8a]">
+                        ${flight.price}
+                      </span>
+                      <span className="text-gray-600"> roundtrip</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Total Cost Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-gradient-to-br from-[#1e3a8a] via-blue-700 to-cyan-600 rounded-3xl shadow-2xl p-10 text-white hover:shadow-3xl hover:-translate-y-2 transition-all duration-300 ease-in-out">
+          <h2 className="text-3xl font-bold mb-8 text-center">
+            Your Trip Summary
+          </h2>
+          <div className="max-w-2xl mx-auto space-y-6">
+            <div className="flex justify-between items-center pb-4 border-b border-white/30">
+              <div>
+                <div className="font-semibold text-lg">
+                  {selectedHotelData?.type}
+                </div>
+                <div className="text-blue-200 text-sm">
+                  {selectedHotelData?.stars} stars • 7 nights
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">${hotelCost}</div>
               </div>
             </div>
-          </div>
-        </section>
-      )}
 
-      {/* Footer CTA */}
-      <section className="bg-gradient-to-br from-[#1e3a8a] via-blue-700 to-cyan-600 text-white py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Start Your Mediterranean Adventure?
-          </h2>
-          <p className="text-xl md:text-2xl text-blue-100 mb-10">
-            Unlock the complete itinerary and get instant access to all details, reservations, and insider tips
-          </p>
-          <button
-            onClick={() => {
-              setShowPricing(true);
-              setTimeout(() => {
-                document
-                  .getElementById("pricing")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }, 100);
-            }}
-            className="bg-white text-[#1e3a8a] px-12 py-5 rounded-full font-bold text-xl hover:bg-blue-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-110 transform"
-          >
-            <Lock className="w-6 h-6 inline mr-3" />
-            Unlock Now for $49
-          </button>
+            <div className="flex justify-between items-center pb-4 border-b border-white/30">
+              <div>
+                <div className="font-semibold text-lg">
+                  {selectedFlightData?.type}
+                </div>
+                <div className="text-blue-200 text-sm">
+                  {selectedFlightData?.duration} • {selectedFlightData?.stops}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">${flightCost}</div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pb-4 border-b border-white/30">
+              <div className="text-xl font-semibold">Trip Subtotal</div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">${tripCost}</div>
+                <div className="text-blue-200 text-sm">for 2 travelers</div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pb-4 border-b border-white/30">
+              <div>
+                <div className="text-xl font-semibold">Unlock Fee</div>
+                <div className="text-blue-200 text-sm">
+                  Access full itinerary details
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">${unlockFee.toFixed(2)}</div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pt-4">
+              <div className="text-2xl font-bold">Total with Unlock Fee</div>
+              <div className="text-right">
+                <div className="text-4xl font-bold">${totalCost.toFixed(2)}</div>
+              </div>
+            </div>
+
+            <div className="pt-6">
+              <button className="w-full bg-orange-500 text-white px-10 py-5 rounded-full font-bold text-xl hover:bg-orange-600 transition-all duration-300 ease-in-out shadow-2xl hover:shadow-3xl hover:-translate-y-2 transform">
+                <Lock className="w-6 h-6 inline mr-3" />
+                Unlock Complete Itinerary - ${totalCost.toFixed(2)}
+              </button>
+              <p className="text-center text-sm text-blue-200 mt-4">
+                Secure payment • Instant access • 30-day money-back guarantee
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -433,7 +429,7 @@ export default function TeaserPage() {
           <div className="text-center">
             <div className="mb-6">
               <div className="text-3xl font-bold text-white mb-2">
-                ✈️ Mediterranean Adventure
+                Mediterranean Adventure
               </div>
               <p className="text-blue-300">
                 Your gateway to unforgettable Mediterranean experiences
@@ -444,7 +440,10 @@ export default function TeaserPage() {
                 © 2025 Custom Itinerary Travel. All rights reserved.
               </p>
               <div className="space-x-6 text-sm">
-                <a href="/privacy" className="hover:text-white transition-colors">
+                <a
+                  href="/privacy"
+                  className="hover:text-white transition-colors"
+                >
                   Privacy Policy
                 </a>
                 <span className="text-blue-400">•</span>
@@ -460,71 +459,6 @@ export default function TeaserPage() {
           </div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function StopCard({ stop }: { stop: TeaserStop }) {
-  const getTypeIcon = (type: TeaserStop["type"]) => {
-    switch (type) {
-      case "hotel":
-        return "🏨";
-      case "food":
-        return "🍽️";
-      case "attraction":
-        return "🎭";
-      case "transport":
-        return "🚗";
-      default:
-        return "📍";
-    }
-  };
-
-  const getTypeColor = (type: TeaserStop["type"]) => {
-    switch (type) {
-      case "hotel":
-        return "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300 text-blue-800";
-      case "food":
-        return "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300 text-orange-800";
-      case "attraction":
-        return "bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-300 text-cyan-800";
-      case "transport":
-        return "bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-300 text-emerald-800";
-      default:
-        return "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-300 text-gray-800";
-    }
-  };
-
-  return (
-    <div
-      className={`relative border-2 rounded-2xl p-5 hover:shadow-2xl transition-all hover:scale-105 transform ${getTypeColor(
-        stop.type
-      )}`}
-    >
-      <div className="flex items-start gap-4">
-        <div className="text-4xl drop-shadow-sm">{getTypeIcon(stop.type)}</div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-bold text-xl">{stop.displayName}</h4>
-            <Lock className="w-5 h-5 opacity-70" />
-          </div>
-          <div className="flex items-center gap-2 text-sm opacity-90 mb-2 font-medium">
-            <MapPin className="w-4 h-4" />
-            <span>{stop.displayArea}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm opacity-90 font-medium">
-            <Clock className="w-4 h-4" />
-            <span>{stop.timeWindow}</span>
-          </div>
-        </div>
-      </div>
-      <div className="mt-4 aspect-video rounded-xl overflow-hidden shadow-lg border-2 border-white/50">
-        <img
-          src={stop.thumbUrl}
-          alt={stop.displayName}
-          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-        />
-      </div>
     </div>
   );
 }
