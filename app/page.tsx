@@ -56,7 +56,7 @@ const flightOptions: FlightOption[] = [
     price: 850,
     duration: "8h 45m",
     stops: "Nonstop",
-    image: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=800",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
     description: "Direct premium service with extra legroom",
   },
   {
@@ -65,7 +65,7 @@ const flightOptions: FlightOption[] = [
     price: 620,
     duration: "8h 55m",
     stops: "Nonstop",
-    image: "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=800",
+    image: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=800",
     description: "Comfortable direct flight with standard amenities",
   },
   {
@@ -74,7 +74,7 @@ const flightOptions: FlightOption[] = [
     price: 480,
     duration: "12h 20m",
     stops: "1 stop",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
+    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800",
     description: "Budget-friendly option with one layover",
   },
 ];
@@ -108,13 +108,13 @@ const bannerMedia = [
   },
   {
     type: "image",
-    url: "/images/header-6.png",
-    title: "Infinity Pool",
+    url: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=1920&q=80",
+    title: "Santorini Sunset",
   },
   {
     type: "image",
     url: "/images/header-7.png",
-    title: "Seaside Elegance",
+    title: "Farmers Market",
   },
 ];
 
