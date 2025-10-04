@@ -19,7 +19,10 @@ This project strictly uses **pnpm**. Do not use npm or yarn.
 
 ## Architecture
 
-This is a TypeScript Next.js 15 starter template for AI-powered applications with a travel agent theme:
+This is a TypeScript Next.js 15 application with two main features:
+
+1. **AI-powered travel agents** - Chat interfaces with AI agents (RAG, MCP tools, etc.)
+2. **Paywalled itinerary teaser** - Visual teaser page for custom travel itineraries derived from Wanderlog data
 
 ### Core Stack
 
@@ -32,16 +35,33 @@ This is a TypeScript Next.js 15 starter template for AI-powered applications wit
 ### Key Directories
 
 - `app/` - Next.js App Router pages and API routes
-- `app/api/chat/` - AI chat endpoint using streaming `streamText()`
-- `app/api/rag-agent/` - RAG-enabled agent endpoint with knowledge base access
+  - `page.tsx` - **Teaser page** - Main landing page with paywalled itinerary preview
+  - `simple-agent/` - Basic AI agent page
+  - `rag-agent/` - RAG-enabled AI agent page
+  - `agent-with-mcp-tools/` - MCP-enabled AI agent page
+- `app/api/` - API routes
+  - `chat/` - AI chat endpoint using streaming `streamText()`
+  - `rag-agent/` - RAG-enabled agent endpoint with knowledge base access
+  - `agent-with-mcp-tools/` - Agent endpoint with MCP tools (Firecrawl web scraping)
+  - `teaser/` - **Teaser data API** - Returns obfuscated itinerary data
+  - `peek/` - **Peek API** - Validates access and returns full details if authorized
+  - `checkout/` - **Checkout API** - Handles payment flow for unlocking itineraries
+  - `og/teaser/` - **Watermarked image API** - Returns SVG placeholders with viewer tags
+- `prompts/` - AI prompt files for itinerary redaction
+  - `claude.pmd` - Redaction policies and schemas for Wanderlog data transformation
+  - `system.txt` - System instructions for the Itinerary Redactor
 - `components/chat/` - Chat interface components
 - `components/ai-elements/` - Vercel AI Elements components
 - `components/agent/` - Agent configuration (system prompts)
   - `prompt.ts` - Default travel agent system prompt
   - `rag-prompt.ts` - RAG agent system prompt for Catan and Peruvian restaurant
+  - `web-scraper-prompt.ts` - Web scraper agent system prompt
 - `components/agent/tools/` - AI SDK tools for agent capabilities (knowledge base retrieval, etc.)
 - `components/ui/` - shadcn/ui components
 - `lib/retrieval/` - Vectorize RAG service for document retrieval
+- `lib/mcp/` - MCP (Model Context Protocol) client implementations
+  - `client/firecrawl-client.ts` - Firecrawl MCP client with SSE transport
+  - See `lib/mcp/CLAUDE.md` for detailed MCP integration guidelines
 - `lib/utils.ts` - Utility functions including `cn()` for className merging
 - `types/` - TypeScript type definitions
 
@@ -367,6 +387,171 @@ Display tool execution states using AI Elements:
 
 This documentation is essential for understanding how to properly stream source data parts from RAG tools to the frontend.
 
+### MCP (Model Context Protocol) Integration
+
+This project includes MCP client support for connecting to remote MCP servers. The primary implementation is a Firecrawl MCP client for web scraping capabilities.
+
+**CRITICAL**: Always read the MCP documentation before working with MCP integration: See `/lib/mcp/CLAUDE.md` for comprehensive guidelines.
+
+#### Key Documentation
+
+- AI SDK MCP Integration: https://ai-sdk.dev/cookbook/node/mcp-tools
+- Firecrawl MCP Server: https://docs.firecrawl.dev/mcp-server
+
+#### MCP Client Architecture
+
+- **Location**: `/lib/mcp/client/`
+- **Singleton Pattern**: Use `getFirecrawlMCPClient()` for persistent connections across requests
+- **SSE Transport**: Firecrawl uses Server-Sent Events (SSE) transport
+- **Connection Management**: Never disconnect clients during streaming operations
+
+#### Using MCP Tools in Agents
+
+```typescript
+import { getFirecrawlMCPClient } from "@/lib/mcp";
+
+// Initialize and connect
+const firecrawlClient = getFirecrawlMCPClient();
+await firecrawlClient.connect();
+
+// Get tools for use with streamText()
+const tools = await firecrawlClient.getTools();
+
+// Use with AI SDK
+const result = streamText({
+  model: openai("gpt-5"),
+  messages: modelMessages,
+  tools: tools, // MCP tools work directly with AI SDK
+  stopWhen: stepCountIs(10),
+});
+```
+
+#### Tool Wrapping Pattern
+
+Wrap MCP tools to add logging and monitoring:
+
+```typescript
+const wrappedTools = Object.fromEntries(
+  Object.entries(tools).map(([toolName, toolDef]) => [
+    toolName,
+    {
+      ...toolDef,
+      execute: async (args: any) => {
+        console.log(`🔧 Tool called: ${toolName}`);
+        console.log(`   Input:`, JSON.stringify(args, null, 2));
+        const result = await toolDef.execute(args);
+        console.log(`   Output:`, JSON.stringify(result, null, 2));
+        return result;
+      },
+    },
+  ])
+);
+```
+
+#### Critical MCP Rules
+
+- **Never disconnect during streaming**: Closing MCP clients prematurely causes "closed client" errors
+- **Use singleton pattern**: Maintain persistent connections via `getFirecrawlMCPClient()`
+- **SSE URL format**: `https://mcp.firecrawl.dev/{API_KEY}/v2/sse`
+- **Type compatibility**: Use `Record<string, any>` for tool return types
+- **Error handling**: Always wrap MCP operations in try-catch blocks
+
+## Paywalled Itinerary Teaser
+
+The main landing page (`app/page.tsx`) displays a visual teaser for paywalled itineraries derived from Wanderlog data.
+
+### Architecture Overview
+
+```
+Wanderlog Data (server-only)
+    ↓
+Itinerary Redactor (prompts/system.txt)
+    ↓
+Obfuscated Teaser Payload (app/api/teaser/route.ts)
+    ↓
+Teaser UI (app/page.tsx)
+    ↓
+Checkout Flow (app/api/checkout/route.ts)
+    ↓
+Full Access (app/api/peek/route.ts)
+```
+
+### Redaction Policy (CRITICAL)
+
+**Never expose these details in teaser mode:**
+- Exact venue names (use truncated names with ellipsis: "Cafe A•••")
+- Precise times (use time windows: Morning | Midday | Afternoon | Evening | Late)
+- Full addresses (use coarse geography: Downtown, Waterfront, etc.)
+- Emails, phone numbers, booking IDs
+- GPS coordinates or deep links
+- If a truncated name is uniquely identifiable, use category + vibe (e.g., "Seaside Cafe •••")
+
+### Teaser Data Schemas
+
+```typescript
+interface TeaserStop {
+  id: string;              // Random ID (NOT Wanderlog ID)
+  displayName: string;     // Obfuscated name (e.g., "Cafe A•••")
+  displayArea: string;     // Coarse location (e.g., "Downtown")
+  timeWindow: "Morning" | "Midday" | "Afternoon" | "Evening" | "Late";
+  thumbUrl: string;        // Points to /api/og/teaser with watermark
+  type: "hotel" | "food" | "attraction" | "transport" | "other";
+}
+
+interface TeaserDay {
+  label: string;           // e.g., "Day 1"
+  summary: string;         // e.g., "Arrival and coastal exploration"
+  stops: TeaserStop[];
+}
+
+interface TeaserPayload {
+  tripTitle: string;       // Can be partially obfuscated
+  tripDates: string;       // e.g., "March 15-20, 2025"
+  days: TeaserDay[];
+}
+```
+
+### Teaser Page Features
+
+The teaser page (`app/page.tsx`) includes:
+
+1. **Hero Section** - Trip title, dates, and unlock CTA
+2. **Masked Map** - Blurred map placeholder with lock icon
+3. **Timeline Cards** - Day-by-day preview with obfuscated stop details
+4. **Gallery** - Grid of watermarked placeholder images
+5. **Trust Indicators** - Why choose this itinerary
+6. **Pricing Section** - Unlock flow with email capture and checkout
+7. **Footer CTA** - Final conversion opportunity
+
+### API Routes
+
+- **`GET /api/teaser`** - Returns `TeaserPayload` with obfuscated data
+- **`GET /api/og/teaser?stop=1&viewer=preview`** - Returns watermarked SVG placeholder
+- **`POST /api/peek`** - Checks access and returns full details if authorized
+  - Input: `{ stopId: string, accessToken: string }`
+  - Output: `{ hasAccess: boolean, revealedData?: {...} }`
+- **`POST /api/checkout`** - Initiates payment flow
+  - Input: `{ itineraryId: string, email: string, priceId: string }`
+  - Output: `{ success: boolean, checkoutUrl?: string, sessionId?: string }`
+
+### Security Considerations
+
+- Raw Wanderlog data must NEVER be sent to the client
+- Redaction happens server-side only
+- Use random IDs for stops (never expose Wanderlog IDs)
+- Watermark images with viewer-specific tags for tracking
+- Validate all access tokens before revealing full details
+
+### Future Integration
+
+In production, the teaser system should:
+1. Fetch raw Wanderlog data from secure storage (database, S3, etc.)
+2. Apply redaction rules via LLM (using `prompts/system.txt`)
+3. Cache obfuscated payloads per viewer session
+4. Integrate with Stripe for real payment processing
+5. Store access grants in database
+6. Send confirmation emails with full itinerary access links
+
 ## Environment Setup
 
 Create `.env.local` with:
@@ -376,6 +561,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 VECTORIZE_ACCESS_TOKEN=your_vectorize_token
 VECTORIZE_ORG_ID=your_org_id
 VECTORIZE_PIPELINE_ID=your_pipeline_id
+FIRECRAWL_API_KEY=your_firecrawl_api_key_here
 ```
 
 ## Critical Rules for useChat Implementation

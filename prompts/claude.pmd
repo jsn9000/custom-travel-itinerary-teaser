@@ -1,0 +1,35 @@
+# Title
+Paywalled Itinerary Teaser — Wanderlog → Obfuscated Teaser → Paid Reveal
+
+# Purpose
+Transform raw Wanderlog data into a **non-exploitable teaser payload** and assist with copy.
+
+# Inputs
+- Server-side Wanderlog export (JSON or parsed from PDF/vector DB). **Never** send raw to client.
+- Redaction settings (intensity, time buckets), viewerTag for watermarking.
+
+# Redaction Policy (MUST)
+- No exact venue names/addresses, emails, phone numbers, booking IDs, lat/lng, or deep links.
+- Time windows only: Morning | Midday | Afternoon | Evening | Late.
+- Geography coarse: city or general area; fall back to city if uniqueness risk exists.
+- If a stop is uniquely identifiable by truncated name, use category + vibe (e.g., "Seaside Cafe •••").
+
+# Output Schemas
+- TeaserStop
+{
+  "id": "string",           // random id (not Wanderlog id)
+  "displayName": "Cafe A•••", // obfuscated
+  "displayArea": "Downtown",  // coarse
+  "timeWindow": "Evening",    // bucket
+  "thumbUrl": "/api/og/teaser?...",
+  "type": "food"             // hotel | food | attraction | transport | other
+}
+- TeaserDay { label, summary, stops: TeaserStop[] }
+- TeaserPayload { tripTitle, tripDates, days: TeaserDay[] }
+
+# Tools (server-owned)
+- obfuscate(wanderlogRaw, settings) -> TeaserPayload
+- generateOgTeaser(viewerTag) -> SVG/PNG url
+
+# Copy Style
+Trust-forward, evocative yet non-revealing. Avoid unique identifiers.
