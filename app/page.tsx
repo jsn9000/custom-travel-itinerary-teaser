@@ -74,7 +74,7 @@ const flightOptions: FlightOption[] = [
     price: 480,
     duration: "12h 20m",
     stops: "1 stop",
-    image: "https://images.unsplash.com/photo-1583500557349-fb5238f8d946?w=800",
+    image: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=800",
     description: "Budget-friendly option with one layover",
   },
 ];
@@ -83,19 +83,43 @@ const flightOptions: FlightOption[] = [
 const bannerImages = [
   {
     url: "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=1920&q=80",
-    title: "Mediterranean Dining Experience",
+    title: "Seaside Dining",
   },
   {
-    url: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1920&q=80",
-    title: "Sailing the Azure Coast",
+    url: "https://images.unsplash.com/photo-1503152394-c571994fd383?w=1920&q=80",
+    title: "Santorini Views",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1920&q=80",
+    title: "Beach Paradise",
   },
   {
     url: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=1920&q=80",
-    title: "Ancient Architecture",
+    title: "Ancient Villages",
   },
   {
-    url: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1920&q=80",
+    url: "https://images.unsplash.com/photo-1527004013197-933c4bb611b3?w=1920&q=80",
+    title: "Coastal Cliffs",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1920&q=80",
+    title: "Island Hopping",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&q=80",
     title: "Vineyard Sunset",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=1920&q=80",
+    title: "Crystal Waters",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1920&q=80",
+    title: "Coastal Paradise",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80",
+    title: "Luxury Accommodations",
   },
 ];
 
@@ -103,12 +127,56 @@ export default function TravelSelection() {
   const [selectedHotel, setSelectedHotel] = useState<string>("h1");
   const [selectedFlight, setSelectedFlight] = useState<string>("f1");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState({
+    months: 0,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
-  // Auto-rotate banner images every 4 seconds
+  // Auto-rotate banner images every 6 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % bannerImages.length);
-    }, 4000);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Countdown timer to trip date (December 10, 2025)
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const tripDate = new Date("2025-12-10T00:00:00");
+      const now = new Date();
+
+      if (tripDate > now) {
+        // Calculate total days
+        const totalDays = Math.floor((tripDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+        // Calculate months (approximate, 30 days per month for display)
+        const months = Math.floor(totalDays / 30);
+        const remainingDays = totalDays % 30;
+
+        // Calculate hours, minutes, seconds
+        const difference = tripDate.getTime() - now.getTime();
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / (1000 * 60)) % 60);
+        const seconds = Math.floor((difference / 1000) % 60);
+
+        setTimeLeft({
+          months,
+          days: remainingDays,
+          hours,
+          minutes,
+          seconds
+        });
+      } else {
+        setTimeLeft({ months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -122,11 +190,11 @@ export default function TravelSelection() {
   const totalCost = tripCost + unlockFee;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-cyan-50/40">
       {/* Hero Header with Rotating Banner */}
       <header className="relative overflow-hidden">
         {/* Rotating Background Images */}
-        <div className="relative h-[400px] md:h-[500px]">
+        <div className="relative h-[300px] md:h-[375px]">
           {bannerImages.map((image, index) => (
             <div
               key={index}
@@ -145,15 +213,53 @@ export default function TravelSelection() {
 
           {/* Content Overlay */}
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-4">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-center drop-shadow-2xl">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-wide text-center drop-shadow-2xl" style={{ fontFamily: 'var(--font-playfair)', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
               Your Mediterranean Escape Awaits
             </h1>
-            <p className="text-xl md:text-2xl font-light mb-3 text-white/90 text-center drop-shadow-lg">
+            <p className="text-2xl md:text-3xl font-medium mb-4 text-white text-center drop-shadow-lg" style={{ fontFamily: 'var(--font-lora)', textShadow: '2px 2px 6px rgba(0,0,0,0.8)' }}>
               7 Days of Sun, Sea, and Unforgettable Memories
             </p>
-            <p className="text-lg text-white/80 max-w-3xl mx-auto text-center drop-shadow-lg">
-              June 10-17, 2025
+            <p className="text-xl md:text-2xl font-semibold text-white/95 max-w-3xl mx-auto text-center drop-shadow-lg mb-6" style={{ fontFamily: 'var(--font-lora)', textShadow: '2px 2px 6px rgba(0,0,0,0.8)' }}>
+              December 10-17, 2025
             </p>
+
+            {/* Countdown Timer */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl px-8 py-4 border border-white/20 shadow-2xl">
+              <div className="flex gap-4 md:gap-8">
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)' }}>
+                    {timeLeft.months}
+                  </div>
+                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-lora)' }}>
+                    Months
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)' }}>
+                    {timeLeft.days}
+                  </div>
+                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-lora)' }}>
+                    Days
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)' }}>
+                    {timeLeft.hours}
+                  </div>
+                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-lora)' }}>
+                    Hours
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)' }}>
+                    {timeLeft.minutes}
+                  </div>
+                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-lora)' }}>
+                    Minutes
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Activity Indicator */}
             <div className="absolute bottom-8 flex gap-2">
@@ -175,34 +281,42 @@ export default function TravelSelection() {
       </header>
 
       {/* Trip Description Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-white rounded-3xl shadow-2xl p-10 border-2 border-blue-100 hover:shadow-3xl hover:-translate-y-2 transition-all duration-300 ease-in-out">
-          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-6 text-center">
-            Experience the Magic of the Mediterranean
-          </h2>
-          <p className="text-lg text-gray-700 leading-relaxed mb-6">
-            Embark on an extraordinary 7-day journey through the sun-drenched
-            shores of the Mediterranean. Discover pristine beaches with
-            crystal-clear azure waters, explore ancient villages perched on
-            cliffsides, and indulge in world-class cuisine at seaside tavernas.
-          </p>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            From private boat excursions to hidden grottos, wine tastings at
-            family vineyards, and sunset dinners overlooking the sea, every
-            moment has been carefully curated to create memories that will last
-            a lifetime. Choose your perfect accommodation and flight options
-            below to complete your dream vacation.
-          </p>
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative bg-gradient-to-br from-[#0f4c81] via-[#1e3a8a] to-[#155e75] rounded-3xl shadow-2xl p-12 md:p-16 border-2 border-cyan-300/30 hover:shadow-3xl hover:-translate-y-1 transition-all duration-500 ease-in-out overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl"></div>
+
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 text-center leading-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
+              Experience the Magic of the Mediterranean
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-cyan-300 to-teal-300 mx-auto mb-8 rounded-full shadow-lg"></div>
+
+            <p className="text-lg md:text-xl text-blue-50 leading-relaxed mb-6 text-center max-w-4xl mx-auto" style={{ fontFamily: 'var(--font-lora)' }}>
+              Embark on an extraordinary 7-day journey through the sun-drenched
+              shores of the Mediterranean. Discover pristine beaches with
+              crystal-clear azure waters, explore ancient villages perched on
+              cliffsides, and indulge in world-class cuisine at seaside tavernas.
+            </p>
+            <p className="text-base md:text-lg text-blue-100 leading-relaxed text-center max-w-3xl mx-auto" style={{ fontFamily: 'var(--font-lora)' }}>
+              From private boat excursions to hidden grottos, wine tastings at
+              family vineyards, and sunset dinners overlooking the sea, every
+              moment has been carefully curated to create memories that will last
+              a lifetime.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Hotels Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             Select Your Accommodation
           </h2>
-          <p className="text-lg text-gray-700">
+          <p className="text-lg text-gray-700" style={{ fontFamily: 'var(--font-lora)' }}>
             Choose from our handpicked selection of Mediterranean properties
           </p>
         </div>
@@ -278,10 +392,10 @@ export default function TravelSelection() {
       {/* Flights Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-[#1e3a8a] mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             Select Your Flight
           </h2>
-          <p className="text-lg text-gray-700">
+          <p className="text-lg text-gray-700" style={{ fontFamily: 'var(--font-lora)' }}>
             Choose the flight option that best suits your schedule and budget
           </p>
         </div>
@@ -351,7 +465,7 @@ export default function TravelSelection() {
       {/* Total Cost Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-gradient-to-br from-[#1e3a8a] via-blue-700 to-cyan-600 rounded-3xl shadow-2xl p-10 text-white hover:shadow-3xl hover:-translate-y-2 transition-all duration-300 ease-in-out">
-          <h2 className="text-3xl font-bold mb-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center" style={{ fontFamily: 'var(--font-playfair)' }}>
             Your Trip Summary
           </h2>
           <div className="max-w-2xl mx-auto space-y-6">
