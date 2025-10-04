@@ -79,57 +79,42 @@ const flightOptions: FlightOption[] = [
   },
 ];
 
-// Mediterranean destination images - bold, vibrant, exciting
+// Mediterranean destination images - AI-generated luxury scenes
 const bannerMedia = [
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1920&q=80",
-    title: "Fresh Mediterranean Food",
+    url: "/images/header-1.png",
+    title: "Mediterranean Cuisine",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=1920&q=80",
-    title: "White Santorini Buildings",
+    url: "/images/header-2.png",
+    title: "Coastal Paradise",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&q=80",
-    title: "Bright Blue Domes",
+    url: "/images/header-3.png",
+    title: "Luxury Dining",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1920&q=80",
-    title: "Crystal Clear Beach",
+    url: "/images/header-4.png",
+    title: "Cliffside Village",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1590074072117-af74ca33c2a6?w=1920&q=80",
-    title: "Colorful Greek Cuisine",
+    url: "/images/header-5.png",
+    title: "Azure Waters",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=1920&q=80",
-    title: "Seafood Feast",
+    url: "/images/header-6.png",
+    title: "Infinity Pool",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1920&q=80",
-    title: "Turquoise Island Waters",
-  },
-  {
-    type: "image",
-    url: "https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?w=1920&q=80",
-    title: "Beachfront Dining",
-  },
-  {
-    type: "image",
-    url: "https://images.unsplash.com/photo-1600011689032-8b628b8a8747?w=1920&q=80",
-    title: "Colorful Coastal Town",
-  },
-  {
-    type: "image",
-    url: "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=1920&q=80",
-    title: "Seaside Dining Experience",
+    url: "/images/header-7.png",
+    title: "Seaside Elegance",
   },
 ];
 
@@ -249,7 +234,7 @@ export default function TravelSelection() {
   const totalCost = tripCost + unlockFee;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-cyan-50/40">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #faf9f7, #f5f3ef, #fdfcfa)' }}>
       {/* Hero Header with Rotating Banner */}
       <header className="relative overflow-hidden">
         {/* Rotating Background Media (Images and Videos) */}
@@ -276,7 +261,7 @@ export default function TravelSelection() {
 
           {/* Content Overlay */}
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-4">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-wide text-center drop-shadow-2xl" style={{ fontFamily: 'var(--font-outfit)', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-wide text-center drop-shadow-2xl" style={{ fontFamily: 'var(--font-cormorant)', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
               Your Mediterranean Escape Awaits
             </h1>
             <p className="text-2xl md:text-3xl font-medium mb-4 text-white text-center drop-shadow-lg" style={{ fontFamily: 'var(--font-inter)', textShadow: '2px 2px 6px rgba(0,0,0,0.8)' }}>
@@ -290,7 +275,7 @@ export default function TravelSelection() {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl px-6 md:px-8 py-4 border border-white/20 shadow-2xl">
               <div className="flex gap-2 md:gap-6">
                 <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
                     {timeLeft.months}
                   </div>
                   <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -298,7 +283,7 @@ export default function TravelSelection() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
                     {timeLeft.days}
                   </div>
                   <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -306,7 +291,7 @@ export default function TravelSelection() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
                     {timeLeft.hours}
                   </div>
                   <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -314,7 +299,7 @@ export default function TravelSelection() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
                     {timeLeft.minutes}
                   </div>
                   <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -322,7 +307,7 @@ export default function TravelSelection() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
                     {timeLeft.seconds}
                   </div>
                   <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -353,18 +338,21 @@ export default function TravelSelection() {
 
       {/* Trip Description Section */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="relative bg-gradient-to-br from-[#0f4c81] via-[#1e3a8a] to-[#155e75] rounded-2xl shadow-xl p-8 md:p-10 border border-cyan-300/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 ease-in-out overflow-hidden">
+        <div className="relative rounded-3xl p-8 md:p-10 overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #1a5f7a 0%, #2a7c9e 50%, #1a5f7a 100%)',
+          boxShadow: '0 10px 40px rgba(26, 95, 122, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)'
+        }}>
           {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
 
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center leading-tight tracking-wide" style={{ fontFamily: 'var(--font-cormorant)' }}>
               Experience the Magic of the Mediterranean
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-300 to-teal-300 mx-auto mb-6 rounded-full shadow-lg"></div>
+            <div className="w-24 h-0.5 bg-white/40 mx-auto mb-6"></div>
 
-            <p className="text-base md:text-lg text-blue-50 leading-relaxed text-center max-w-3xl mx-auto" style={{ fontFamily: 'var(--font-inter)' }}>
+            <p className="text-base md:text-lg text-white/90 leading-relaxed text-center max-w-3xl mx-auto" style={{ fontFamily: 'var(--font-inter)' }}>
               Embark on an extraordinary 7-day journey through the sun-drenched
               shores of the Mediterranean. Discover pristine beaches, explore ancient villages,
               and indulge in world-class cuisine at seaside tavernas.
@@ -376,10 +364,10 @@ export default function TravelSelection() {
       {/* Hotels Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
             Select Your Accommodation
           </h2>
-          <p className="text-lg text-gray-700" style={{ fontFamily: 'var(--font-inter)' }}>
+          <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
             Choose from our handpicked selection of Mediterranean properties
           </p>
         </div>
@@ -391,14 +379,23 @@ export default function TravelSelection() {
               <div
                 key={hotel.id}
                 onClick={() => setSelectedHotel(hotel.id)}
-                className={`relative cursor-pointer rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl border-3 ${
+                className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 border-3 ${
                   isSelected
-                    ? "border-orange-500 opacity-100 scale-105"
-                    : "border-gray-200 opacity-60 grayscale-[50%] hover:opacity-80"
+                    ? "opacity-100 scale-105"
+                    : "opacity-60 grayscale-[50%] hover:opacity-80"
                 }`}
+                style={{
+                  boxShadow: isSelected
+                    ? '0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px #c1694f'
+                    : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                  border: isSelected ? 'none' : '1px solid #e5e5e5'
+                }}
               >
                 {isSelected && (
-                  <div className="absolute top-2 right-2 z-10 bg-orange-500 text-white rounded-full p-1.5 shadow-lg">
+                  <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                    background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                    boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                  }}>
                     <Check className="w-4 h-4" />
                   </div>
                 )}
@@ -455,10 +452,10 @@ export default function TravelSelection() {
       {/* Flights Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
             Select Your Flight
           </h2>
-          <p className="text-lg text-gray-700" style={{ fontFamily: 'var(--font-inter)' }}>
+          <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
             Choose the flight option that best suits your schedule and budget
           </p>
         </div>
@@ -470,14 +467,23 @@ export default function TravelSelection() {
               <div
                 key={flight.id}
                 onClick={() => setSelectedFlight(flight.id)}
-                className={`relative cursor-pointer rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl border-3 ${
+                className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 border-3 ${
                   isSelected
-                    ? "border-orange-500 opacity-100 scale-105"
-                    : "border-gray-200 opacity-60 grayscale-[50%] hover:opacity-80"
+                    ? "opacity-100 scale-105"
+                    : "opacity-60 grayscale-[50%] hover:opacity-80"
                 }`}
+                style={{
+                  boxShadow: isSelected
+                    ? '0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px #c1694f'
+                    : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                  border: isSelected ? 'none' : '1px solid #e5e5e5'
+                }}
               >
                 {isSelected && (
-                  <div className="absolute top-2 right-2 z-10 bg-orange-500 text-white rounded-full p-1.5 shadow-lg">
+                  <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                    background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                    boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                  }}>
                     <Check className="w-4 h-4" />
                   </div>
                 )}
@@ -528,10 +534,10 @@ export default function TravelSelection() {
       {/* Itinerary Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
             Your 3-Day Itinerary Preview
           </h2>
-          <p className="text-lg text-gray-700" style={{ fontFamily: 'var(--font-inter)' }}>
+          <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
             A glimpse of the unforgettable experiences awaiting you
           </p>
         </div>
@@ -544,10 +550,14 @@ export default function TravelSelection() {
             >
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="bg-gradient-to-br from-[#1e3a8a] to-cyan-600 text-white text-xl font-bold px-4 py-2 rounded-full" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <div className="text-white text-xl font-bold px-4 py-2 rounded-full" style={{
+                    fontFamily: 'var(--font-cormorant)',
+                    background: 'linear-gradient(135deg, #1a5f7a 0%, #2a7c9e 100%)',
+                    boxShadow: '0 2px 8px rgba(26, 95, 122, 0.3)'
+                  }}>
                     Day {day.day}
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-[#1e3a8a]" style={{ fontFamily: 'var(--font-outfit)' }}>
+                  <h3 className="text-2xl md:text-3xl font-bold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
                     {day.title}
                   </h3>
                 </div>
@@ -618,8 +628,11 @@ export default function TravelSelection() {
 
       {/* Total Cost Section */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-gradient-to-br from-[#1e3a8a] via-blue-700 to-cyan-600 rounded-2xl shadow-xl p-6 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center" style={{ fontFamily: 'var(--font-outfit)' }}>
+        <div className="rounded-3xl p-6 text-white transition-all duration-300 ease-in-out" style={{
+          background: 'linear-gradient(135deg, #1a5f7a 0%, #2a7c9e 50%, #1a5f7a 100%)',
+          boxShadow: '0 10px 40px rgba(26, 95, 122, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center tracking-wide" style={{ fontFamily: 'var(--font-cormorant)' }}>
             Your Trip Summary
           </h2>
           <div className="max-w-md mx-auto space-y-4" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -681,21 +694,36 @@ export default function TravelSelection() {
             <div className="pt-5 space-y-2.5">
               <button
                 onClick={() => setShowNotInterestedModal(true)}
-                className="w-full bg-orange-500 text-white px-6 py-3 rounded-full font-semibold text-base hover:bg-orange-600 transition-all duration-300 ease-in-out shadow-xl hover:shadow-2xl hover:-translate-y-1 transform"
-                style={{ fontFamily: 'var(--font-inter)' }}
+                className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
+                style={{
+                  fontFamily: 'var(--font-inter)',
+                  background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                  boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
+                }}
               >
                 Not Interested
               </button>
 
               <button
                 onClick={() => setShowEditModal(true)}
-                className="w-full bg-orange-500 text-white px-6 py-3 rounded-full font-semibold text-base hover:bg-orange-600 transition-all duration-300 ease-in-out shadow-xl hover:shadow-2xl hover:-translate-y-1 transform"
-                style={{ fontFamily: 'var(--font-inter)' }}
+                className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
+                style={{
+                  fontFamily: 'var(--font-inter)',
+                  background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                  boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
+                }}
               >
                 I like it but I want to make edits
               </button>
 
-              <button className="w-full bg-orange-500 text-white px-6 py-3 rounded-full font-semibold text-base hover:bg-orange-600 transition-all duration-300 ease-in-out shadow-xl hover:shadow-2xl hover:-translate-y-1 transform" style={{ fontFamily: 'var(--font-inter)' }}>
+              <button
+                className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
+                style={{
+                  fontFamily: 'var(--font-inter)',
+                  background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                  boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
+                }}
+              >
                 <Lock className="w-4 h-4 inline mr-2" />
                 I love it! Unlock Complete Itinerary - ${totalCost.toFixed(2)}
               </button>
@@ -761,7 +789,7 @@ export default function TravelSelection() {
               </svg>
             </button>
 
-            <h3 className="text-3xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <h3 className="text-3xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-cormorant)' }}>
               How Can We Help?
             </h3>
             <p className="text-gray-600 mb-6" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -830,7 +858,7 @@ export default function TravelSelection() {
               </svg>
             </button>
 
-            <h3 className="text-3xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <h3 className="text-3xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-cormorant)' }}>
               What Would You Like to Change?
             </h3>
             <p className="text-gray-600 mb-6" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -899,7 +927,7 @@ export default function TravelSelection() {
               </svg>
             </button>
 
-            <h3 className="text-3xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <h3 className="text-3xl font-bold text-[#1e3a8a] mb-4" style={{ fontFamily: 'var(--font-cormorant)' }}>
               We'd Love Your Feedback
             </h3>
             <p className="text-gray-600 mb-6" style={{ fontFamily: 'var(--font-inter)' }}>
