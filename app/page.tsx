@@ -93,6 +93,11 @@ const bannerMedia = [
   },
   {
     type: "image",
+    url: "https://images.unsplash.com/photo-1504870712357-65ea720d6078?w=1920&q=80",
+    title: "Couple Enjoying the Coast",
+  },
+  {
+    type: "image",
     url: "/images/header-3.png",
     title: "Luxury Dining",
   },
@@ -100,6 +105,11 @@ const bannerMedia = [
     type: "image",
     url: "/images/header-4.png",
     title: "Cliffside Village",
+  },
+  {
+    type: "image",
+    url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80",
+    title: "Solo Traveler Adventure",
   },
   {
     type: "image",
@@ -116,6 +126,11 @@ const bannerMedia = [
     url: "/images/header-7.png",
     title: "Farmers Market",
   },
+  {
+    type: "image",
+    url: "/images/header-8.png",
+    title: "Mediterranean Experience",
+  },
 ];
 
 // Mock itinerary data
@@ -129,8 +144,8 @@ const mockItinerary = [
       { time: "Evening", name: "Sunset Boat Cruise", location: "Marina Bay" },
     ],
     restaurants: [
-      { meal: "Lunch", name: "Taverna Poseidon", cuisine: "Fresh Seafood", stars: 4, price: 3, location: "Waterfront" },
-      { meal: "Dinner", name: "Casa Azzurra", cuisine: "Mediterranean Fusion", stars: 5, price: 4, location: "Old Town" },
+      { meal: "Lunch", name: "Waterfront Seafood Taverna", cuisine: "Fresh Seafood", stars: 4, price: 3, location: "Waterfront" },
+      { meal: "Dinner", name: "Upscale Mediterranean Fusion", cuisine: "Mediterranean Fusion", stars: 5, price: 4, location: "Old Town" },
     ],
   },
   {
@@ -142,8 +157,8 @@ const mockItinerary = [
       { time: "Evening", name: "Cooking Class with Local Chef", location: "Villa Terrace" },
     ],
     restaurants: [
-      { meal: "Lunch", name: "Cliffside Tavern", cuisine: "Traditional Greek", stars: 4, price: 2, location: "Coastal Village" },
-      { meal: "Dinner", name: "The Olive Grove", cuisine: "Farm-to-Table", stars: 5, price: 4, location: "Countryside" },
+      { meal: "Lunch", name: "Traditional Greek Tavern", cuisine: "Traditional Greek", stars: 4, price: 2, location: "Coastal Village" },
+      { meal: "Dinner", name: "Farm-to-Table Restaurant", cuisine: "Farm-to-Table", stars: 5, price: 4, location: "Countryside" },
     ],
   },
   {
@@ -155,8 +170,8 @@ const mockItinerary = [
       { time: "Evening", name: "Rooftop Sunset Cocktails", location: "Boutique Hotel" },
     ],
     restaurants: [
-      { meal: "Lunch", name: "Mezes & More", cuisine: "Small Plates", stars: 4, price: 2, location: "Village Square" },
-      { meal: "Dinner", name: "Estrella del Mar", cuisine: "Modern Mediterranean", stars: 5, price: 4, location: "Harbor View" },
+      { meal: "Lunch", name: "Authentic Mezze Cafe", cuisine: "Small Plates", stars: 4, price: 2, location: "Village Square" },
+      { meal: "Dinner", name: "Modern Mediterranean Fine Dining", cuisine: "Modern Mediterranean", stars: 5, price: 4, location: "Harbor View" },
     ],
   },
 ];
@@ -171,6 +186,7 @@ export default function TravelSelection() {
   const [question, setQuestion] = useState("");
   const [editRequest, setEditRequest] = useState("");
   const [notInterestedReason, setNotInterestedReason] = useState("");
+  const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     months: 0,
     days: 0,
@@ -178,6 +194,11 @@ export default function TravelSelection() {
     minutes: 0,
     seconds: 0,
   });
+
+  // Track when component is mounted to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Auto-rotate banner media every 6 seconds
   useEffect(() => {
@@ -189,6 +210,8 @@ export default function TravelSelection() {
 
   // Countdown timer to trip date (December 10, 2025)
   useEffect(() => {
+    if (!mounted) return;
+
     const calculateTimeLeft = () => {
       const tripDate = new Date("2025-12-10T00:00:00");
       const now = new Date();
@@ -222,7 +245,7 @@ export default function TravelSelection() {
     calculateTimeLeft();
     const interval = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [mounted]);
 
   const selectedHotelData = hotelOptions.find((h) => h.id === selectedHotel);
   const selectedFlightData = flightOptions.find((f) => f.id === selectedFlight);
@@ -672,28 +695,15 @@ export default function TravelSelection() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center pb-3 border-b border-white/30">
-              <div>
-                <div className="text-base font-semibold">Unlock Fee</div>
-                <div className="text-blue-100 text-sm">
-                  Access full itinerary details
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-xl font-bold">${unlockFee.toFixed(2)}</div>
-              </div>
-            </div>
-
             <div className="flex justify-between items-center pt-3">
-              <div className="text-lg font-bold">Total with Unlock Fee</div>
+              <div className="text-lg font-bold">Total</div>
               <div className="text-right">
-                <div className="text-2xl font-bold">${totalCost.toFixed(2)}</div>
+                <div className="text-2xl font-bold">${tripCost}</div>
               </div>
             </div>
 
             <div className="pt-5 space-y-2.5">
               <button
-                onClick={() => setShowNotInterestedModal(true)}
                 className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
                 style={{
                   fontFamily: 'var(--font-inter)',
@@ -701,7 +711,8 @@ export default function TravelSelection() {
                   boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
                 }}
               >
-                Not Interested
+                <Lock className="w-4 h-4 inline mr-2" />
+                I love it! Unlock Complete Itinerary - ${tripCost}
               </button>
 
               <button
@@ -717,6 +728,7 @@ export default function TravelSelection() {
               </button>
 
               <button
+                onClick={() => setShowNotInterestedModal(true)}
                 className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
                 style={{
                   fontFamily: 'var(--font-inter)',
@@ -724,8 +736,7 @@ export default function TravelSelection() {
                   boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
                 }}
               >
-                <Lock className="w-4 h-4 inline mr-2" />
-                I love it! Unlock Complete Itinerary - ${totalCost.toFixed(2)}
+                Not Interested
               </button>
 
               <p className="text-center text-sm text-blue-100 mt-3">
