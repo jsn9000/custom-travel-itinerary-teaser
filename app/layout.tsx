@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${cormorant.variable} antialiased`}
         style={{ fontFamily: 'var(--font-inter)', backgroundColor: '#faf9f7' }}

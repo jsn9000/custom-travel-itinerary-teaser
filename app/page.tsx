@@ -266,7 +266,7 @@ export default function TravelSelection() {
             <div
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentImageIndex ? "opacity-100" : "opacity-0"
+                mounted && index === currentImageIndex ? "opacity-100" : index === 0 && !mounted ? "opacity-100" : "opacity-0"
               }`}
             >
               <div
@@ -295,50 +295,52 @@ export default function TravelSelection() {
             </p>
 
             {/* Countdown Timer */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl px-6 md:px-8 py-4 border border-white/20 shadow-2xl">
-              <div className="flex gap-2 md:gap-6">
-                <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                    {timeLeft.months}
+            {mounted && (
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl px-6 md:px-8 py-4 border border-white/20 shadow-2xl">
+                <div className="flex gap-2 md:gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      {timeLeft.months}
+                    </div>
+                    <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
+                      Months
+                    </div>
                   </div>
-                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
-                    Months
+                  <div className="text-center">
+                    <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      {timeLeft.days}
+                    </div>
+                    <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
+                      Days
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                    {timeLeft.days}
+                  <div className="text-center">
+                    <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      {timeLeft.hours}
+                    </div>
+                    <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
+                      Hours
+                    </div>
                   </div>
-                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
-                    Days
+                  <div className="text-center">
+                    <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      {timeLeft.minutes}
+                    </div>
+                    <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
+                      Minutes
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                    {timeLeft.hours}
-                  </div>
-                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
-                    Hours
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                    {timeLeft.minutes}
-                  </div>
-                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
-                    Minutes
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                    {timeLeft.seconds}
-                  </div>
-                  <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
-                    Seconds
+                  <div className="text-center">
+                    <div className="text-2xl md:text-4xl font-bold" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      {timeLeft.seconds}
+                    </div>
+                    <div className="text-xs md:text-sm uppercase tracking-wider font-medium" style={{ fontFamily: 'var(--font-inter)' }}>
+                      Seconds
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Activity Indicator */}
             <div className="absolute bottom-8 flex gap-2">
@@ -347,7 +349,7 @@ export default function TravelSelection() {
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    index === currentImageIndex
+                    (mounted ? index === currentImageIndex : index === 0)
                       ? "w-8 bg-white"
                       : "w-2 bg-white/50 hover:bg-white/75"
                   }`}
