@@ -24,12 +24,14 @@ This is a TypeScript Next.js 15 application with two main features:
 1. **AI-powered travel agents** - Chat interfaces with AI agents (RAG, MCP tools, etc.)
 2. **Paywalled itinerary teaser** - Visual teaser page for custom travel itineraries derived from Wanderlog data
 3. **Website Design** - The website and header must be high quality. The site very visually appealing, including the font used.
-4. **Header** - The header must contain pictures or videp clips based on the destination the person will be visiting and be vibrant and eye catching
+4. **Header** - The header must contain pictures based on the destination the person will be visiting and be vibrant and eye catching. You can use images on the wanderlog url provided or create visually appealing images based on the destination of the client. always include a couple, single person, family with kids as well. there should be about 6 images provided. The landscape and surroundings should be based on well known or fun looking sites from the destination
 5. **Sections** - Have in order the sections, catchy description of this trip, hotels, and fights. Each card for the hotels the user will pick from should have the star ratings and prices. The card should have an image of the place that is available but it should be blurred a little. And the name of the site should not be the actual name of the flights or hotel but a description of the type of hotel and flight.
 6. **Choices** - The card or options that are chosen should be active and the other options not chosen should be greyed outl
 7. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
 8. **Trip Summary** - The trip summary section should also have the price of the trip but also show a seperate price of 299.00 to unlock the details of the trip. Show the prices without the fee and the price with the fee included in the total
 9. **Always Check Images** - Always double check images to make sure they are truly representative of the destination. Correct and choose another image if necessary on initial setup.
+10. **Wanderlog URL** - Always make sure to use the Wanderlog URL provided to pull the newest information for the generated page based on the template that is here.
+11. **Buttons, Color, Theme** - The button and colors and themes must all be based on the Wanderlog url provided since it will have the destination and location of the visit.
 
 
 ### Core Stack
@@ -560,16 +562,136 @@ In production, the teaser system should:
 5. Store access grants in database
 6. Send confirmation emails with full itinerary access links
 
+## Supabase Integration
+
+This project uses Supabase for storing raw Wanderlog PDF files with metadata tracking.
+
+### Architecture
+
+- **Storage Bucket**: `wanderlog-pdfs` - Private bucket for PDF file storage
+- **Database Table**: `wanderlog_pdfs` - Metadata and processing status
+- **Service Layer**: `SupabaseStorageService` in `/lib/supabase/storage.ts`
+
+### Setup Instructions
+
+See `/supabase/README.md` for complete setup instructions, including:
+1. Creating storage bucket in Supabase Dashboard
+2. Running database schema (`/supabase/schema.sql`)
+3. Configuring environment variables
+4. Testing the integration
+
+### API Routes
+
+- `POST /api/pdfs/upload` - Upload Wanderlog PDF with optional metadata
+  - Accepts multipart form data
+  - Fields: `file` (required), `trip_title`, `trip_dates`, `destination`, `user_id`
+  - Max file size: 50MB
+  - Returns: `{ success: boolean, data?: {...}, error?: string }`
+
+- `GET /api/pdfs/list` - List all PDFs with optional filters
+  - Query params: `destination`, `status`, `user_id`, `limit`
+  - Returns: `{ success: boolean, data?: WanderlogPDF[], error?: string }`
+
+- `GET /api/pdfs/[id]` - Get PDF metadata and public URL by ID
+  - Returns: `{ success: boolean, data?: {...}, error?: string }`
+
+- `PATCH /api/pdfs/[id]` - Update PDF metadata
+  - Body: `{ trip_title?, trip_dates?, destination?, status?, metadata? }`
+  - Returns: `{ success: boolean, data?: WanderlogPDF, error?: string }`
+
+- `DELETE /api/pdfs/[id]` - Delete PDF (storage + database)
+  - Returns: `{ success: boolean, message?: string, error?: string }`
+
+### Storage Service Usage
+
+```typescript
+import { SupabaseStorageService } from '@/lib/supabase';
+
+// Upload a PDF
+const service = new SupabaseStorageService();
+const result = await service.uploadPDF(file, fileName, {
+  trip_title: 'Mediterranean Adventure',
+  destination: 'Greece',
+});
+
+// List PDFs
+const pdfs = await service.listPDFs({
+  destination: 'Greece',
+  status: 'uploaded',
+  limit: 10,
+});
+
+// Get PDF by ID
+const pdf = await service.getPDFById(id);
+
+// Update metadata
+await service.updatePDFMetadata(id, {
+  status: 'processed',
+  trip_title: 'Updated Title',
+});
+
+// Delete PDF
+await service.deletePDF(id);
+```
+
+### Database Schema
+
+```typescript
+interface WanderlogPDF {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  file_name: string;
+  file_path: string;
+  file_size: number;
+  mime_type: string;
+  trip_title: string | null;
+  trip_dates: string | null;
+  destination: string | null;
+  status: 'uploaded' | 'processing' | 'processed' | 'error';
+  metadata: Record<string, any> | null;
+  user_id: string | null;
+}
+```
+
+### Security Considerations
+
+- Storage bucket is **private** by default
+- Row Level Security (RLS) enabled on `wanderlog_pdfs` table
+- Use `SUPABASE_SERVICE_ROLE_KEY` only in API routes (server-side)
+- Use `NEXT_PUBLIC_SUPABASE_ANON_KEY` for client-side operations
+- Service role key bypasses RLS policies
+- Adjust RLS policies in schema based on authentication requirements
+
+### File Processing Workflow
+
+1. Upload PDF via `POST /api/pdfs/upload` (status: `uploaded`)
+2. Process PDF to extract itinerary data (update status to `processing`)
+3. Apply redaction rules via LLM to create teaser data
+4. Update metadata with processing results (status: `processed`)
+5. Display teaser on landing page
+6. Retrieve full PDF when user unlocks access
+
 ## Environment Setup
 
 Create `.env.local` with:
 
 ```
+# OpenAI
 OPENAI_API_KEY=your_openai_api_key_here
+
+# Vectorize (RAG)
 VECTORIZE_ACCESS_TOKEN=your_vectorize_token
 VECTORIZE_ORG_ID=your_org_id
 VECTORIZE_PIPELINE_ID=your_pipeline_id
+
+# Firecrawl MCP (optional)
 FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key
 ```
 
 ## Critical Rules for useChat Implementation

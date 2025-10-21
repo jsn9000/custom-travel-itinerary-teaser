@@ -757,9 +757,16 @@ export default function TravelSelection() {
               <div className="text-3xl font-bold text-white mb-2">
                 Mediterranean Adventure
               </div>
-              <p className="text-blue-300">
+              <p className="text-blue-300 mb-4">
                 Your gateway to unforgettable Mediterranean experiences
               </p>
+              <a
+                href="/wanderlog-import"
+                className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full font-semibold text-sm hover:from-purple-600 hover:to-blue-600 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg"
+                style={{ fontFamily: 'var(--font-inter)' }}
+              >
+                Import
+              </a>
             </div>
             <div className="border-t border-blue-700 pt-6 mt-6">
               <p className="text-sm mb-4">
