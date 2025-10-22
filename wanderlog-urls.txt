@@ -1,0 +1,9 @@
+# Wanderlog URLs to Scrape
+# Add one URL per line
+# Lines starting with # are comments and will be ignored
+
+# Example:
+# https://wanderlog.com/view/znjfochocj/trip-to-edmonton
+
+# Add your URLs below:
+https://wanderlog.com/view/znjfochocj/trip-to-edmonton
