@@ -24,7 +24,7 @@
       null,
       null
     ],
-    "anonymousId": "bc522c07-70b7-4f0a-9c08-5f6be88f8dbe",
+    "anonymousId": "e94f4ce7-314f-4781-bf23-d37b7df049e2",
     "showIsInExternalWebViewOAuthError": false,
     "useFirstExperimentVariant": false,
     "user": null,
@@ -6199,7 +6199,7 @@
         "overallVersion": 497,
         "placeCount": 40,
         "journalStopCount": 0,
-        "viewCount": 127,
+        "viewCount": 129,
         "likeCount": 1,
         "characterCount": 5961,
         "imageCount": null,
@@ -6214,7 +6214,7 @@
         "publishedAt": null,
         "lastSentUpdateEmailAt": null,
         "createdAt": "2025-06-27T23:00:56.000Z",
-        "updatedAt": "2025-10-23T05:10:56Z",
+        "updatedAt": "2025-10-23T05:46:36Z",
         "deletedAt": null,
         "TripPlanKeys": [
           {

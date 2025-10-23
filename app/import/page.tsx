@@ -70,7 +70,7 @@ export default function ImportPage() {
         ...(force && { force: 'true' }),
       });
 
-      const response = await fetch(`/api/scrape-wanderlog?${queryParams}`);
+      const response = await fetch(`/api/scrape?${queryParams}`);
       const data = await response.json();
 
       setResult(data);

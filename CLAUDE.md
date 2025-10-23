@@ -25,6 +25,12 @@ This is a TypeScript Next.js 15 application with two main features:
 2. **Paywalled itinerary teaser** - Visual teaser page for custom travel itineraries derived from Wanderlog data
 3. **Website Design** - The website and header must be high quality. The site very visually appealing, including the font used.
 4. **Header** - The header must contain pictures based on the destination the person will be visiting and be vibrant and eye catching. You can use images on the wanderlog url provided or create visually appealing images based on the destination of the client. always include a couple, single person, family with kids as well. there should be about 6 images provided. The landscape and surroundings should be based on well known or fun looking sites from the destination
+   - **Edmonton Header Images**: For Edmonton trips, use the following images from `/app/images/edmonton/`:
+     - `edmonton-skyline.jpeg` - Vibrant night skyline with colorful buildings
+     - `edmonton-lights.jpeg` - Northern lights over Edmonton skyline
+     - `edmonton-couple.jpeg` - Couple enjoying Edmonton
+     - `edmonton-whitehouse.jpg` - Historic Edmonton landmark
+   - Rotate through these images in the header carousel for a dynamic, engaging visual experience
 5. **Trip Title & Subtitle** - The trip title should have a catchy subtitle underneath it that fits the destination, like "7 Days of Sun, Sea, and Unforgettable Memories". The subtitle should be derived from the trip notes if available (first sentence), otherwise generate one based on trip duration and destination.
 6. **Sections** - Have in order the sections: catchy description of this trip, hotels, flights, and daily itinerary. Each card for the hotels the user will pick from should have the star ratings and prices. The card should have an image of the place that is available but it should be blurred a little. And the name of the site should not be the actual name of the flights or hotel but a description of the type of hotel and flight.
 7. **Hotel Details** - Each hotel card must show: room type description (e.g., "Standard Room, 2 Queen Beds"), amenities, price per night with 2 decimal places, and total price for all nights. Use images from Supabase that were extracted from Wanderlog with `associated_section: 'hotel'`.
@@ -36,10 +42,14 @@ This is a TypeScript Next.js 15 application with two main features:
     - Activity cards with slightly blurred images from Supabase, activity names, ratings, and times
     - Activities should ONLY be shown in the daily itinerary section, not as a separate standalone section
 11. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
-12. **Trip Summary** - The trip summary section should also have the price of the trip but also show a seperate price of 299.00 to unlock the details of the trip. Show the prices without the fee and the price with the fee included in the total
+12. **Trip Summary** - The trip summary section should show the price of the trip (flight + hotel subtotal only). Do not display any unlock fee or additional charges in the trip summary.
 13. **Always Check Images** - Always double check images to make sure they are truly representative of the destination. Correct and choose another image if necessary on initial setup. Use actual Wanderlog images stored in Supabase with proper associations.
 14. **Wanderlog URL** - Always make sure to use the Wanderlog URL provided to pull the newest information for the generated page based on the template that is here.
 15. **Buttons, Color, Theme** - The button and colors and themes must all be based on the Wanderlog url provided since it will have the destination and location of the visit.
+16. **Dining Variety** - Each day must show THREE DIFFERENT dining venues for breakfast, lunch, and dinner. The same restaurant should NOT be shown for multiple meals on the same day. Venues should rotate across different days to provide variety throughout the trip.
+17. **Airline Descriptions** - The airlines presented should not be the name of the actual airline, it should be a description such as if it's first class or economy etc. for example.
+18. **Accommodation Descriptions** - Under Select your accommodations, the actual hotel, inn, suites and other living arrangements should be a description of the property not the actual name of the hotel.
+19. **Card Hover Effects** - All activity cards and dining cards in the daily itinerary section must have interactive hover effects. When a user hovers over these cards, they should smoothly translate upward (hover:-translate-y-1), display a shadow effect (hover:shadow-lg), and have a smooth transition animation (transition-all duration-300). The cursor should change to pointer to indicate interactivity.
 
 ---
 

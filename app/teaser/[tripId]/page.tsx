@@ -8,7 +8,7 @@ import Link from "next/link";
 interface HotelOption {
   id: string;
   name: string;
-  room_type?: string | null;
+  roomType?: string | null;
   amenities?: string[];
   rating?: number | null;
   price: number;
@@ -20,38 +20,40 @@ interface HotelOption {
 interface FlightOption {
   id: string;
   airline: string;
-  flight_code?: string | null;
-  departure_airport: string;
-  arrival_airport: string;
-  departure_time: string;
-  arrival_time: string;
+  flightCode?: string | null;
+  departureAirport: string;
+  arrivalAirport: string;
+  departureTime: string;
+  arrivalTime: string;
   price: number;
   currency: string;
-  baggage_options?: string | null;
+  baggageOptions?: string | null;
 }
 
 interface TripData {
   id: string;
   title: string;
   creator?: string;
-  start_date: string;
-  end_date: string;
-  header_images: string[];
+  startDate: string;
+  endDate: string;
+  headerImages: string[];
   notes?: string | null;
-  wanderlog_url: string;
+  wanderlogUrl: string;
   hotels: HotelOption[];
   flights: FlightOption[];
-  images: any[];
   activities: {
     id: string;
     name: string;
     description?: string;
     location?: string;
     rating?: number;
-    images?: { url: string; alt?: string }[];
+    hours?: string;
+    address?: string;
+    contact?: string;
+    images?: { url: string; alt?: string; caption?: string }[];
   }[];
   dailySchedule: {
-    day_number: number;
+    dayNumber: number;
     date: string;
     items: {
       type: string;
@@ -131,21 +133,21 @@ export default function TeaserPage() {
 
   // Auto-rotate banner images every 6 seconds
   useEffect(() => {
-    if (!tripData?.header_images || tripData.header_images.length === 0) return;
+    if (!mounted) return;
 
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % tripData.header_images.length);
+      setCurrentImageIndex((prev) => (prev + 1) % 4); // 4 Edmonton header images
     }, 6000);
     return () => clearInterval(interval);
-  }, [tripData]);
+  }, [mounted]);
 
   // Countdown timer to trip start date
   useEffect(() => {
-    if (!mounted || !tripData?.start_date) return;
+    if (!mounted || !tripData?.startDate) return;
 
     const calculateTimeLeft = () => {
       // Parse date and set to noon to avoid timezone issues
-      const tripDate = new Date(tripData.start_date + 'T12:00:00');
+      const tripDate = new Date(tripData.startDate + 'T12:00:00');
       const now = new Date();
 
       if (tripDate > now) {
@@ -174,8 +176,8 @@ export default function TeaserPage() {
 
   const calculateNights = () => {
     if (!tripData) return 7;
-    const start = new Date(tripData.start_date);
-    const end = new Date(tripData.end_date);
+    const start = new Date(tripData.startDate);
+    const end = new Date(tripData.endDate);
     const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return nights > 0 ? nights : 7;
   };
@@ -190,8 +192,8 @@ export default function TeaserPage() {
   // Format dates
   const formatDateRange = () => {
     if (!tripData) return "";
-    const start = new Date(tripData.start_date);
-    const end = new Date(tripData.end_date);
+    const start = new Date(tripData.startDate);
+    const end = new Date(tripData.endDate);
     return `${start.toLocaleDateString("en-US", { month: "long", day: "numeric" })} - ${end.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`;
   };
 
@@ -208,8 +210,8 @@ export default function TeaserPage() {
     }
 
     // Fallback: generate based on duration and destination
-    const start = new Date(tripData.start_date);
-    const end = new Date(tripData.end_date);
+    const start = new Date(tripData.startDate);
+    const end = new Date(tripData.endDate);
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     const destination = tripData.title.replace(/Trip to |Visit to |Journey to /i, '').trim();
 
@@ -240,9 +242,9 @@ export default function TeaserPage() {
     }
 
     // Generate title based on first day, last day, or activity types
-    if (day.day_number === 1) {
+    if (day.dayNumber === 1) {
       return 'Arrival & Getting Started';
-    } else if (tripData && day.day_number === tripData.dailySchedule.length) {
+    } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
       return 'Final Explorations & Departure';
     } else if (activities.length >= 3) {
       return 'Full Day of Adventures';
@@ -348,13 +350,13 @@ export default function TeaserPage() {
     );
   }
 
-  // Get banner images (header_images or fallback to activity images)
-  const bannerImages = tripData.header_images && tripData.header_images.length > 0
-    ? tripData.header_images
-    : tripData.images
-        .filter((img) => img.url)
-        .slice(0, 6)
-        .map((img) => img.url);
+  // Use local Edmonton header images
+  const bannerImages = [
+    '/images/edmonton/edmonton-skyline.jpeg',
+    '/images/edmonton/edmonton-lights.jpeg',
+    '/images/edmonton/edmonton-couple.jpeg',
+    '/images/edmonton/edmonton-whitehouse.jpg',
+  ];
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #faf9f7, #f5f3ef, #fdfcfa)' }}>
@@ -501,105 +503,6 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Hotels Section */}
-      {tripData.hotels && tripData.hotels.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              Select Your Accommodation
-            </h2>
-            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Choose from our handpicked selection of properties
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-5">
-            {tripData.hotels.map((hotel, hotelIdx) => {
-              const hotelKey = hotel.id || `hotel-${hotelIdx}`;
-              const isSelected = selectedHotel === hotelKey;
-              // Use real images from scraped data, cycling through available images
-              const availableImages = tripData.images.filter((img) => img.url);
-              const hotelImage = availableImages.length > 0
-                ? availableImages[hotelIdx % availableImages.length].url
-                : `https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800`;
-
-              return (
-                <div
-                  key={hotelKey}
-                  onClick={() => setSelectedHotel(hotelKey)}
-                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 border-3 ${
-                    isSelected
-                      ? "opacity-100 scale-105"
-                      : "opacity-60 grayscale-[50%] hover:opacity-80"
-                  }`}
-                  style={{
-                    boxShadow: isSelected
-                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
-                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
-                    border: isSelected ? 'none' : '1px solid #e5e5e5'
-                  }}
-                >
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
-                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
-                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
-                    }}>
-                      <Check className="w-4 h-4" />
-                    </div>
-                  )}
-
-                  <div className="relative h-32">
-                    <img
-                      src={hotelImage}
-                      alt={hotel.name}
-                      className="w-full h-full object-cover"
-                      style={{ filter: "blur(2px)" }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-3">
-                    <div className="flex items-start justify-between mb-1.5">
-                      <h3 className="text-base font-bold text-gray-900 flex-1">
-                        {getHotelDescription(hotel)}
-                      </h3>
-                      <Building2 className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <p className="text-xs text-gray-600 mb-2">
-                      {hotel.room_type || "Premium accommodation with modern amenities"}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-xl font-bold text-[#1e3a8a]">
-                          ${hotel.price.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-gray-600"> /night</span>
-                      </div>
-                      <div className="text-right text-xs text-gray-500">
-                        {nights} nights
-                        <div className="font-bold text-xs text-gray-900">
-                          ${(hotel.price * nights).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
       {/* Flights Section */}
       {tripData.flights && tripData.flights.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -614,19 +517,21 @@ export default function TeaserPage() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {tripData.flights.map((flight, flightIdx) => {
-              const isSelected = selectedFlight === flight.id;
-              // Use real images from scraped data, offset from hotel images
-              const availableImages = tripData.images.filter((img) => img.url);
-              const imageIndex = (tripData.hotels.length + flightIdx) % availableImages.length;
-              const flightImage = availableImages.length > 0
-                ? availableImages[imageIndex].url
-                : `https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800`;
+              const flightKey = flight.id || `flight-${flightIdx}`;
+              const isSelected = selectedFlight === flightKey;
+              // Use different plane images for each flight
+              const planeImages = [
+                'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800',
+                'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=800',
+                'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=800'
+              ];
+              const flightImage = planeImages[flightIdx % planeImages.length];
 
               return (
                 <div
-                  key={flight.id}
-                  onClick={() => setSelectedFlight(flight.id)}
-                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 border-3 ${
+                  key={flightKey}
+                  onClick={() => setSelectedFlight(flightKey)}
+                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
                     isSelected
                       ? "opacity-100 scale-105"
                       : "opacity-60 grayscale-[50%] hover:opacity-80"
@@ -652,7 +557,9 @@ export default function TeaserPage() {
                       src={flightImage}
                       alt={flight.airline}
                       className="w-full h-full object-cover"
-                      style={{ filter: "blur(2px)" }}
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800';
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   </div>
@@ -665,21 +572,21 @@ export default function TeaserPage() {
                       <Plane className="w-4 h-4 text-blue-600" />
                     </div>
                     <p className="text-xs text-gray-600 mb-2">
-                      {flight.departure_airport} → {flight.arrival_airport}
+                      {flight.departureAirport} → {flight.arrivalAirport}
                     </p>
                     <div className="space-y-0.5 mb-2">
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Departure:</span>
-                        <span className="font-semibold">{flight.departure_time}</span>
+                        <span className="font-semibold">{flight.departureTime}</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Arrival:</span>
-                        <span className="font-semibold">{flight.arrival_time}</span>
+                        <span className="font-semibold">{flight.arrivalTime}</span>
                       </div>
                     </div>
-                    {flight.baggage_options && (
+                    {flight.baggageOptions && (
                       <div className="mb-2 text-xs text-gray-600 bg-blue-50 p-2 rounded">
-                        {flight.baggage_options}
+                        {flight.baggageOptions}
                       </div>
                     )}
                     <div className="pt-2 border-t border-gray-200">
@@ -688,6 +595,118 @@ export default function TeaserPage() {
                           ${flight.price.toFixed(2)}
                         </span>
                         <span className="text-xs text-gray-600"> roundtrip</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Hotels Section */}
+      {tripData.hotels && tripData.hotels.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+              Select Your Accommodation
+            </h2>
+            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+              Choose from our handpicked selection of properties
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {tripData.hotels.map((hotel, hotelIdx) => {
+              const hotelKey = hotel.id || `hotel-${hotelIdx}`;
+              const isSelected = selectedHotel === hotelKey;
+              // Use different hotel images for each hotel
+              const hotelImages = [
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+                'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
+                'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
+              ];
+              const hotelImage = hotelImages[hotelIdx % hotelImages.length];
+
+              return (
+                <div
+                  key={hotelKey}
+                  onClick={() => setSelectedHotel(hotelKey)}
+                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                    isSelected
+                      ? "opacity-100 scale-105"
+                      : "opacity-60 grayscale-[50%] hover:opacity-80"
+                  }`}
+                  style={{
+                    boxShadow: isSelected
+                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                    border: isSelected ? 'none' : '1px solid #e5e5e5'
+                  }}
+                >
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                    }}>
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+
+                  <div className="relative h-32">
+                    <img
+                      src={hotelImage}
+                      alt={hotel.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-3">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <h3 className="text-base font-bold text-gray-900 flex-1">
+                        {getHotelDescription(hotel)}
+                      </h3>
+                      <Building2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <p className="text-xs text-gray-600 mb-2">
+                      {hotel.roomType || "Premium accommodation with modern amenities"}
+                    </p>
+                    {hotel.amenities && hotel.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                          <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xl font-bold text-[#1e3a8a]">
+                          ${hotel.price.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-gray-600"> /night</span>
+                      </div>
+                      <div className="text-right text-xs text-gray-500">
+                        {nights} nights
+                        <div className="font-bold text-xs text-gray-900">
+                          ${(hotel.price * nights).toFixed(2)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -711,10 +730,10 @@ export default function TeaserPage() {
           </div>
 
           <div className="space-y-8">
-            {tripData.dailySchedule.map((day) => (
+            {tripData.dailySchedule.map((day, dayIdx) => (
               <div
-                key={day.day_number}
-                className="bg-white rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                key={`day-${day.dayNumber}-${dayIdx}`}
+                className="bg-white rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ease-out"
               >
                 <div className="mb-6">
                   <div className="flex flex-col gap-2 mb-2">
@@ -724,152 +743,279 @@ export default function TeaserPage() {
                         background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
                         boxShadow: '0 2px 8px rgba(26, 95, 122, 0.3)'
                       }}>
-                        Day {day.day_number}
+                        Day {day.dayNumber}
                       </div>
                       <h3 className="text-2xl md:text-3xl font-bold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
                         {generateDayTitle(day)}
                       </h3>
                     </div>
-                    <p className="text-sm text-gray-600 ml-2" style={{ fontFamily: 'var(--font-inter)' }}>
-                      {day.date}
-                    </p>
                   </div>
                 </div>
 
                 {/* Activities */}
-                {day.items && day.items.length > 0 && (
-                  <>
-                    <div className="mb-6">
-                      <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
-                        Activities
-                      </h4>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        {day.items.filter((item: any) => item.type === 'activity').map((item: any, idx: number) => {
-                          // Find the full activity details
-                          const activityDetails = tripData.activities.find(
-                            (act) => act.name === item.name
-                          );
+                {(() => {
+                  // Filter activities (exclude hotels, dining, airports)
+                  let allActivities = day.items.filter((item: any) => {
+                    if (item.type !== 'activity') return false;
 
-                          // Get activity image
-                          const activityImage = activityDetails?.images?.[0]?.url;
+                    // Check if this item is actually a hotel
+                    const isHotel = tripData.hotels?.some(hotel =>
+                      hotel.name.toLowerCase().includes(item.name.toLowerCase()) ||
+                      item.name.toLowerCase().includes(hotel.name.toLowerCase())
+                    );
+                    if (isHotel) return false;
 
-                          // Assign time of day based on index
-                          const timeLabels = ['MORNING', 'AFTERNOON', 'EVENING'];
-                          const timeLabel = timeLabels[idx % 3];
+                    // Check if item name suggests it's a hotel/accommodation
+                    const hotelKeywords = ['hotel', 'inn', 'suites', 'resort', 'motel', 'lodge'];
+                    const nameContainsHotelKeyword = hotelKeywords.some(keyword =>
+                      item.name.toLowerCase().includes(keyword)
+                    );
+                    if (nameContainsHotelKeyword) return false;
 
-                          // Use the full description (NO ADDRESSES)
-                          const activityDescription = item.description || activityDetails?.description || 'Local attraction worth exploring';
+                    // Check if it's an airport
+                    const isAirport = item.name.toLowerCase().includes('airport');
+                    if (isAirport) return false;
 
-                          return (
-                            <div
-                              key={idx}
-                              className="bg-blue-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow border border-blue-100"
-                            >
-                              {activityImage && (
-                                <div className="relative h-32 w-full">
-                                  <img
-                                    src={activityImage}
-                                    alt="Activity"
-                                    className="w-full h-full object-cover"
-                                    style={{ filter: "blur(2px)" }}
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    // Exclude dining venues
+                    const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen'];
+                    const isDining = diningKeywords.some(keyword =>
+                      item.name.toLowerCase().includes(keyword)
+                    );
+                    const activityDetails = tripData.activities.find(
+                      (act) => act.name === item.name
+                    );
+                    const category = (activityDetails as any)?.category;
+                    const hasDiningCategory = category?.toLowerCase().includes('dining') ||
+                                             category?.toLowerCase().includes('restaurant') ||
+                                             category?.toLowerCase().includes('food');
+                    if (isDining || hasDiningCategory) return false;
+
+                    return true;
+                  });
+
+                  // Ensure minimum 3 activities per day - if fewer, pull from full activities list
+                  if (allActivities.length < 3) {
+                    const allNonDiningActivities = tripData.activities.filter((act: any) => {
+                      // Exclude dining
+                      const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse'];
+                      const isDining = diningKeywords.some(keyword =>
+                        act.name.toLowerCase().includes(keyword)
+                      );
+                      // Exclude hotels/airports
+                      const isHotelOrAirport = act.name.toLowerCase().includes('hotel') ||
+                                               act.name.toLowerCase().includes('inn') ||
+                                               act.name.toLowerCase().includes('airport');
+                      return !isDining && !isHotelOrAirport;
+                    });
+
+                    // Get additional activities to reach minimum 3
+                    const needed = 3 - allActivities.length;
+                    const additionalActivities = allNonDiningActivities
+                      .filter(act => !allActivities.some(item => item.name === act.name))
+                      .slice(0, needed)
+                      .map(act => ({
+                        name: act.name,
+                        type: 'activity',
+                        description: act.description
+                      }));
+
+                    allActivities = [...allActivities, ...additionalActivities];
+                  }
+
+                  if (allActivities.length === 0) return null;
+
+                  // Distribute activities across morning, afternoon, evening
+                  const activitiesPerSlot = Math.ceil(allActivities.length / 3);
+                  const timeSlots = [
+                    { label: 'MORNING', activities: allActivities.slice(0, activitiesPerSlot) },
+                    { label: 'AFTERNOON', activities: allActivities.slice(activitiesPerSlot, activitiesPerSlot * 2) },
+                    { label: 'EVENING', activities: allActivities.slice(activitiesPerSlot * 2) }
+                  ].filter(slot => slot.activities.length > 0);
+
+                  if (timeSlots.length === 0) return null;
+
+                  return (
+                    <>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                          Activities
+                        </h4>
+                        <div className="grid md:grid-cols-3 gap-4">
+                          {allActivities.map((item: any, actIdx: number) => {
+                            // Find the full activity details
+                            const activityDetails = tripData.activities.find(
+                              (act) => act.name === item.name
+                            );
+
+                            // Extract location from address
+                            const location = activityDetails?.address?.split(',').slice(0, 2).join(',') || 'Local Area';
+
+                            // Determine time slot
+                            const activityIndex = actIdx;
+                            const activitiesPerSlot = Math.ceil(allActivities.length / 3);
+                            let timeLabel = 'Morning';
+                            if (activityIndex >= activitiesPerSlot * 2) {
+                              timeLabel = 'Evening';
+                            } else if (activityIndex >= activitiesPerSlot) {
+                              timeLabel = 'Afternoon';
+                            }
+
+                            // Get description
+                            const description = item.description || activityDetails?.description || 'Explore this local attraction';
+
+                            return (
+                              <div
+                                key={`activity-${dayIdx}-${actIdx}`}
+                                className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer"
+                              >
+                                <div className="text-xs font-semibold text-cyan-700 uppercase tracking-wider mb-1">
+                                  {timeLabel}
                                 </div>
-                              )}
-                              <div className="p-5">
-                                <div className="flex items-center justify-between mb-3">
-                                  <div className="text-xs font-bold text-blue-700 tracking-wider">
-                                    {timeLabel}
-                                  </div>
-                                  {activityDetails?.rating && (
-                                    <div className="flex items-center gap-1">
-                                      {Array.from({ length: Math.round(activityDetails.rating) }).map((_, i) => (
-                                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                      ))}
-                                    </div>
-                                  )}
+                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                  {item.name}
                                 </div>
-                                <div className="text-sm text-gray-700 leading-relaxed" style={{ fontFamily: 'var(--font-inter)' }}>
-                                  {activityDescription}
-                                </div>
+                                <div className="text-sm text-gray-600 mb-2">{description}</div>
+                                <div className="text-xs text-gray-500">{location}</div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
 
                     {/* Dining Section */}
-                    <div className="mb-6">
-                      <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
-                        Dining
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {day.items.filter((item: any) => item.type === 'activity').slice(0, 2).map((item: any, idx: number) => {
-                          // Find the full activity details
-                          const activityDetails = tripData.activities.find(
-                            (act) => act.name === item.name
-                          );
+                    {(() => {
+                      // Get all dining venues from activities
+                      const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse', 'food', 'bakery', 'deli'];
+                      const allDiningActivities = tripData.activities.filter((act: any) => {
+                        const isDining = diningKeywords.some(keyword =>
+                          act.name.toLowerCase().includes(keyword)
+                        );
+                        const description = act.description || '';
+                        const hasDiningDescription = description.toLowerCase().includes('dining') ||
+                                                    description.toLowerCase().includes('restaurant') ||
+                                                    description.toLowerCase().includes('cuisine') ||
+                                                    description.toLowerCase().includes('food');
+                        return isDining || hasDiningDescription;
+                      });
 
-                          // Get activity image
-                          const diningImage = activityDetails?.images?.[0]?.url;
+                      // Pick THREE different dining venues for breakfast, lunch, and dinner
+                      // Ensure they don't repeat within the same day
+                      let breakfastVenue: any;
+                      let lunchVenue: any;
+                      let dinnerVenue: any;
 
-                          // Assign meal time
-                          const mealLabels = ['LUNCH', 'DINNER'];
-                          const mealLabel = mealLabels[idx % 2];
+                      if (allDiningActivities.length >= 3) {
+                        // We have at least 3 venues - pick different ones for each meal
+                        // Use separate rotation for each meal type to ensure variety across days
+                        const venueCount = allDiningActivities.length;
+                        const breakfastIdx = dayIdx % venueCount;
+                        // Offset lunch and dinner to ensure they're different from breakfast
+                        const lunchOffset = Math.floor(venueCount / 3);
+                        const dinnerOffset = Math.floor((venueCount * 2) / 3);
+                        const lunchIdx = (dayIdx + lunchOffset) % venueCount;
+                        const dinnerIdx = (dayIdx + dinnerOffset) % venueCount;
 
-                          // Generate price indicator based on rating
-                          const priceLevel = activityDetails?.rating
-                            ? Math.ceil(activityDetails.rating)
-                            : 3;
-                          const priceIndicator = '$'.repeat(Math.min(priceLevel, 4));
+                        breakfastVenue = allDiningActivities[breakfastIdx];
+                        lunchVenue = allDiningActivities[lunchIdx];
+                        dinnerVenue = allDiningActivities[dinnerIdx];
+                      } else if (allDiningActivities.length === 2) {
+                        // Only 2 venues - alternate and create a generic third
+                        const baseIndex = (dayIdx * 2) % 2;
+                        breakfastVenue = allDiningActivities[baseIndex];
+                        lunchVenue = allDiningActivities[(baseIndex + 1) % 2];
+                        dinnerVenue = {
+                          name: 'Local Dining Spot',
+                          description: 'Curated dining experience featuring local cuisine and fresh ingredients',
+                        };
+                      } else if (allDiningActivities.length === 1) {
+                        // Only 1 venue - use it once and create generics
+                        breakfastVenue = allDiningActivities[0];
+                        lunchVenue = {
+                          name: 'Local Lunch Spot',
+                          description: 'Authentic local dishes for midday dining',
+                        };
+                        dinnerVenue = {
+                          name: 'Local Dinner Spot',
+                          description: 'Evening dining experience with regional specialties',
+                        };
+                      } else {
+                        // No venues - create generics
+                        breakfastVenue = {
+                          name: 'Local Breakfast Spot',
+                          description: 'Morning dining experience with fresh ingredients',
+                        };
+                        lunchVenue = {
+                          name: 'Local Lunch Spot',
+                          description: 'Authentic local dishes for midday dining',
+                        };
+                        dinnerVenue = {
+                          name: 'Local Dinner Spot',
+                          description: 'Evening dining experience with regional specialties',
+                        };
+                      }
 
-                          // Use the full description (NO ADDRESSES)
-                          const diningDescription = item.description || activityDetails?.description || 'Local dining establishment serving quality cuisine';
+                      return (
+                        <div className="mb-6">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                            Dining
+                          </h4>
 
-                          return (
-                            <div
-                              key={idx}
-                              className="bg-orange-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow border border-orange-100"
-                            >
-                              {diningImage && (
-                                <div className="relative h-32 w-full">
-                                  <img
-                                    src={diningImage}
-                                    alt="Restaurant"
-                                    className="w-full h-full object-cover"
-                                    style={{ filter: "blur(2px)" }}
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                </div>
-                              )}
-                              <div className="p-5">
-                                <div className="flex items-start justify-between mb-3">
-                                  <div className="text-xs font-bold text-orange-700 tracking-wider">
-                                    {mealLabel}
-                                  </div>
-                                  {activityDetails?.rating && (
-                                    <div className="flex items-center gap-1">
-                                      {Array.from({ length: Math.round(activityDetails.rating) }).map((_, i) => (
-                                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="text-sm text-gray-700 leading-relaxed mb-2" style={{ fontFamily: 'var(--font-inter)' }}>
-                                  {diningDescription}
-                                </div>
-                                <div className="text-sm font-bold text-green-700">
-                                  {priceIndicator}
-                                </div>
+                          {/* Single row with Breakfast, Lunch, Dinner - all different venues */}
+                          <div className="grid md:grid-cols-3 gap-4">
+                            {/* Breakfast */}
+                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
+                              <div className="text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">
+                                Breakfast
+                              </div>
+                              <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                {breakfastVenue.name}
+                              </div>
+                              <div className="text-sm text-gray-600 mb-2">
+                                {breakfastVenue.description || 'Local dining experience'}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                )}
+
+                            {/* Lunch */}
+                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
+                              <div className="text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">
+                                Lunch
+                              </div>
+                              <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                {lunchVenue.name}
+                              </div>
+                              <div className="text-sm text-gray-600 mb-2">
+                                {lunchVenue.description || 'Local dining experience'}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                              </div>
+                            </div>
+
+                            {/* Dinner */}
+                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
+                              <div className="text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">
+                                Dinner
+                              </div>
+                              <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                {dinnerVenue.name}
+                              </div>
+                              <div className="text-sm text-gray-600 mb-2">
+                                {dinnerVenue.description || 'Local dining experience'}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    </>
+                  );
+                })()}
 
                 {/* Accommodations */}
                 {day.items.filter((item: any) => item.type === 'accommodation').length > 0 && (
@@ -880,7 +1026,7 @@ export default function TeaserPage() {
                     <div className="grid md:grid-cols-2 gap-4">
                       {day.items.filter((item: any) => item.type === 'accommodation').map((item: any, idx: number) => (
                         <div
-                          key={idx}
+                          key={`accommodation-${dayIdx}-${idx}`}
                           className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100"
                         >
                           <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
@@ -933,7 +1079,7 @@ export default function TeaserPage() {
                     {getFlightClass(selectedFlightData.price)}
                   </div>
                   <div className="text-blue-100 text-sm">
-                    {selectedFlightData.departure_time} • {selectedFlightData.departure_airport} → {selectedFlightData.arrival_airport}
+                    {selectedFlightData.departureTime} • {selectedFlightData.departureAirport} → {selectedFlightData.arrivalAirport}
                   </div>
                 </div>
                 <div className="text-right">
@@ -950,15 +1096,9 @@ export default function TeaserPage() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center pt-3">
-              <div className="text-lg font-bold">Total</div>
-              <div className="text-right">
-                <div className="text-2xl font-bold">${tripCost.toFixed(2)}</div>
-              </div>
-            </div>
-
             <div className="pt-5 space-y-2.5">
               <button
+                onClick={() => router.push(`/payment/${tripId}`)}
                 className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
                 style={{
                   fontFamily: 'var(--font-inter)',
@@ -967,7 +1107,7 @@ export default function TeaserPage() {
                 }}
               >
                 <Lock className="w-4 h-4 inline mr-2" />
-                I love it! Unlock Complete Itinerary - ${tripCost.toFixed(2)}
+                I love it! Unlock Complete Itinerary
               </button>
 
               <button

@@ -1,139 +1,198 @@
--- Wanderlog Trip Data Schema for Supabase
--- Run this SQL in your Supabase SQL Editor to create all necessary tables
+-- Wanderlog Scraper - Structured Tables Schema
+-- Run this in Supabase SQL Editor for project: eaofdajkpqyddlbawdli
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Trips table (main trip information)
-CREATE TABLE IF NOT EXISTS trips (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+-- =====================================================
+-- 1. TRIPS TABLE (Main table for trip metadata)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_trips (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  wanderlog_url TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
   creator TEXT,
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
+  start_date DATE,
+  end_date DATE,
   views INTEGER,
-  publication_date DATE,
-  wanderlog_url TEXT NOT NULL UNIQUE,
-  header_images TEXT[] DEFAULT '{}',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  publication_date TEXT,
+  notes TEXT,
+  scraped_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Trip notes table
-CREATE TABLE IF NOT EXISTS trip_notes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
-  notes TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+CREATE INDEX idx_trips_url ON public.wanderlog_trips(wanderlog_url);
+CREATE INDEX idx_trips_created_at ON public.wanderlog_trips(created_at);
 
--- Flights table
-CREATE TABLE IF NOT EXISTS flights (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+-- =====================================================
+-- 2. FLIGHTS TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_flights (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES public.wanderlog_trips(id) ON DELETE CASCADE,
   airline TEXT NOT NULL,
-  flight_code TEXT,
-  departure_airport TEXT NOT NULL,
-  arrival_airport TEXT NOT NULL,
-  departure_time TEXT NOT NULL,
-  arrival_time TEXT NOT NULL,
-  price DECIMAL(10, 2) NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'CAD',
+  departure_airport TEXT,
+  arrival_airport TEXT,
+  departure_time TEXT,
+  arrival_time TEXT,
+  price DECIMAL(10, 2),
+  currency TEXT DEFAULT 'CAD',
   baggage_options TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Hotels table
-CREATE TABLE IF NOT EXISTS hotels (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+CREATE INDEX idx_flights_trip_id ON public.wanderlog_flights(trip_id);
+
+-- =====================================================
+-- 3. HOTELS TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_hotels (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES public.wanderlog_trips(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
-  room_type TEXT,
-  amenities TEXT[] DEFAULT '{}',
-  rating DECIMAL(3, 2),
-  price DECIMAL(10, 2) NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'CAD',
   address TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  room_type TEXT,
+  price DECIMAL(10, 2),
+  currency TEXT DEFAULT 'CAD',
+  rating DECIMAL(2, 1),
+  amenities TEXT[],
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Car rentals table
-CREATE TABLE IF NOT EXISTS car_rentals (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+CREATE INDEX idx_hotels_trip_id ON public.wanderlog_hotels(trip_id);
+
+-- =====================================================
+-- 4. CAR RENTALS TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_car_rentals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES public.wanderlog_trips(id) ON DELETE CASCADE,
   company TEXT NOT NULL,
   vehicle_type TEXT,
   pickup_location TEXT,
   dropoff_location TEXT,
   price DECIMAL(10, 2),
   currency TEXT DEFAULT 'CAD',
-  discount_info TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Activities table
-CREATE TABLE IF NOT EXISTS activities (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+CREATE INDEX idx_car_rentals_trip_id ON public.wanderlog_car_rentals(trip_id);
+
+-- =====================================================
+-- 5. ACTIVITIES TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_activities (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES public.wanderlog_trips(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   description TEXT,
-  location TEXT,
-  address TEXT,
+  original_description TEXT,
   hours TEXT,
-  rating DECIMAL(3, 2),
+  rating DECIMAL(2, 1),
+  address TEXT,
   contact TEXT,
-  category TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Daily schedule table
-CREATE TABLE IF NOT EXISTS daily_schedule (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
-  day_number INTEGER NOT NULL,
-  date TEXT NOT NULL,
-  items JSONB NOT NULL DEFAULT '[]',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(trip_id, day_number)
-);
+CREATE INDEX idx_activities_trip_id ON public.wanderlog_activities(trip_id);
+CREATE INDEX idx_activities_name ON public.wanderlog_activities(name);
 
--- Images table (with associations to activities and sections)
-CREATE TABLE IF NOT EXISTS images (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+-- =====================================================
+-- 6. IMAGES TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES public.wanderlog_trips(id) ON DELETE CASCADE,
+  activity_id UUID REFERENCES public.wanderlog_activities(id) ON DELETE CASCADE,
   url TEXT NOT NULL,
-  associated_activity_id UUID REFERENCES activities(id) ON DELETE SET NULL,
-  associated_section TEXT, -- 'header', 'notes', 'flight', 'hotel', 'activity', etc.
-  context TEXT, -- alt text, caption, or description
-  position INTEGER, -- order/position of image
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  alt TEXT,
+  caption TEXT,
+  position INTEGER DEFAULT 0,
+  associated_section TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_trip_notes_trip_id ON trip_notes(trip_id);
-CREATE INDEX IF NOT EXISTS idx_flights_trip_id ON flights(trip_id);
-CREATE INDEX IF NOT EXISTS idx_hotels_trip_id ON hotels(trip_id);
-CREATE INDEX IF NOT EXISTS idx_car_rentals_trip_id ON car_rentals(trip_id);
-CREATE INDEX IF NOT EXISTS idx_activities_trip_id ON activities(trip_id);
-CREATE INDEX IF NOT EXISTS idx_daily_schedule_trip_id ON daily_schedule(trip_id);
-CREATE INDEX IF NOT EXISTS idx_images_trip_id ON images(trip_id);
-CREATE INDEX IF NOT EXISTS idx_images_activity_id ON images(associated_activity_id);
+CREATE INDEX idx_images_trip_id ON public.wanderlog_images(trip_id);
+CREATE INDEX idx_images_activity_id ON public.wanderlog_images(activity_id);
+CREATE INDEX idx_images_section ON public.wanderlog_images(associated_section);
 
--- Enable Row Level Security (optional, but recommended)
-ALTER TABLE trips ENABLE ROW LEVEL SECURITY;
-ALTER TABLE trip_notes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE flights ENABLE ROW LEVEL SECURITY;
-ALTER TABLE hotels ENABLE ROW LEVEL SECURITY;
-ALTER TABLE car_rentals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE daily_schedule ENABLE ROW LEVEL SECURITY;
-ALTER TABLE images ENABLE ROW LEVEL SECURITY;
+-- =====================================================
+-- 7. DAILY SCHEDULES TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.wanderlog_daily_schedules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES public.wanderlog_trips(id) ON DELETE CASCADE,
+  day_number INTEGER NOT NULL,
+  date DATE,
+  items JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
--- Create policies (allow all operations for now - customize based on your needs)
-CREATE POLICY "Allow all operations on trips" ON trips FOR ALL USING (true);
-CREATE POLICY "Allow all operations on trip_notes" ON trip_notes FOR ALL USING (true);
-CREATE POLICY "Allow all operations on flights" ON flights FOR ALL USING (true);
-CREATE POLICY "Allow all operations on hotels" ON hotels FOR ALL USING (true);
-CREATE POLICY "Allow all operations on car_rentals" ON car_rentals FOR ALL USING (true);
-CREATE POLICY "Allow all operations on activities" ON activities FOR ALL USING (true);
-CREATE POLICY "Allow all operations on daily_schedule" ON daily_schedule FOR ALL USING (true);
-CREATE POLICY "Allow all operations on images" ON images FOR ALL USING (true);
+CREATE INDEX idx_daily_schedules_trip_id ON public.wanderlog_daily_schedules(trip_id);
+CREATE INDEX idx_daily_schedules_day_number ON public.wanderlog_daily_schedules(day_number);
+
+-- =====================================================
+-- 8. ROW LEVEL SECURITY (RLS) POLICIES
+-- =====================================================
+
+ALTER TABLE public.wanderlog_trips ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wanderlog_flights ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wanderlog_hotels ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wanderlog_car_rentals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wanderlog_activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wanderlog_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wanderlog_daily_schedules ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access" ON public.wanderlog_trips FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.wanderlog_flights FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.wanderlog_hotels FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.wanderlog_car_rentals FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.wanderlog_activities FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.wanderlog_images FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON public.wanderlog_daily_schedules FOR SELECT USING (true);
+
+CREATE POLICY "Allow service role full access" ON public.wanderlog_trips FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service role full access" ON public.wanderlog_flights FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service role full access" ON public.wanderlog_hotels FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service role full access" ON public.wanderlog_car_rentals FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service role full access" ON public.wanderlog_activities FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service role full access" ON public.wanderlog_images FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service role full access" ON public.wanderlog_daily_schedules FOR ALL USING (auth.role() = 'service_role');
+
+CREATE POLICY "Allow anon insert" ON public.wanderlog_trips FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert" ON public.wanderlog_flights FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert" ON public.wanderlog_hotels FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert" ON public.wanderlog_car_rentals FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert" ON public.wanderlog_activities FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert" ON public.wanderlog_images FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert" ON public.wanderlog_daily_schedules FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow anon update" ON public.wanderlog_trips FOR UPDATE USING (true);
+CREATE POLICY "Allow anon update" ON public.wanderlog_activities FOR UPDATE USING (true);
+
+CREATE POLICY "Allow anon delete" ON public.wanderlog_trips FOR DELETE USING (true);
+CREATE POLICY "Allow anon delete" ON public.wanderlog_flights FOR DELETE USING (true);
+CREATE POLICY "Allow anon delete" ON public.wanderlog_hotels FOR DELETE USING (true);
+CREATE POLICY "Allow anon delete" ON public.wanderlog_car_rentals FOR DELETE USING (true);
+CREATE POLICY "Allow anon delete" ON public.wanderlog_activities FOR DELETE USING (true);
+CREATE POLICY "Allow anon delete" ON public.wanderlog_images FOR DELETE USING (true);
+CREATE POLICY "Allow anon delete" ON public.wanderlog_daily_schedules FOR DELETE USING (true);
+
+-- =====================================================
+-- 9. UPDATED_AT TRIGGER
+-- =====================================================
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_wanderlog_trips_updated_at
+  BEFORE UPDATE ON public.wanderlog_trips
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
+-- DONE! After running, reload schema cache:
+-- NOTIFY pgrst, 'reload schema';
+-- =====================================================
