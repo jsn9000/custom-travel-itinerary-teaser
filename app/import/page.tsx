@@ -48,7 +48,7 @@ export default function ImportPage() {
     if (!url.trim()) {
       setResult({
         success: false,
-        error: 'Please enter a Wanderlog URL',
+        error: 'Please enter a Travel app URL',
       });
       return;
     }
@@ -142,10 +142,10 @@ export default function ImportPage() {
             <Download className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold mb-3 text-slate-900 dark:text-white">
-            Import Wanderlog Trip
+            Import Travel App URL
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400">
-            Paste a Wanderlog URL to import trip details, flights, hotels, activities, and images
+            Paste a Travel app URL to import trip details, flights, hotels, activities, and images
           </p>
         </div>
 
@@ -155,16 +155,16 @@ export default function ImportPage() {
             {/* URL Input */}
             <div>
               <label
-                htmlFor="wanderlog-url"
+                htmlFor="travel-app-url"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
-                Wanderlog URL
+                Travel app URL
               </label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <Input
-                    id="wanderlog-url"
+                    id="travel-app-url"
                     type="text"
                     placeholder="https://wanderlog.com/view/abc123/trip-name"
                     value={url}
