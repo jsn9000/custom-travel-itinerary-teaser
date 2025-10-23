@@ -127,6 +127,25 @@ export async function scrapeWanderlogTrip(
     console.log(`📅 Found ${dailySchedule.length} days in schedule`);
     if (dailySchedule.length > 0) {
       console.log('📅 Daily schedule:', JSON.stringify(dailySchedule, null, 2));
+
+      // Use mock dates: July 13-19, 2026
+      // Assign dates based on day count
+      if (dailySchedule.length > 0) {
+        const startDate = new Date('2026-07-13');
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + (dailySchedule.length - 1));
+
+        tripMetadata.startDate = startDate.toISOString().split('T')[0];
+        tripMetadata.endDate = endDate.toISOString().split('T')[0];
+        console.log(`📅 Mock trip dates (${dailySchedule.length} days): ${tripMetadata.startDate} - ${tripMetadata.endDate}`);
+
+        // Also update each day's date to match
+        dailySchedule.forEach((day, index) => {
+          const dayDate = new Date(startDate);
+          dayDate.setDate(startDate.getDate() + index);
+          day.date = dayDate.toISOString().split('T')[0]; // Store as ISO date
+        });
+      }
     }
 
     // Collect all images with associations
@@ -153,6 +172,24 @@ export async function scrapeWanderlogTrip(
         });
       });
     });
+
+    // Hotel images (extract from hotel section)
+    const hotelSection = sections.find((s: any) => s.heading === 'Hotel Options' || s.heading?.includes('Hotel'));
+    if (hotelSection) {
+      hotelSection.blocks?.forEach((block: any) => {
+        if (block.type === 'place' && block.place && block.place.photo_urls) {
+          block.place.photo_urls.forEach((url: string, imgIndex: number) => {
+            allImages.push({
+              url,
+              alt: block.place.name,
+              caption: block.place.name,
+              position: imagePosition++,
+              associatedSection: 'hotel',
+            });
+          });
+        }
+      });
+    }
 
     // Calculate image association stats
     const imageStats = {
@@ -577,6 +614,7 @@ function extractFlightsFromState(sections: any[], budget: any): WanderlogFlight[
           currency: match[5],
           departureTime: '',
           arrivalTime: '',
+          baggageOptions: undefined,
         });
       });
 
@@ -588,6 +626,29 @@ function extractFlightsFromState(sections: any[], budget: any): WanderlogFlight[
         if (flights[index]) {
           flights[index].departureTime = match[1];
           flights[index].arrivalTime = match[2];
+        }
+      });
+
+      // Extract baggage information
+      // Look for patterns like "Includes Personal Item for FREE" or "1 Check bag 23kg"
+      const baggagePatterns = [
+        /Includes\s+Personal\s+Item.*?for\s+FREE/i,
+        /\d+\s+Check(?:ed)?\s+bag.*?\d+kg/i,
+        /Personal\s+item.*?free/i,
+        /carry-on.*?free/i,
+      ];
+
+      flights.forEach((flight, index) => {
+        const baggageInfo: string[] = [];
+        baggagePatterns.forEach(pattern => {
+          const match = text.match(pattern);
+          if (match) {
+            baggageInfo.push(match[0]);
+          }
+        });
+
+        if (baggageInfo.length > 0) {
+          flights[index].baggageOptions = baggageInfo.join(' • ');
         }
       });
     }
@@ -610,23 +671,51 @@ function extractHotelsFromState(sections: any[], budget: any): WanderlogHotel[] 
   hotelSection.blocks?.forEach((block: any) => {
     if (block.type === 'place' && block.place) {
       const place = block.place;
+
+      // Extract room type and notes from the text block
+      let roomType: string | undefined = undefined;
+      let price = 0;
+      let currency = 'CAD';
+
+      if (block.text?.ops) {
+        const text = extractTextFromQuillOps(block.text.ops) || '';
+
+        // Extract price from text like "Total Price 558.79 CAD"
+        const priceMatch = text.match(/Total\s+Price\s+(\d+(?:\.\d{2})?)\s*(CAD|USD)/i);
+        if (priceMatch) {
+          price = parseFloat(priceMatch[1]);
+          currency = priceMatch[2];
+        }
+
+        // The room type is typically the first line before any notes
+        // Remove the "Total Price" line and extract the description
+        roomType = text.replace(/Total\s+Price\s+\d+(?:\.\d{2})?\s*(?:CAD|USD)/i, '').trim();
+      }
+
       hotels.push({
         name: place.name,
-        price: 0, // Will be filled from budget if available
-        currency: 'CAD',
+        price: price,
+        currency: currency,
         rating: place.rating,
         amenities: place.amenities ? Object.keys(place.amenities).filter(k => place.amenities[k]) : [],
         address: place.formatted_address,
+        roomType: roomType,
       });
     }
   });
 
-  // Get hotel prices from budget expenses
+  // Override with budget prices if available (budget prices take precedence)
   const hotelExpenses = budget?.expenses?.filter((e: any) => e.category === 'lodging') || [];
-  hotelExpenses.forEach((expense: any, index: number) => {
-    if (hotels[index]) {
-      hotels[index].price = expense.amount?.amount || 0;
-      hotels[index].currency = expense.amount?.currencyCode || 'CAD';
+  hotelExpenses.forEach((expense: any) => {
+    // Match by name (partial match)
+    const expenseDesc = expense.description?.toLowerCase() || '';
+    const matchingHotel = hotels.find(h =>
+      expenseDesc.includes(h.name.toLowerCase().substring(0, 15))
+    );
+
+    if (matchingHotel) {
+      matchingHotel.price = expense.amount?.amount || matchingHotel.price;
+      matchingHotel.currency = expense.amount?.currencyCode || matchingHotel.currency;
     }
   });
 
@@ -749,6 +838,144 @@ function extractCarRentalsFromState(budget: any, sections: any[]): WanderlogCarR
 }
 
 /**
+ * Generate engaging, specific descriptions based on place type (NO ADDRESSES)
+ */
+function generatePlaceDescription(place: any): string {
+  const types = place.types || [];
+  const name = place.name || '';
+  const rating = place.rating || 0;
+
+  // Enhanced descriptions with multiple variations for variety
+  const typeDescriptions: { [key: string]: string[] } = {
+    'science_museum': [
+      'Hands-on science center with interactive exhibits exploring technology, nature, and the cosmos',
+      'Educational science attraction featuring robotics, space exploration, and live demonstrations',
+      'Interactive museum showcasing scientific wonders and discovery through engaging exhibits'
+    ],
+    'planetarium': [
+      'Immersive planetarium experience with stunning star shows and astronomical exhibits',
+      'Cosmic journey through space with state-of-the-art projection and educational programs'
+    ],
+    'museum': [
+      'Cultural museum featuring curated collections of art, history, and heritage',
+      'Museum showcasing regional history, artifacts, and cultural exhibitions',
+      'Historical museum with fascinating exhibits and guided tours'
+    ],
+    'art_gallery': [
+      'Contemporary art gallery featuring local and international artists',
+      'Fine art gallery showcasing paintings, sculptures, and rotating exhibitions'
+    ],
+    'zoo': [
+      'Wildlife sanctuary home to exotic animals from around the world with conservation programs',
+      'Family-friendly zoo featuring diverse animal habitats and educational encounters',
+      'Urban zoo showcasing wildlife species in naturalistic environments'
+    ],
+    'aquarium': [
+      'Underwater adventure featuring marine life from oceans around the globe',
+      'Aquarium experience with colorful fish, sharks, and interactive touch pools'
+    ],
+    'amusement_park': [
+      'Theme park adventure with thrilling rides, games, and family entertainment',
+      'Amusement park featuring roller coasters, attractions, and seasonal events'
+    ],
+    'park': [
+      'Scenic park perfect for outdoor recreation, picnics, and nature walks',
+      'Beautiful green space with walking trails, playgrounds, and natural scenery',
+      'Urban park oasis offering peaceful escape and recreational activities'
+    ],
+    'botanical_garden': [
+      'Stunning botanical garden with seasonal blooms, rare plants, and tranquil walking paths',
+      'Horticultural paradise featuring themed gardens and educational plant collections'
+    ],
+    'tourist_attraction': [
+      'Must-see landmark offering unique cultural experience and photo opportunities',
+      'Popular destination showcasing local character and memorable experiences',
+      'Iconic attraction capturing the essence of the region'
+    ],
+    'restaurant': [
+      'Local dining spot serving fresh, flavorful cuisine in welcoming atmosphere',
+      'Restaurant featuring regional specialties and seasonal menu selections',
+      'Culinary destination known for quality ingredients and authentic flavors'
+    ],
+    'cafe': [
+      'Cozy café serving artisan coffee, fresh pastries, and light fare',
+      'Neighborhood café perfect for coffee breaks and casual meetups',
+      'Charming coffee house with specialty drinks and homemade treats'
+    ],
+    'bar': [
+      'Local bar offering craft cocktails and relaxed social atmosphere',
+      'Casual pub with drinks, snacks, and friendly neighborhood vibe'
+    ],
+    'shopping_mall': [
+      'Shopping center featuring diverse retail stores and dining options',
+      'Large mall complex with shopping, entertainment, and family amenities'
+    ],
+    'movie_theater': [
+      'Cinema showing latest films with comfortable seating and concessions',
+      'Movie theater experience with multiple screens and premium viewing options'
+    ],
+    'spa': [
+      'Relaxing spa retreat offering wellness treatments and rejuvenation',
+      'Spa sanctuary featuring massages, facials, and therapeutic services'
+    ],
+    'gym': [
+      'Fitness center with modern equipment and group exercise classes',
+      'Gym facility offering training programs and wellness resources'
+    ],
+    'library': [
+      'Public library with extensive book collections and community programs',
+      'Modern library featuring reading spaces, digital resources, and events'
+    ],
+    'church': [
+      'Historic church offering spiritual services and community gatherings',
+      'Place of worship with beautiful architecture and peaceful atmosphere'
+    ],
+    'point_of_interest': [
+      'Notable local landmark worth exploring and photographing',
+      'Interesting site showcasing unique character and regional heritage'
+    ],
+    'establishment': [
+      'Local establishment serving the community with quality service',
+      'Well-regarded venue known for excellent experience and hospitality'
+    ]
+  };
+
+  // Special handling for specific name patterns
+  if (name.toLowerCase().includes('farm') || name.toLowerCase().includes('berry')) {
+    return 'Working farm offering seasonal produce picking, fresh goods, and agricultural experiences';
+  }
+
+  if (name.toLowerCase().includes('market')) {
+    return 'Vibrant market featuring local vendors, fresh produce, artisan goods, and community atmosphere';
+  }
+
+  if (name.toLowerCase().includes('sanctuary') || name.toLowerCase().includes('refuge')) {
+    return 'Natural sanctuary providing habitat preservation and wildlife viewing opportunities';
+  }
+
+  if (name.toLowerCase().includes('viewpoint') || name.toLowerCase().includes('lookout')) {
+    return 'Scenic viewpoint offering breathtaking panoramic vistas perfect for photography';
+  }
+
+  // Find the first matching type and return a random variation
+  for (const type of types) {
+    if (typeDescriptions[type]) {
+      const variations = typeDescriptions[type];
+      return variations[Math.floor(Math.random() * variations.length)];
+    }
+  }
+
+  // Enhanced fallbacks based on rating
+  if (rating >= 4.5) {
+    return 'Highly-rated local attraction offering exceptional experience and memorable moments';
+  } else if (rating >= 4.0) {
+    return 'Popular destination featuring quality experience and welcoming atmosphere';
+  } else {
+    return 'Local venue offering unique character and authentic regional experience';
+  }
+}
+
+/**
  * Extract activities from MOBX state
  */
 function extractActivitiesFromState(sections: any[]): WanderlogActivity[] {
@@ -772,7 +999,7 @@ function extractActivitiesFromState(sections: any[]): WanderlogActivity[] {
         activities.push({
           id: `activity-${Date.now()}-${index}`,
           name: place.name,
-          description: place.formatted_address,
+          description: generatePlaceDescription(place),
           hours: undefined,
           rating: place.rating,
           address: place.formatted_address,
@@ -794,24 +1021,39 @@ function extractDailyScheduleFromState(sections: any[]): WanderlogDailySchedule[
   let dayNumber = 1;
 
   sections.forEach((section: any) => {
-    // Skip non-day sections
-    if (!section.heading || section.heading === 'Notes' || section.heading === 'Flight' || section.heading?.includes('Hotel') || section.heading?.includes('Car')) {
+    // Skip sections without headings or with empty headings
+    if (!section.heading || section.heading.trim() === '') {
       return;
     }
 
-    const items: any[] = [];
+    // Skip known system sections (exact match or contains)
+    const skipSections = ['Notes', 'Flight', 'Hotel Options', 'Car Rental'];
+    const shouldSkip = skipSections.some(keyword =>
+      section.heading === keyword || section.heading.includes('Hotel') || section.heading.includes('Car')
+    );
+    if (shouldSkip) {
+      return;
+    }
 
+    // Skip standalone "Activities" section (intro section)
+    if (section.heading === 'Activities') {
+      return;
+    }
+
+    // Check if section has place blocks (actual activities)
+    const items: any[] = [];
     section.blocks?.forEach((block: any) => {
       if (block.type === 'place' && block.place) {
         items.push({
           type: 'activity',
           name: block.place.name,
           time: undefined,
-          description: block.place.formatted_address,
+          description: generatePlaceDescription(block.place),
         });
       }
     });
 
+    // Only add if it has activities
     if (items.length > 0) {
       schedule.push({
         dayNumber: dayNumber++,

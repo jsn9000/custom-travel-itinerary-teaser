@@ -1,0 +1,42 @@
+Found 10 images in Supabase:
+
+1. https://itin-dev.wanderlogstatic.com/freeImage/cjjOii6pNqzt4jEBoFQC8XMnhwyku3QK
+   Context: N/A
+   Position: 0
+
+2. https://lh3.googleusercontent.com/p/AF1QipNMYAzH3N-5AMhnjYrPsXJ1UuwRIKV2k4uDXdRn
+   Context: TELUS World of Science - Edmonton
+   Position: 1
+
+3. https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrDkmAyYMSq-mnuL-BJcNMSmwerBsGGhUdVzDyIfQtXwakzTaRtMjdrzNfqExkdMLlO3Kt3rCFMt75RinRg_iSRfM3wHPb_xsDrRRXouagG11Jo8eU0kKxO7ajDWOAaWcJXPJJHSw
+   Context: TELUS World of Science - Edmonton
+   Position: 2
+
+4. https://lh3.googleusercontent.com/gps-cs-s/AC9h4npnMBX4bc_A9yje5hl8iH4ejOVHyrHhpHYxNXy-mxORd22ERp352KryYjscP_NhQtf3I4ttVguiXnDVWb1MLF3JHJnG_5WmW9ZJlPmHUnGLt3-LcuzPbg-R1wpP13n0IHCMJwM
+   Context: TELUS World of Science - Edmonton
+   Position: 3
+
+5. https://lh3.googleusercontent.com/gps-cs-s/AC9h4noeZGA_fISXw_Be0qVWMVka2lNXpn93NitpVzBf_CLSVLCV6vOQOfVkRBe1vcxqX4foAEchHnWx0l8kYuNx9ImnchySA8Gsw_Cm8XB5hHQi253pWi2yxC6wDRQkwkgP87crAud19KEptOfS
+   Context: Edmonton Valley Zoo
+   Position: 4
+
+6. https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqOUImViHV1GPhRj7IScZtnuvTZy2Qiwcqbnehvd8BSGKXL8AH4E10gAFxzIHWcxW6_F9lB2ttrml0y8pm8XG7OSXGhCcWXu-IR7aSFH1whMjX3cSw0iAAAiMNNAfq0dekygSgQ
+   Context: Edmonton Valley Zoo
+   Position: 5
+
+7. https://lh3.googleusercontent.com/p/AF1QipOZz9vog26nSNill94ZnNaZD_Rf1OrP-igblb6K
+   Context: University of Alberta Botanic Garden
+   Position: 6
+
+8. https://lh3.googleusercontent.com/gps-cs-s/AC9h4noNWKb78DFkzc4ctVtEeSBFpX_cBEwEtJkYkfBLbgHml90LRQmmrn_QCw3NWAx-7saQRKxpcjFL9Pyfm66e1A6ZvUB9LinGdYgWFL6GXTa3NqD25Ne6ONR1LqZyt1pa1-9nXC_F
+   Context: University of Alberta Botanic Garden
+   Position: 7
+
+9. https://lh3.googleusercontent.com/gps-cs-s/AC9h4nr01Uo0aolMv013Z4aVUiCo0W0XgBVO4l9yH3LwA4cRdm7STwes0RoXr5VaGkePADfeN9hGUJy3oobkmhGdHcU7NG3H7e0lVH15r050xytiRvnMSLFdC6muuxHmghwLK9W7fcM
+   Context: University of Alberta Botanic Garden
+   Position: 8
+
+10. https://lh3.googleusercontent.com/p/AF1QipOXYnpkHN2SoWhvI6vfnCqXnL4U5r0DeeaUYn90
+   Context: Fort Edmonton Park
+   Position: 9
+

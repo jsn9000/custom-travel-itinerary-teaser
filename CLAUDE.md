@@ -17,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This project strictly uses **pnpm**. Do not use npm or yarn.
 
-## Architecture
+## Architecture and Design
 
 This is a TypeScript Next.js 15 application with two main features:
 
@@ -25,683 +25,269 @@ This is a TypeScript Next.js 15 application with two main features:
 2. **Paywalled itinerary teaser** - Visual teaser page for custom travel itineraries derived from Wanderlog data
 3. **Website Design** - The website and header must be high quality. The site very visually appealing, including the font used.
 4. **Header** - The header must contain pictures based on the destination the person will be visiting and be vibrant and eye catching. You can use images on the wanderlog url provided or create visually appealing images based on the destination of the client. always include a couple, single person, family with kids as well. there should be about 6 images provided. The landscape and surroundings should be based on well known or fun looking sites from the destination
-5. **Sections** - Have in order the sections, catchy description of this trip, hotels, and fights. Each card for the hotels the user will pick from should have the star ratings and prices. The card should have an image of the place that is available but it should be blurred a little. And the name of the site should not be the actual name of the flights or hotel but a description of the type of hotel and flight.
-6. **Choices** - The card or options that are chosen should be active and the other options not chosen should be greyed outl
-7. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
-8. **Trip Summary** - The trip summary section should also have the price of the trip but also show a seperate price of 299.00 to unlock the details of the trip. Show the prices without the fee and the price with the fee included in the total
-9. **Always Check Images** - Always double check images to make sure they are truly representative of the destination. Correct and choose another image if necessary on initial setup.
-10. **Wanderlog URL** - Always make sure to use the Wanderlog URL provided to pull the newest information for the generated page based on the template that is here.
-11. **Buttons, Color, Theme** - The button and colors and themes must all be based on the Wanderlog url provided since it will have the destination and location of the visit.
+5. **Trip Title & Subtitle** - The trip title should have a catchy subtitle underneath it that fits the destination, like "7 Days of Sun, Sea, and Unforgettable Memories". The subtitle should be derived from the trip notes if available (first sentence), otherwise generate one based on trip duration and destination.
+6. **Sections** - Have in order the sections: catchy description of this trip, hotels, flights, and daily itinerary. Each card for the hotels the user will pick from should have the star ratings and prices. The card should have an image of the place that is available but it should be blurred a little. And the name of the site should not be the actual name of the flights or hotel but a description of the type of hotel and flight.
+7. **Hotel Details** - Each hotel card must show: room type description (e.g., "Standard Room, 2 Queen Beds"), amenities, price per night with 2 decimal places, and total price for all nights. Use images from Supabase that were extracted from Wanderlog with `associated_section: 'hotel'`.
+8. **Choices** - The card or options that are chosen should be active (opacity 100%, full color, scaled up) and the other options not chosen should be greyed out (opacity 60%, 50% grayscale filter).
+9. **Price Formatting** - All prices must be formatted to 2 decimal places maximum using `.toFixed(2)`. This applies to hotel prices, flight prices, totals, and the unlock fee.
+10. **Daily Itinerary Section** - Include a complete daily itinerary section showing each day with:
+    - Day headers formatted as "Day X [Title]" where title is descriptive (e.g., "Arrival & Getting Started", "Full Day of Adventures")
+    - The actual date shown below the day title in smaller text
+    - Activity cards with slightly blurred images from Supabase, activity names, ratings, and times
+    - Activities should ONLY be shown in the daily itinerary section, not as a separate standalone section
+11. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
+12. **Trip Summary** - The trip summary section should also have the price of the trip but also show a seperate price of 299.00 to unlock the details of the trip. Show the prices without the fee and the price with the fee included in the total
+13. **Always Check Images** - Always double check images to make sure they are truly representative of the destination. Correct and choose another image if necessary on initial setup. Use actual Wanderlog images stored in Supabase with proper associations.
+14. **Wanderlog URL** - Always make sure to use the Wanderlog URL provided to pull the newest information for the generated page based on the template that is here.
+15. **Buttons, Color, Theme** - The button and colors and themes must all be based on the Wanderlog url provided since it will have the destination and location of the visit.
 
+---
 
-### Core Stack
+# Teaser Generator (Activities, Dining & Airlines Only)
+**Activation:** Only apply this section **when the user prompt explicitly includes**: `TEASER_MODE`.  
+If `TEASER_MODE` is not present, **ignore this section entirely**.
 
-- **Next.js 15** with App Router and Turbopack for fast builds
-- **AI SDK 5** with OpenAI GPT-5 integration and web search tool
-- **Vectorize** for RAG document retrieval from your knowledge base
-- **shadcn/ui** components (New York style, neutral base color)
-- **Tailwind CSS v4** for styling
+## Purpose
+Transform raw data for **activities**, **dining**, and **airlines** into short, enticing teaser descriptions that **do not reveal** exact names or addresses. These teasers are public-facing; real names/locations are revealed only after purchase.
 
-### Key Directories
+If a record is **not** one of those categories (e.g., hotels, cars, trips, etc.), or if `TEASER_MODE` is not present, **return data unchanged** and follow the rest of this file as usual.
 
-- `app/` - Next.js App Router pages and API routes
-  - `page.tsx` - **Teaser page** - Main landing page with paywalled itinerary preview
-  - `simple-agent/` - Basic AI agent page
-  - `rag-agent/` - RAG-enabled AI agent page
-  - `agent-with-mcp-tools/` - MCP-enabled AI agent page
-- `app/api/` - API routes
-  - `chat/` - AI chat endpoint using streaming `streamText()`
-  - `rag-agent/` - RAG-enabled agent endpoint with knowledge base access
-  - `agent-with-mcp-tools/` - Agent endpoint with MCP tools (Firecrawl web scraping)
-  - `teaser/` - **Teaser data API** - Returns obfuscated itinerary data
-  - `peek/` - **Peek API** - Validates access and returns full details if authorized
-  - `checkout/` - **Checkout API** - Handles payment flow for unlocking itineraries
-  - `og/teaser/` - **Watermarked image API** - Returns SVG placeholders with viewer tags
-- `prompts/` - AI prompt files for itinerary redaction
-  - `claude.pmd` - Redaction policies and schemas for Wanderlog data transformation
-  - `system.txt` - System instructions for the Itinerary Redactor
-- `components/chat/` - Chat interface components
-- `components/ai-elements/` - Vercel AI Elements components
-- `components/agent/` - Agent configuration (system prompts)
-  - `prompt.ts` - Default travel agent system prompt
-  - `rag-prompt.ts` - RAG agent system prompt for Catan and Peruvian restaurant
-  - `web-scraper-prompt.ts` - Web scraper agent system prompt
-- `components/agent/tools/` - AI SDK tools for agent capabilities (knowledge base retrieval, etc.)
-- `components/ui/` - shadcn/ui components
-- `lib/retrieval/` - Vectorize RAG service for document retrieval
-- `lib/mcp/` - MCP (Model Context Protocol) client implementations
-  - `client/firecrawl-client.ts` - Firecrawl MCP client with SSE transport
-  - See `lib/mcp/CLAUDE.md` for detailed MCP integration guidelines
-- `lib/utils.ts` - Utility functions including `cn()` for className merging
-- `types/` - TypeScript type definitions
+## Scope
+Apply transformation **only** when:
+- The record/table/category/type includes one of: `activity`, `activities`, `dining`, `restaurant`, `food`, `airline`, `flight`
+- **AND** the current request includes the literal activation phrase `TEASER_MODE`
 
-### AI Integration
+Otherwise, skip transformation.
 
-- Uses AI SDK 5's `streamText()` for streaming responses
-- Configured for GPT-5 via OpenAI provider with web search tool enabled
-- Vectorize RAG integration via `VectorizeService` in `/lib/retrieval/`
-- System instructions defined in `components/agent/prompt.ts` (travel agent theme)
-- API route at `/api/chat` expects `{ messages: Array }` and returns streaming text
-- RAG-enabled agent at `/api/rag-agent` includes `retrieveKnowledgeBase` tool for knowledge base access
-- use useChat for all streaming handling (read the doc first, always, before writing any streaming code: https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat)
-- **CRITICAL**: `sendMessage()` from useChat ONLY accepts UIMessage-compatible objects: `sendMessage({ text: "message" })`
-- **NEVER** use `sendMessage("string")` - this does NOT work and will cause runtime errors
-- Messages from useChat have a `parts` array structure, NOT a simple `content` field
-- Tool calls and sources are supported in the response format
-- Requires environment variables in `.env.local`
-- Reference: https://ai-sdk.dev/docs/reference/ai-sdk-core/stream-text#streamtext
-
-### AI SDK Tools
-
-**CRITICAL REQUIREMENT**: You MUST read the AI SDK tools documentation before working with tools: https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling
-
-**ALSO REQUIRED**: Read the manual agent loop cookbook for advanced patterns: https://ai-sdk.dev/cookbook/node/manual-agent-loop
-
-This documentation is essential for understanding:
-- How tools are called by language models
-- Tool execution flow and lifecycle
-- Tool choice strategies (`auto`, `required`, `none`, specific tool)
-- Multi-step tool calling with `stopWhen` and `stepCountIs()`
-- Tool call monitoring and error handling
-- Manual agent loops for complex tool workflows
-
-#### Data Streaming with Tools
-
-**IMPORTANT**: Always read the AI SDK data streaming documentation when working with custom data parts: https://ai-sdk.dev/docs/ai-sdk-ui/streaming-data
-
-##### Streaming Sources and Custom Data
-
-When tools return structured data (like sources from RAG retrieval), the data is automatically streamed as part of the tool call response:
-
-```typescript
-// Tool that returns sources
-export const retrieveKnowledgeBase = tool({
-  description: 'Search the knowledge base',
-  inputSchema: z.object({
-    query: z.string(),
-  }),
-  execute: async ({ query }) => {
-    // ... retrieve documents ...
-    return {
-      context: 'Document content here',
-      sources: [
-        { url: 'https://example.com', title: 'Source 1', snippet: 'Preview text' }
-      ]
-    };
-  },
-});
-```
-
-The returned data is automatically included in the tool call result and streamed to the client.
-
-**Frontend Access Pattern**:
-```typescript
-// Extract sources from tool results in the UI
-const ragToolCalls = message.parts?.filter(
-  part => part.type === "tool" && part.toolName === "retrieveKnowledgeBase" && part.result?.sources
-);
-
-const sources = ragToolCalls?.flatMap(tool => tool.result?.sources || []) || [];
-```
-
-**Chat Component with Custom API Endpoint**:
-```typescript
-// Use ChatAssistant with custom API endpoint
-<ChatAssistant api="/api/rag-agent" />
-
-// ChatAssistant component supports optional api prop
-interface ChatAssistantProps {
-  api?: string;
+## Input (from Supabase)
+Example structure:
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "address": "string | null",
+  "city": "string | null",
+  "region": "string | null",
+  "country": "string | null",
+  "description": "string | null",
+  "category": "string | null",
+  "type": "string | null",
+  "hours": "string | null",
+  "seasonality": "string | null",
+  "notes": "string | null",
+  "rating": 4.6
 }
-
-const { messages, status, sendMessage } = useChat({
-  transport: api ? new DefaultChatTransport({ api }) : undefined,
-});
 ```
+> When in `TEASER_MODE` for scoped categories, the model must **never** output `name`, `address`, or any identifying terms.
 
-##### Types of Streamable Data
-
-1. **Tool Results**: Automatically streamed when tools return data
-2. **Sources**: Can be included in tool results for RAG implementations
-3. **Custom Data Parts**: Can be streamed using `streamData` for more complex scenarios
-
-##### Best Practices
-
-- Keep tool return types simple to avoid TypeScript deep instantiation errors
-- Include sources directly in tool results for automatic streaming
-- Use the `toUIMessageStreamResponse()` method for proper client compatibility
-- Tool results are automatically included in the message parts array
-
-#### Current AI SDK API (v5.0.44+)
-
-**IMPORTANT**: The AI SDK API has evolved. Always use current patterns:
-
-##### Multi-Step Tool Execution with `stepCountIs()`
-
-```typescript
-const result = streamText({
-  model: openai("gpt-5"),
-  messages: modelMessages,
-  tools: { retrieveKnowledgeBase },
-  stopWhen: stepCountIs(10), // CURRENT API - replaces deprecated maxSteps
-});
-```
-
-##### Tool Choice Strategies
-
-Control how and when tools are called using the `toolChoice` parameter:
-
-```typescript
-const result = streamText({
-  model: openai("gpt-5"),
-  messages: modelMessages,
-  tools: { retrieveKnowledgeBase },
-  toolChoice: 'auto', // Options: 'auto', 'required', 'none', or specific tool name
-  stopWhen: stepCountIs(5),
-});
-```
-
-- **`auto` (default)**: Model decides whether to call tools based on context
-- **`required`**: Model must call at least one tool before responding
-- **`none`**: Disable all tool calls
-- **Specific tool**: Force a particular tool to be called
-
-##### Converting Tool Results to Source Data Parts
-
-**Current Limitation (v5.0.44)**: The `response.steps` API is not yet available in the current version. Sources are currently displayed from tool results embedded in message parts.
-
-```typescript
-// Current working approach (v5.0.44)
-const result = streamText({
-  model: openai("gpt-5"),
-  messages: modelMessages,
-  tools: { retrieveKnowledgeBase },
-  stopWhen: stepCountIs(10),
-});
-
-return result.toUIMessageStreamResponse();
-
-// Frontend extracts sources from tool results in message parts
-// See ChatAssistant component for implementation
-```
-
-**Future Implementation** (when `response.steps` becomes available):
-```typescript
-const stream = createUIMessageStream({
-  execute: async ({ writer }) => {
-    const result = streamText({
-      model: openai("gpt-5"),
-      messages: modelMessages,
-      tools: { retrieveKnowledgeBase },
-      stopWhen: stepCountIs(10),
-    });
-
-    writer.merge(result.toUIMessageStream());
-
-    // This will work when response.steps is available
-    const response = await result.response;
-    for (const step of response.steps || []) {
-      if (step.toolResults) {
-        for (const toolResult of step.toolResults) {
-          if (toolResult.toolName === 'retrieveKnowledgeBase') {
-            for (const source of toolResult.output?.sources || []) {
-              writer.write({
-                type: 'source-url', // Correct type for current version
-                url: source.url,
-                title: source.title
-              });
-            }
-          }
-        }
-      }
-    }
+## Output (for scoped categories in TEASER_MODE)
+Return an **array** with:
+```json
+[
+  {
+    "id": "uuid",
+    "title": "string",
+    "headerEmoji": "string",
+    "teaser": "string",
+    "tone": "string",
+    "tags": ["string"]
   }
-});
+]
 ```
+If input is not in scope or `TEASER_MODE` is absent, return the input unchanged.
 
-#### Tool Implementation Guidelines
+**Important:** In `TEASER_MODE`, output **JSON only** (no markdown fences, no extra commentary).
 
-- **Location**: All agent tools are in `/components/agent/tools/`
-- **Structure**: Each tool uses AI SDK's `tool()` function with:
-  - `description`: Clear explanation of the tool's purpose (influences tool selection)
-  - `inputSchema`: Zod schema defining input parameters
-  - `execute`: Async function performing the tool's action
-- **Current Tools**:
-  - `retrieveKnowledgeBase`: Searches the Vectorize knowledge base for relevant information
-  - `web_search`: OpenAI's web search tool for current information
+## Writing Guidelines (in TEASER_MODE)
+- Focus on **experience** — what travelers see, feel, or taste.  
+- **Strictly remove** names, addresses, and brands.  
+- Replace specifics with **generic descriptors**.
 
-#### Creating New Tools and Agents
+| Type              | Example Replacement              |
+|-------------------|----------------------------------|
+| Science Museum    | “interactive science center”     |
+| Zoo               | “urban wildlife haven”           |
+| Garden            | “serene botanical paradise”      |
+| Heritage Park     | “living history village”         |
+| Farm              | “seasonal berry patch”           |
+| Restaurant        | “hidden culinary gem”            |
+| Café/Bistro       | “cozy corner café”               |
+| Fine Dining       | “elegant dining experience”      |
+| Airline           | “premium air carrier”            |
 
-**IMPORTANT**: When building more agent and tools functionality, ALWAYS follow the existing patterns in `/components/agent/` and `/components/agent/tools/` folders. Study the existing implementations before creating new ones.
+- Keep teasers **2–4 sentences** (~35–80 words).  
+- Mention seasonality/uniqueness briefly; avoid exact dates/times.  
+- End softly: “perfect for food lovers,” “great for families,” “ideal for explorers.”
 
-When creating new tools:
-1. Create a new file in `/components/agent/tools/`
-2. Use the `tool()` function from `ai` package
-3. Define clear Zod input schemas with descriptions
-4. Implement error handling in the `execute` function
-5. Export from `/components/agent/tools/index.ts`
-6. Add the tool to the appropriate API route's tools configuration
+## Tone Modes
+Use one of: `family_friendly`, `adventure`, `romantic`, `luxury`, `balanced`, `culinary`, `travel`.
 
-When creating new agents:
-1. Follow the pattern established in `/app/api/rag-agent/route.ts`
-2. Create new prompts in `/components/agent/` following the structure of `prompt.ts` and `rag-prompt.ts`
-3. Use the same streaming patterns and error handling as existing agents
-4. Always include proper tool configurations and import from `/components/agent/tools`
+## Examples (for TEASER_MODE)
 
-Example:
-```typescript
-import { tool } from 'ai';
-import { z } from 'zod';
-
-export const myTool = tool({
-  description: 'Clear description of what the tool does',
-  inputSchema: z.object({
-    param: z.string().describe('What this parameter is for')
-  }),
-  execute: async ({ param }) => {
-    // Tool implementation with logging
-    console.log(`🔧 Tool called with param: ${param}`);
-    return { result: 'data' };
-  }
-});
-```
-
-#### Tool Call Monitoring
-
-Add logging in tools to monitor execution:
-
-```typescript
-// In tool execute function
-execute: async ({ query }) => {
-  console.log(`🔍 Tool executing with query: "${query}"`);
-  try {
-    const result = await performAction(query);
-    console.log(`✅ Tool completed successfully`);
-    return result;
-  } catch (error) {
-    console.error(`💥 Tool error:`, error);
-    throw error;
-  }
+### Activity Example
+**Input**
+```json
+{
+  "id":"1",
+  "name":"TELUS World of Science - Edmonton",
+  "category":"activity",
+  "description":"Science centre with hands-on exhibits on robots, the human body & more, plus a separate observatory."
 }
 ```
 
-#### Tool Call UI Indicators
-
-Display tool execution states using AI Elements:
-
-```typescript
-// In ChatAssistant component
-{message.parts?.filter(part => part.type === "tool").map((part, i) => {
-  const toolState = part.result
-    ? "output-available"
-    : part.input
-      ? "input-available"
-      : "input-streaming";
-
-  return (
-    <Tool defaultOpen={true}>
-      <ToolHeader type={`tool-${part.toolName}`} state={toolState} />
-      <ToolContent>
-        {part.input && <ToolInput input={part.input} />}
-        {part.result && <ToolOutput output={part.result} />}
-        {toolState === "input-streaming" && (
-          <div>🔍 Searching knowledge base...</div>
-        )}
-      </ToolContent>
-    </Tool>
-  );
-})}
-```
-
-#### Tool Call Best Practices
-
-- **Clear Descriptions**: Write detailed descriptions to help the model choose the right tool
-- **Specific Input Schemas**: Use descriptive Zod schemas with `.describe()` for parameters
-- **Error Handling**: Always wrap tool execution in try-catch blocks
-- **Logging**: Add console logging to track tool usage and debug issues
-- **Return Structure**: Keep return types simple to avoid TypeScript complexity
-- **UI Feedback**: Always show tool execution state using AI Elements components
-
-### Chat Architecture
-
-- **Frontend**: `ChatAssistant` component uses `useChat` hook from `@ai-sdk/react`
-- **API Route**: Validates messages, converts UIMessages to ModelMessages using `convertToModelMessages()`, streams response via `toTextStreamResponse()`
-- **Message Format**: Messages have `parts` array with typed parts (text, tool, source-url, etc.), NOT simple `content` field
-- **Sending Messages**: MUST use `sendMessage({ text: "message" })` format - string format does NOT work
-- **Streaming**: Official `useChat` hook handles streaming automatically
-- **Error Handling**: Graceful fallbacks for API failures via `status` monitoring
-
-### UI Components
-
-- **shadcn/ui** configured with:
-  - New York style
-  - Neutral base color with CSS variables
-  - Import aliases: `@/components`, `@/lib/utils`, `@/components/ui`
-  - Lucide React for icons
-- **AI Elements** from Vercel:
-  - Pre-built components for AI applications
-  - Located in `components/ai-elements/`
-  - Key components: Conversation, Message, PromptInput, Sources, Tool, Reasoning
-  - Supports tool calls, sources, reasoning tokens, and rich message formatting
-  - Reasoning component documentation: https://ai-sdk.dev/elements/components/reasoning#reasoning
-  - Reasoning tokens automatically display as collapsible blocks with duration tracking
-
-### Adding Components
-
-- shadcn/ui: `pnpm dlx shadcn@latest add [component-name]`
-- AI Elements: `pnpm dlx ai-elements@latest` (adds all components)
-
-### RAG Source Streaming
-
-**CRITICAL REQUIREMENT**: You MUST read the AI SDK streaming data documentation before implementing RAG source citations: https://ai-sdk.dev/docs/ai-sdk-ui/streaming-data
-
-This documentation is essential for understanding how to properly stream source data parts from RAG tools to the frontend.
-
-### MCP (Model Context Protocol) Integration
-
-This project includes MCP client support for connecting to remote MCP servers. The primary implementation is a Firecrawl MCP client for web scraping capabilities.
-
-**CRITICAL**: Always read the MCP documentation before working with MCP integration: See `/lib/mcp/CLAUDE.md` for comprehensive guidelines.
-
-#### Key Documentation
-
-- AI SDK MCP Integration: https://ai-sdk.dev/cookbook/node/mcp-tools
-- Firecrawl MCP Server: https://docs.firecrawl.dev/mcp-server
-
-#### MCP Client Architecture
-
-- **Location**: `/lib/mcp/client/`
-- **Singleton Pattern**: Use `getFirecrawlMCPClient()` for persistent connections across requests
-- **SSE Transport**: Firecrawl uses Server-Sent Events (SSE) transport
-- **Connection Management**: Never disconnect clients during streaming operations
-
-#### Using MCP Tools in Agents
-
-```typescript
-import { getFirecrawlMCPClient } from "@/lib/mcp";
-
-// Initialize and connect
-const firecrawlClient = getFirecrawlMCPClient();
-await firecrawlClient.connect();
-
-// Get tools for use with streamText()
-const tools = await firecrawlClient.getTools();
-
-// Use with AI SDK
-const result = streamText({
-  model: openai("gpt-5"),
-  messages: modelMessages,
-  tools: tools, // MCP tools work directly with AI SDK
-  stopWhen: stepCountIs(10),
-});
-```
-
-#### Tool Wrapping Pattern
-
-Wrap MCP tools to add logging and monitoring:
-
-```typescript
-const wrappedTools = Object.fromEntries(
-  Object.entries(tools).map(([toolName, toolDef]) => [
-    toolName,
-    {
-      ...toolDef,
-      execute: async (args: any) => {
-        console.log(`🔧 Tool called: ${toolName}`);
-        console.log(`   Input:`, JSON.stringify(args, null, 2));
-        const result = await toolDef.execute(args);
-        console.log(`   Output:`, JSON.stringify(result, null, 2));
-        return result;
-      },
-    },
-  ])
-);
-```
-
-#### Critical MCP Rules
-
-- **Never disconnect during streaming**: Closing MCP clients prematurely causes "closed client" errors
-- **Use singleton pattern**: Maintain persistent connections via `getFirecrawlMCPClient()`
-- **SSE URL format**: `https://mcp.firecrawl.dev/{API_KEY}/v2/sse`
-- **Type compatibility**: Use `Record<string, any>` for tool return types
-- **Error handling**: Always wrap MCP operations in try-catch blocks
-
-## Paywalled Itinerary Teaser
-
-The main landing page (`app/page.tsx`) displays a visual teaser for paywalled itineraries derived from Wanderlog data.
-
-### Architecture Overview
-
-```
-Wanderlog Data (server-only)
-    ↓
-Itinerary Redactor (prompts/system.txt)
-    ↓
-Obfuscated Teaser Payload (app/api/teaser/route.ts)
-    ↓
-Teaser UI (app/page.tsx)
-    ↓
-Checkout Flow (app/api/checkout/route.ts)
-    ↓
-Full Access (app/api/peek/route.ts)
-```
-
-### Redaction Policy (CRITICAL)
-
-**Never expose these details in teaser mode:**
-- Exact venue names (use truncated names with ellipsis: "Cafe A•••")
-- Precise times (use time windows: Morning | Midday | Afternoon | Evening | Late)
-- Full addresses (use coarse geography: Downtown, Waterfront, etc.)
-- Emails, phone numbers, booking IDs
-- GPS coordinates or deep links
-- If a truncated name is uniquely identifiable, use category + vibe (e.g., "Seaside Cafe •••")
-
-### Teaser Data Schemas
-
-```typescript
-interface TeaserStop {
-  id: string;              // Random ID (NOT Wanderlog ID)
-  displayName: string;     // Obfuscated name (e.g., "Cafe A•••")
-  displayArea: string;     // Coarse location (e.g., "Downtown")
-  timeWindow: "Morning" | "Midday" | "Afternoon" | "Evening" | "Late";
-  thumbUrl: string;        // Points to /api/og/teaser with watermark
-  type: "hotel" | "food" | "attraction" | "transport" | "other";
-}
-
-interface TeaserDay {
-  label: string;           // e.g., "Day 1"
-  summary: string;         // e.g., "Arrival and coastal exploration"
-  stops: TeaserStop[];
-}
-
-interface TeaserPayload {
-  tripTitle: string;       // Can be partially obfuscated
-  tripDates: string;       // e.g., "March 15-20, 2025"
-  days: TeaserDay[];
+**Output**
+```json
+{
+  "id":"1",
+  "title":"Interactive Science Adventure",
+  "headerEmoji":"🌌",
+  "teaser":"Step into a world where curiosity comes alive — tinker with robotics, explore the marvels of the human body, and peer through telescopes that bring distant galaxies within reach. A fun, educational outing for families and explorers alike.",
+  "tone":"family_friendly",
+  "tags":["hands-on","indoors","stargazing","educational"]
 }
 ```
 
-### Teaser Page Features
-
-The teaser page (`app/page.tsx`) includes:
-
-1. **Hero Section** - Trip title, dates, and unlock CTA
-2. **Masked Map** - Blurred map placeholder with lock icon
-3. **Timeline Cards** - Day-by-day preview with obfuscated stop details
-4. **Gallery** - Grid of watermarked placeholder images
-5. **Trust Indicators** - Why choose this itinerary
-6. **Pricing Section** - Unlock flow with email capture and checkout
-7. **Footer CTA** - Final conversion opportunity
-
-### API Routes
-
-- **`GET /api/teaser`** - Returns `TeaserPayload` with obfuscated data
-- **`GET /api/og/teaser?stop=1&viewer=preview`** - Returns watermarked SVG placeholder
-- **`POST /api/peek`** - Checks access and returns full details if authorized
-  - Input: `{ stopId: string, accessToken: string }`
-  - Output: `{ hasAccess: boolean, revealedData?: {...} }`
-- **`POST /api/checkout`** - Initiates payment flow
-  - Input: `{ itineraryId: string, email: string, priceId: string }`
-  - Output: `{ success: boolean, checkoutUrl?: string, sessionId?: string }`
-
-### Security Considerations
-
-- Raw Wanderlog data must NEVER be sent to the client
-- Redaction happens server-side only
-- Use random IDs for stops (never expose Wanderlog IDs)
-- Watermark images with viewer-specific tags for tracking
-- Validate all access tokens before revealing full details
-
-### Future Integration
-
-In production, the teaser system should:
-1. Fetch raw Wanderlog data from secure storage (database, S3, etc.)
-2. Apply redaction rules via LLM (using `prompts/system.txt`)
-3. Cache obfuscated payloads per viewer session
-4. Integrate with Stripe for real payment processing
-5. Store access grants in database
-6. Send confirmation emails with full itinerary access links
-
-## Supabase Integration
-
-This project uses Supabase for storing raw Wanderlog PDF files with metadata tracking.
-
-### Architecture
-
-- **Storage Bucket**: `wanderlog-pdfs` - Private bucket for PDF file storage
-- **Database Table**: `wanderlog_pdfs` - Metadata and processing status
-- **Service Layer**: `SupabaseStorageService` in `/lib/supabase/storage.ts`
-
-### Setup Instructions
-
-See `/supabase/README.md` for complete setup instructions, including:
-1. Creating storage bucket in Supabase Dashboard
-2. Running database schema (`/supabase/schema.sql`)
-3. Configuring environment variables
-4. Testing the integration
-
-### API Routes
-
-- `POST /api/pdfs/upload` - Upload Wanderlog PDF with optional metadata
-  - Accepts multipart form data
-  - Fields: `file` (required), `trip_title`, `trip_dates`, `destination`, `user_id`
-  - Max file size: 50MB
-  - Returns: `{ success: boolean, data?: {...}, error?: string }`
-
-- `GET /api/pdfs/list` - List all PDFs with optional filters
-  - Query params: `destination`, `status`, `user_id`, `limit`
-  - Returns: `{ success: boolean, data?: WanderlogPDF[], error?: string }`
-
-- `GET /api/pdfs/[id]` - Get PDF metadata and public URL by ID
-  - Returns: `{ success: boolean, data?: {...}, error?: string }`
-
-- `PATCH /api/pdfs/[id]` - Update PDF metadata
-  - Body: `{ trip_title?, trip_dates?, destination?, status?, metadata? }`
-  - Returns: `{ success: boolean, data?: WanderlogPDF, error?: string }`
-
-- `DELETE /api/pdfs/[id]` - Delete PDF (storage + database)
-  - Returns: `{ success: boolean, message?: string, error?: string }`
-
-### Storage Service Usage
-
-```typescript
-import { SupabaseStorageService } from '@/lib/supabase';
-
-// Upload a PDF
-const service = new SupabaseStorageService();
-const result = await service.uploadPDF(file, fileName, {
-  trip_title: 'Mediterranean Adventure',
-  destination: 'Greece',
-});
-
-// List PDFs
-const pdfs = await service.listPDFs({
-  destination: 'Greece',
-  status: 'uploaded',
-  limit: 10,
-});
-
-// Get PDF by ID
-const pdf = await service.getPDFById(id);
-
-// Update metadata
-await service.updatePDFMetadata(id, {
-  status: 'processed',
-  trip_title: 'Updated Title',
-});
-
-// Delete PDF
-await service.deletePDF(id);
-```
-
-### Database Schema
-
-```typescript
-interface WanderlogPDF {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  file_name: string;
-  file_path: string;
-  file_size: number;
-  mime_type: string;
-  trip_title: string | null;
-  trip_dates: string | null;
-  destination: string | null;
-  status: 'uploaded' | 'processing' | 'processed' | 'error';
-  metadata: Record<string, any> | null;
-  user_id: string | null;
+### Dining Example
+**Input**
+```json
+{
+  "id":"2",
+  "name":"Ruth’s Steakhouse",
+  "category":"dining",
+  "description":"Upscale steakhouse offering prime cuts, seafood, and fine wines in a sophisticated setting."
 }
 ```
 
-### Security Considerations
-
-- Storage bucket is **private** by default
-- Row Level Security (RLS) enabled on `wanderlog_pdfs` table
-- Use `SUPABASE_SERVICE_ROLE_KEY` only in API routes (server-side)
-- Use `NEXT_PUBLIC_SUPABASE_ANON_KEY` for client-side operations
-- Service role key bypasses RLS policies
-- Adjust RLS policies in schema based on authentication requirements
-
-### File Processing Workflow
-
-1. Upload PDF via `POST /api/pdfs/upload` (status: `uploaded`)
-2. Process PDF to extract itinerary data (update status to `processing`)
-3. Apply redaction rules via LLM to create teaser data
-4. Update metadata with processing results (status: `processed`)
-5. Display teaser on landing page
-6. Retrieve full PDF when user unlocks access
-
-## Environment Setup
-
-Create `.env.local` with:
-
-```
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Vectorize (RAG)
-VECTORIZE_ACCESS_TOKEN=your_vectorize_token
-VECTORIZE_ORG_ID=your_org_id
-VECTORIZE_PIPELINE_ID=your_pipeline_id
-
-# Firecrawl MCP (optional)
-FIRECRAWL_API_KEY=your_firecrawl_api_key_here
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key
+**Output**
+```json
+{
+  "id":"2",
+  "title":"Elegant Dining Experience",
+  "headerEmoji":"🍷",
+  "teaser":"An upscale retreat where expertly grilled dishes meet impeccable service and ambiance. Expect soft lighting, refined flavors, and a touch of indulgence — perfect for a memorable evening out.",
+  "tone":"luxury",
+  "tags":["steak","wine","fine dining","evening"]
+}
 ```
 
-## Critical Rules for useChat Implementation
+### Airline Example
+**Input**
+```json
+{
+  "id":"3",
+  "name":"Air Canada",
+  "category":"airline",
+  "description":"Major airline offering domestic and international flights with a focus on comfort and reliability."
+}
+```
 
-**NEVER EVER DO THIS:**
-- ❌ `sendMessage("string")` - This DOES NOT work and causes runtime errors
-- ❌ Accessing `message.content` directly - Messages use `parts` array structure
-- ❌ Passing plain strings to sendMessage
+**Output**
+```json
+{
+  "id":"3",
+  "title":"Premier Air Journey",
+  "headerEmoji":"✈️",
+  "teaser":"Experience a smooth, well-connected journey with a trusted international carrier known for comfort and care. From takeoff to landing, every detail is designed to make travel feel effortless.",
+  "tone":"travel",
+  "tags":["flight","comfort","international","reliable"]
+}
+```
 
-**ALWAYS DO THIS:**
-- ✅ `sendMessage({ text: "message content" })` - Only UIMessage-compatible objects work
-- ✅ Access message content via `message.parts` array
-- ✅ Read AI SDK docs before implementing any useChat functionality
+## Transformation Steps (in TEASER_MODE)
+1. Parse each record.  
+2. If category/table/type ≠ activity/dining/airline → return unchanged.  
+3. Else:
+   - Derive a non-identifying `title` and `headerEmoji`.
+   - Write a 2–4 sentence `teaser` (no names/addresses).
+   - Pick a `tone` and 2–5 general `tags`.
+4. Return **JSON only** (no markdown, no commentary).
+
+## Guardrails (in TEASER_MODE)
+- Never output names, addresses, brands.  
+- No links, prices, or CTAs.  
+- No copied text — paraphrase only.  
+- If input is sparse, generate tasteful generic copy from `category`.
+
+## How to Invoke (example prompt)
+> **TEASER_MODE** — Using the Teaser Generator section in `CLAUDE.md`, transform these Supabase rows. Only apply rules to activities, dining, or airlines. Return JSON only, no identifying info.
+
+---
+
+# Activity & Dining Description Enhancement
+
+## Overview
+The application includes an AI-powered enhancement feature that improves activity and dining descriptions to make them more enticing and detailed. This feature is available after importing a Wanderlog trip.
+
+## Features
+- **Enhanced Descriptions**: Uses GPT-4o to generate compelling, sensory-rich descriptions for all activities
+- **Dining Details**: Automatically identifies and mentions cuisine types for restaurants and cafes
+- **Preserves Original Data**: Keeps original descriptions for reference while updating with enhanced versions
+
+## How It Works
+
+### API Endpoint
+`POST /api/trips/[tripId]/enhance`
+
+This endpoint:
+1. Fetches the trip data from Supabase
+2. For each activity, generates an enhanced description using GPT-4o
+3. Updates the trip metadata with enhanced data
+4. Preserves original descriptions in `originalDescription` field
+
+### Enhancement Rules
+The AI enhancement follows these guidelines:
+1. **Dining venues** MUST mention cuisine type (e.g., "Italian cuisine", "farm-to-table", "authentic sushi")
+2. Uses sensory language to help travelers imagine the experience
+3. Highlights unique features or what makes the place special
+4. Keeps descriptions concise but evocative (2-3 sentences)
+5. Avoids generic phrases like "quality experience" or "welcoming atmosphere"
+6. Focuses on what travelers will see, do, taste, or feel
+
+### Usage
+
+#### From Import Page
+After importing a trip, click the **"Enhance Descriptions"** button before creating the teaser page.
+
+The button shows:
+- **Default state**: "Enhance Descriptions" with magic wand icon
+- **Loading state**: "Enhancing descriptions... (30-60s)" with spinner
+- **Success state**: "Descriptions Enhanced!" with checkmark
+
+#### Programmatically
+```typescript
+const response = await fetch(`/api/trips/${tripId}/enhance`, {
+  method: 'POST',
+});
+
+const data = await response.json();
+// {
+//   success: true,
+//   message: "Trip descriptions enhanced successfully",
+//   stats: {
+//     totalActivities: 28,
+//     enhancedCount: 28,
+//     destination: "Edmonton"
+//   },
+//   enhancedActivities: [...]
+// }
+```
+
+## Environment Variables
+
+### Required
+```bash
+# OpenAI API key for description enhancement
+OPENAI_API_KEY=sk-proj-...your-actual-key-here...
+```
+
+**IMPORTANT**: The `.env.local` file must contain a **valid OpenAI API key** for the enhancement feature to work. Placeholder values like `your_openai_api_key_here` will cause all enhancements to fail silently.
+
+## Files
+- `/app/api/trips/[tripId]/enhance/route.ts` - Enhancement API endpoint
+- `/app/import/page.tsx` - Import page with enhancement button
+
+## Example Enhanced Description
+
+**Original**: "Hands-on science center with interactive exhibits exploring technology, nature, and the cosmos"
+
+**Enhanced**: "Step into a world where science comes alive through hands-on discovery. From cosmic planetarium shows to interactive technology exhibits, every corner sparks curiosity and wonder for all ages. This isn't just observation—it's immersive learning that makes complex concepts tangible and thrilling."
