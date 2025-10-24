@@ -19,9 +19,9 @@ export default function HomePage() {
           >
             <Image
               src="/peekaboo-logo.png"
-              alt="Peekabooo Travel Logo"
+              alt="peekabooootravel Logo"
               fill
-              className="object-cover scale-110"
+              className="object-cover scale-150"
               priority
             />
           </div>

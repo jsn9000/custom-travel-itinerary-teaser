@@ -15,7 +15,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Mamedee Travel Adventure",
+  title: "peekabooootravel",
   description: "Your gateway to unforgettable travel experiences",
 };
 

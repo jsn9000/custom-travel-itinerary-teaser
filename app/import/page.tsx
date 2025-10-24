@@ -130,16 +130,16 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Miniature Logo - Top Left (150% bigger) */}
+      {/* Miniature Logo - Top Left (30% smaller) */}
       <div className="absolute top-4 left-24 md:left-32 z-10">
         <Link href="/">
-          <div className="w-40 h-40 md:w-50 md:h-50 rounded-full overflow-hidden shadow-xl hover:scale-110 transition-transform duration-300 cursor-pointer">
+          <div className="w-28 h-28 md:w-35 md:h-35 rounded-full overflow-hidden shadow-xl hover:scale-110 transition-transform duration-300 cursor-pointer">
             <Image
               src="/peekaboo-logo.png"
-              alt="Peekabooo Travel Logo"
-              width={200}
-              height={200}
-              className="object-cover"
+              alt="peekabooootravel Logo"
+              width={140}
+              height={140}
+              className="object-cover scale-150"
               priority
             />
           </div>
@@ -147,36 +147,38 @@ export default function ImportPage() {
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* Back Button */}
-        <Link href="/" className="inline-flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Link>
+        {/* Back Button - Centered */}
+        <div className="flex justify-center mb-8">
+          <Link href="/" className="inline-flex items-center text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors font-semibold" style={{ fontFamily: '"Courier New", Courier, monospace' }}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </div>
 
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12" style={{ fontFamily: '"Courier New", Courier, monospace' }}>
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4">
             <Download className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold mb-3 text-slate-900 dark:text-white">
-            Peekaboooo Import Travel Url
+            peekabooootravel Import Travel Url
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">
+          <p className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">
             Currently supports Wanderlog.com itineraries
           </p>
-          <p className="text-base text-slate-500 dark:text-slate-400">
-            Paste a Travel app URL to import trip details, flights, hotels, activities, and images
+          <p className="text-base font-semibold text-slate-600 dark:text-slate-400">
+            Add your wanderlog Itinerary below to import trip details, flights, hotels, activites and more
           </p>
         </div>
 
         {/* Import Card */}
-        <Card className="p-8 mb-6 shadow-lg">
+        <Card className="p-8 mb-6 shadow-lg" style={{ fontFamily: '"Courier New", Courier, monospace' }}>
           <div className="space-y-4">
             {/* URL Input */}
             <div>
               <label
                 htmlFor="travel-app-url"
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2"
               >
                 Add you or your clients Wanderlog itinerary here
               </label>
@@ -195,7 +197,7 @@ export default function ImportPage() {
                   />
                 </div>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mt-2">
                 Example: https://wanderlog.com/view/znjfochocj/trip-to-edmonton
               </p>
             </div>
@@ -212,7 +214,7 @@ export default function ImportPage() {
               />
               <label
                 htmlFor="force-rescrape"
-                className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer"
+                className="text-sm font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
               >
                 Force re-import (override if trip already exists)
               </label>
@@ -248,6 +250,7 @@ export default function ImportPage() {
                 ? 'border-green-500 bg-green-50 dark:bg-green-950'
                 : 'border-red-500 bg-red-50 dark:bg-red-950'
             }`}
+            style={{ fontFamily: '"Courier New", Courier, monospace' }}
           >
             <div className="flex items-start gap-3">
               {result.success ? (
@@ -258,7 +261,7 @@ export default function ImportPage() {
 
               <div className="flex-1">
                 <h3
-                  className={`text-lg font-semibold mb-2 ${
+                  className={`text-2xl font-bold mb-3 ${
                     result.success
                       ? 'text-green-900 dark:text-green-100'
                       : 'text-red-900 dark:text-red-100'
@@ -268,7 +271,7 @@ export default function ImportPage() {
                 </h3>
 
                 <p
-                  className={`mb-4 ${
+                  className={`text-lg font-bold mb-4 ${
                     result.success
                       ? 'text-green-800 dark:text-green-200'
                       : 'text-red-800 dark:text-red-200'
@@ -286,28 +289,28 @@ export default function ImportPage() {
                 {/* Trip Details */}
                 {result.success && result.data && (
                   <div className="bg-white dark:bg-slate-800 rounded-lg p-4 mb-4">
-                    <h4 className="font-semibold text-slate-900 dark:text-white mb-3">
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                       {result.data.title}
                     </h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="grid grid-cols-2 gap-2 text-base">
                       {result.data.creator && (
                         <div>
-                          <span className="text-slate-600 dark:text-slate-400">Creator:</span>
-                          <span className="ml-2 text-slate-900 dark:text-white">
+                          <span className="font-bold text-slate-600 dark:text-slate-400">Creator:</span>
+                          <span className="ml-2 font-semibold text-slate-900 dark:text-white">
                             {result.data.creator}
                           </span>
                         </div>
                       )}
                       <div>
-                        <span className="text-slate-600 dark:text-slate-400">Dates:</span>
-                        <span className="ml-2 text-slate-900 dark:text-white">
+                        <span className="font-bold text-slate-600 dark:text-slate-400">Dates:</span>
+                        <span className="ml-2 font-semibold text-slate-900 dark:text-white">
                           {result.data.startDate} - {result.data.endDate}
                         </span>
                       </div>
                       {result.tripId && (
                         <div className="col-span-2">
-                          <span className="text-slate-600 dark:text-slate-400">Trip ID:</span>
-                          <span className="ml-2 text-slate-900 dark:text-white font-mono text-xs">
+                          <span className="font-bold text-slate-600 dark:text-slate-400">Trip ID:</span>
+                          <span className="ml-2 font-semibold text-slate-900 dark:text-white font-mono text-sm">
                             {result.tripId}
                           </span>
                         </div>
@@ -319,57 +322,57 @@ export default function ImportPage() {
                 {/* Statistics */}
                 {result.stats && (
                   <div className="bg-white dark:bg-slate-800 rounded-lg p-4">
-                    <h4 className="font-semibold text-slate-900 dark:text-white mb-3">
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                       Import Statistics
                     </h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-base">
                       <div className="bg-slate-50 dark:bg-slate-700 rounded p-2">
-                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                           {result.stats.flights}
                         </div>
-                        <div className="text-slate-600 dark:text-slate-400">Flights</div>
+                        <div className="font-bold text-slate-600 dark:text-slate-400">Flights</div>
                       </div>
                       <div className="bg-slate-50 dark:bg-slate-700 rounded p-2">
-                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                           {result.stats.hotels}
                         </div>
-                        <div className="text-slate-600 dark:text-slate-400">Hotels</div>
+                        <div className="font-bold text-slate-600 dark:text-slate-400">Hotels</div>
                       </div>
                       <div className="bg-slate-50 dark:bg-slate-700 rounded p-2">
-                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                           {result.stats.activities}
                         </div>
-                        <div className="text-slate-600 dark:text-slate-400">Activities</div>
+                        <div className="font-bold text-slate-600 dark:text-slate-400">Activities</div>
                       </div>
                       <div className="bg-slate-50 dark:bg-slate-700 rounded p-2">
-                        <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                        <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
                           {result.stats.carRentals}
                         </div>
-                        <div className="text-slate-600 dark:text-slate-400">Car Rentals</div>
+                        <div className="font-bold text-slate-600 dark:text-slate-400">Car Rentals</div>
                       </div>
                       <div className="bg-slate-50 dark:bg-slate-700 rounded p-2">
-                        <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">
+                        <div className="text-3xl font-bold text-pink-600 dark:text-pink-400">
                           {result.stats.dailyScheduleDays}
                         </div>
-                        <div className="text-slate-600 dark:text-slate-400">Days</div>
+                        <div className="font-bold text-slate-600 dark:text-slate-400">Days</div>
                       </div>
                       <div className="bg-slate-50 dark:bg-slate-700 rounded p-2">
-                        <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
+                        <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
                           {result.stats.images.total}
                         </div>
-                        <div className="text-slate-600 dark:text-slate-400">Images</div>
+                        <div className="font-bold text-slate-600 dark:text-slate-400">Images</div>
                       </div>
                     </div>
 
                     {result.stats.images && (
-                      <div className="mt-3 text-xs text-slate-600 dark:text-slate-400">
+                      <div className="mt-3 text-sm font-bold text-slate-600 dark:text-slate-400">
                         📸 {result.stats.images.associated} images associated with activities,{' '}
                         {result.stats.images.unassociated} unassociated
                       </div>
                     )}
 
                     {result.duration && (
-                      <div className="mt-3 text-xs text-slate-600 dark:text-slate-400">
+                      <div className="mt-3 text-sm font-bold text-slate-600 dark:text-slate-400">
                         ⏱️ Completed in {result.duration}
                       </div>
                     )}
@@ -427,7 +430,7 @@ export default function ImportPage() {
         )}
 
         {/* Info Card */}
-        <Card className="p-6 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+        <Card className="p-6 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800" style={{ fontFamily: '"Courier New", Courier, monospace' }}>
           <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
             ℹ️ What gets imported?
           </h3>
