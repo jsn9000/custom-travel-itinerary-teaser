@@ -360,17 +360,6 @@ export default function TeaserPage() {
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #faf9f7, #f5f3ef, #fdfcfa)' }}>
-      {/* Back Button */}
-      <div className="absolute top-4 left-4 z-20">
-        <Link
-          href="/import"
-          className="inline-flex items-center text-white bg-black/30 hover:bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Import
-        </Link>
-      </div>
-
       {/* Hero Header with Rotating Banner */}
       <header className="relative overflow-hidden">
         <div className="relative h-[300px] md:h-[375px]">

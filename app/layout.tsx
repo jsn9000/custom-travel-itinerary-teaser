@@ -15,8 +15,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Mediterranean Adventure",
-  description: "Your gateway to unforgettable Mediterranean experiences",
+  title: "Mamedee Travel Adventure",
+  description: "Your gateway to unforgettable travel experiences",
 };
 
 export default function RootLayout({
