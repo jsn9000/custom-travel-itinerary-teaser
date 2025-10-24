@@ -183,6 +183,7 @@ export default function TravelSelection() {
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showNotInterestedModal, setShowNotInterestedModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [question, setQuestion] = useState("");
   const [editRequest, setEditRequest] = useState("");
   const [notInterestedReason, setNotInterestedReason] = useState("");
@@ -386,6 +387,88 @@ export default function TravelSelection() {
         </div>
       </section>
 
+      {/* Flights Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
+            Select Your Flight
+          </h2>
+          <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+            Choose the flight option that best suits your schedule and budget
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {flightOptions.map((flight) => {
+            const isSelected = selectedFlight === flight.id;
+            return (
+              <div
+                key={flight.id}
+                onClick={() => setSelectedFlight(flight.id)}
+                className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 border-3 ${
+                  isSelected
+                    ? "opacity-100 scale-105"
+                    : "opacity-60 grayscale-[50%] hover:opacity-80"
+                }`}
+                style={{
+                  boxShadow: isSelected
+                    ? '0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px #c1694f'
+                    : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                  border: isSelected ? 'none' : '1px solid #e5e5e5'
+                }}
+              >
+                {isSelected && (
+                  <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                    background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                    boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                  }}>
+                    <Check className="w-4 h-4" />
+                  </div>
+                )}
+
+                <div className="relative h-32">
+                  <img
+                    src={flight.image}
+                    alt={flight.type}
+                    className="w-full h-full object-cover"
+                    style={{ filter: "blur(2px)" }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+
+                <div className="bg-white p-3">
+                  <div className="flex items-start justify-between mb-1.5">
+                    <h3 className="text-base font-bold text-gray-900 flex-1">
+                      {flight.type}
+                    </h3>
+                    <Plane className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">{flight.description}</p>
+                  <div className="space-y-0.5 mb-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-semibold">{flight.duration}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">Stops:</span>
+                      <span className="font-semibold">{flight.stops}</span>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-gray-200">
+                    <div className="text-center">
+                      <span className="text-xl font-bold text-[#1e3a8a]">
+                        ${flight.price}
+                      </span>
+                      <span className="text-xs text-gray-600"> roundtrip</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {/* Hotels Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
@@ -465,88 +548,6 @@ export default function TravelSelection() {
                       <div className="font-bold text-xs text-gray-900">
                         ${hotel.price * 7}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Flights Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
-            Select Your Flight
-          </h2>
-          <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-            Choose the flight option that best suits your schedule and budget
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {flightOptions.map((flight) => {
-            const isSelected = selectedFlight === flight.id;
-            return (
-              <div
-                key={flight.id}
-                onClick={() => setSelectedFlight(flight.id)}
-                className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 border-3 ${
-                  isSelected
-                    ? "opacity-100 scale-105"
-                    : "opacity-60 grayscale-[50%] hover:opacity-80"
-                }`}
-                style={{
-                  boxShadow: isSelected
-                    ? '0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px #c1694f'
-                    : '0 4px 15px rgba(0, 0, 0, 0.1)',
-                  border: isSelected ? 'none' : '1px solid #e5e5e5'
-                }}
-              >
-                {isSelected && (
-                  <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
-                    background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
-                    boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
-                  }}>
-                    <Check className="w-4 h-4" />
-                  </div>
-                )}
-
-                <div className="relative h-32">
-                  <img
-                    src={flight.image}
-                    alt={flight.type}
-                    className="w-full h-full object-cover"
-                    style={{ filter: "blur(2px)" }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                </div>
-
-                <div className="bg-white p-3">
-                  <div className="flex items-start justify-between mb-1.5">
-                    <h3 className="text-base font-bold text-gray-900 flex-1">
-                      {flight.type}
-                    </h3>
-                    <Plane className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">{flight.description}</p>
-                  <div className="space-y-0.5 mb-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">Duration:</span>
-                      <span className="font-semibold">{flight.duration}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">Stops:</span>
-                      <span className="font-semibold">{flight.stops}</span>
-                    </div>
-                  </div>
-                  <div className="pt-2 border-t border-gray-200">
-                    <div className="text-center">
-                      <span className="text-xl font-bold text-[#1e3a8a]">
-                        ${flight.price}
-                      </span>
-                      <span className="text-xs text-gray-600"> roundtrip</span>
                     </div>
                   </div>
                 </div>
@@ -706,6 +707,7 @@ export default function TravelSelection() {
 
             <div className="pt-5 space-y-2.5">
               <button
+                onClick={() => setShowPaymentModal(true)}
                 className="w-full text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
                 style={{
                   fontFamily: 'var(--font-inter)',
@@ -714,7 +716,7 @@ export default function TravelSelection() {
                 }}
               >
                 <Lock className="w-4 h-4 inline mr-2" />
-                I love it! Unlock Complete Itinerary - ${tripCost}
+                I love it! Unlock Complete Itinerary
               </button>
 
               <button
@@ -996,6 +998,152 @@ export default function TravelSelection() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative animate-in fade-in zoom-in duration-300 my-8">
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="text-center mb-5">
+              <Lock className="w-12 h-12 mx-auto mb-3 text-[#1e3a8a]" />
+              <h3 className="text-2xl font-bold text-[#1e3a8a] mb-2" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                Unlock Your Complete Itinerary
+              </h3>
+              <p className="text-sm text-gray-600" style={{ fontFamily: 'var(--font-inter)' }}>
+                Review your trip details and proceed to unlock the full experience
+              </p>
+            </div>
+
+            {/* Trip Details */}
+            <div className="space-y-3 mb-5" style={{ fontFamily: 'var(--font-inter)' }}>
+              {/* Accommodation */}
+              <div className="flex justify-between items-start pb-3 border-b border-gray-200">
+                <div className="flex items-start gap-2">
+                  <Building2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">
+                      {selectedHotelData?.type}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {selectedHotelData?.stars} stars • 7 nights
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-base font-bold text-gray-900">${hotelCost.toFixed(2)}</div>
+                </div>
+              </div>
+
+              {/* Flight */}
+              <div className="flex justify-between items-start pb-3 border-b border-gray-200">
+                <div className="flex items-start gap-2">
+                  <Plane className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">
+                      {selectedFlightData?.type}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {selectedFlightData?.duration} • {selectedFlightData?.stops}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-base font-bold text-gray-900">${flightCost.toFixed(2)}</div>
+                </div>
+              </div>
+
+              {/* Activities */}
+              <div className="flex justify-between items-start pb-3 border-b border-gray-200">
+                <div className="flex items-start gap-2">
+                  <Star className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">
+                      Activities & Experiences
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {mockItinerary.reduce((total, day) => total + day.activities.length, 0)} curated activities planned
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-green-600 font-semibold">Included</div>
+                </div>
+              </div>
+
+              {/* Trip Subtotal */}
+              <div className="flex justify-between items-center py-2">
+                <div>
+                  <div className="font-semibold text-sm text-gray-700">Estimated Trip Cost</div>
+                  <div className="text-xs text-gray-600">To be booked separately</div>
+                </div>
+                <div className="text-base font-bold text-gray-600">${tripCost.toFixed(2)}</div>
+              </div>
+
+              {/* Unlock Fee */}
+              <div className="flex justify-between items-center py-3 bg-blue-50 -mx-6 md:-mx-8 px-6 md:px-8 rounded-lg border-t-2 border-gray-300 mt-2">
+                <div>
+                  <div className="font-semibold text-sm text-gray-900">Itinerary Unlock Fee</div>
+                  <div className="text-xs text-gray-600">One-time payment for complete trip details</div>
+                </div>
+                <div className="text-base font-bold text-[#1e3a8a]">${unlockFee.toFixed(2)}</div>
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between items-center pt-3 border-t-2 border-gray-300">
+                <div className="text-lg font-bold text-gray-900">Total Charge</div>
+                <div className="text-xl font-bold text-[#1e3a8a]">${unlockFee.toFixed(2)}</div>
+              </div>
+            </div>
+
+            {/* Non-refundable notice */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+              <p className="text-xs text-amber-800 text-center" style={{ fontFamily: 'var(--font-inter)' }}>
+                <strong>Please Note:</strong> All purchases are non-refundable. By proceeding, you agree to our terms and conditions.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2.5">
+              <button
+                onClick={() => {
+                  // Handle payment processing
+                  console.log("Processing payment for unlock fee:", { unlockFee });
+                  alert("Payment processing would happen here. This is a mockup!");
+                  setShowPaymentModal(false);
+                }}
+                className="w-full text-white px-6 py-3 rounded-full font-bold text-base transition-all duration-300 ease-in-out hover:-translate-y-0.5 transform"
+                style={{
+                  fontFamily: 'var(--font-inter)',
+                  background: 'linear-gradient(135deg, #c1694f 0%, #a0522d 100%)',
+                  boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
+                }}
+              >
+                Proceed to Payment - ${unlockFee.toFixed(2)}
+              </button>
+
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="w-full px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-all text-sm"
+                style={{ fontFamily: 'var(--font-inter)' }}
+              >
+                Cancel
+              </button>
+            </div>
+
+            <p className="text-center text-xs text-gray-500 mt-3" style={{ fontFamily: 'var(--font-inter)' }}>
+              Secure payment • SSL encrypted • Instant access upon payment
+            </p>
           </div>
         </div>
       )}
