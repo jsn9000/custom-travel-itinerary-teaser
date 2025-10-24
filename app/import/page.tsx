@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -129,6 +130,22 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      {/* Miniature Logo - Top Left (150% bigger) */}
+      <div className="absolute top-4 left-24 md:left-32 z-10">
+        <Link href="/">
+          <div className="w-40 h-40 md:w-50 md:h-50 rounded-full overflow-hidden shadow-xl hover:scale-110 transition-transform duration-300 cursor-pointer">
+            <Image
+              src="/peekaboo-logo.png"
+              alt="Peekabooo Travel Logo"
+              width={200}
+              height={200}
+              className="object-cover"
+              priority
+            />
+          </div>
+        </Link>
+      </div>
+
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Back Button */}
         <Link href="/" className="inline-flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-8 transition-colors">
@@ -142,9 +159,12 @@ export default function ImportPage() {
             <Download className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold mb-3 text-slate-900 dark:text-white">
-            Import Travel App URL
+            Peekaboooo Import Travel Url
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
+          <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">
+            Currently supports Wanderlog.com itineraries
+          </p>
+          <p className="text-base text-slate-500 dark:text-slate-400">
             Paste a Travel app URL to import trip details, flights, hotels, activities, and images
           </p>
         </div>
@@ -158,7 +178,7 @@ export default function ImportPage() {
                 htmlFor="travel-app-url"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
               >
-                Travel app URL
+                Add you or your clients Wanderlog itinerary here
               </label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
