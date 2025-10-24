@@ -73,11 +73,15 @@ export default function PaymentPage({ params }: { params: Promise<{ tripId: stri
     );
   }
 
-  const tripCost = tripData?.flights?.[0]?.price || 0;
-  const hotelCost = tripData?.hotels?.[0]?.price || 0;
-  const nights = 3; // Default for mockup
-  const totalHotelCost = hotelCost * nights;
-  const subtotal = tripCost + totalHotelCost;
+  // Calculate counts
+  const activitiesCount = tripData?.dailySchedule?.reduce((total: number, day: any) => {
+    return total + (day.activities?.length || 0);
+  }, 0) || 0;
+  const flightsCount = tripData?.flights?.length || 0;
+  const totalNights = tripData?.hotels?.[0]?.nights || 0;
+
+  // Travel Concierge fee
+  const conciergeFee = 299.00;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -218,7 +222,7 @@ export default function PaymentPage({ params }: { params: Promise<{ tripId: stri
                   type="submit"
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
-                  Complete Payment - ${subtotal.toFixed(2)}
+                  Complete Payment - ${conciergeFee.toFixed(2)}
                 </button>
 
                 {/* Security Notice */}
@@ -247,34 +251,61 @@ export default function PaymentPage({ params }: { params: Promise<{ tripId: stri
                     </p>
                   </div>
 
-                  {/* Flight */}
-                  {tripData.flights && tripData.flights.length > 0 && (
-                    <div className="flex justify-between items-center pb-4 border-b border-white/30">
+                  {/* Package Includes */}
+                  <div className="space-y-3 pb-4 border-b border-white/30">
+                    <p className="text-sm font-semibold text-blue-100 uppercase tracking-wider">Package Includes</p>
+
+                    {/* Activities */}
+                    <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-semibold">Flight</div>
+                        <div className="font-semibold">Activities</div>
                         <div className="text-blue-100 text-sm">
-                          {tripData.flights[0].departureAirport} → {tripData.flights[0].arrivalAirport}
+                          {activitiesCount} activities scheduled
                         </div>
                       </div>
-                      <div className="text-xl font-bold">${tripCost.toFixed(2)}</div>
                     </div>
-                  )}
 
-                  {/* Hotel */}
-                  {tripData.hotels && tripData.hotels.length > 0 && (
-                    <div className="flex justify-between items-center pb-4 border-b border-white/30">
+                    {/* Flights */}
+                    <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-semibold">Accommodation</div>
-                        <div className="text-blue-100 text-sm">{nights} nights</div>
+                        <div className="font-semibold">Flights</div>
+                        <div className="text-blue-100 text-sm">
+                          {flightsCount} {flightsCount === 1 ? 'flight' : 'flights'} booked
+                        </div>
                       </div>
-                      <div className="text-xl font-bold">${totalHotelCost.toFixed(2)}</div>
                     </div>
-                  )}
+
+                    {/* Accommodations */}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-semibold">Accommodations</div>
+                        <div className="text-blue-100 text-sm">
+                          {totalNights} {totalNights === 1 ? 'night' : 'nights'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Unlock Fee */}
+                  <div className="flex justify-between items-center pb-4 border-b border-white/30">
+                    <div>
+                      <div className="font-semibold">Travel Concierge Fee</div>
+                      <div className="text-blue-100 text-sm">Unlock all package details</div>
+                    </div>
+                    <div className="text-xl font-bold">${conciergeFee.toFixed(2)}</div>
+                  </div>
 
                   {/* Total */}
                   <div className="flex justify-between items-center pt-2">
                     <div className="text-lg font-bold">Total Amount</div>
-                    <div className="text-3xl font-bold">${subtotal.toFixed(2)}</div>
+                    <div className="text-3xl font-bold">${conciergeFee.toFixed(2)}</div>
+                  </div>
+
+                  {/* What You Get */}
+                  <div className="mt-6 pt-6 border-t border-white/30">
+                    <p className="text-sm text-blue-100 leading-relaxed">
+                      💎 Unlock all package details to begin your journey! Full access to hotel names, flight details, restaurant recommendations, and activity information.
+                    </p>
                   </div>
                 </div>
               )}
