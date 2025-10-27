@@ -17,6 +17,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This project strictly uses **pnpm**. Do not use npm or yarn.
 
+## Image Guidelines
+
+**Activity Images:**
+- Activity images should be displayed WITHOUT blur effect - they should be clear and crisp
+- Each activity card must use a unique image - rotate through available database images to avoid duplicates
+- If an activity has multiple images, use different images for different cards
+- Include 6 diverse fallback images for activities without database images
+- Images should be pulled from `wanderlog_images` table with `associated_section: 'activity'`
+
+**Dining Images:**
+- Dining venue images should be displayed WITHOUT blur effect - they should be clear and crisp, just like activity images
+- Use database images from associated dining activities
+- Include meal-specific fallback images (breakfast, lunch, dinner)
+
+**Hotel/Flight Images:**
+- Hotel and flight images should have a blur effect to maintain the teaser/paywalled aesthetic
+- Pull from database when available, use Unsplash fallbacks otherwise
+
 ## Architecture and Design
 
 This is a TypeScript Next.js 15 application with two main features:
@@ -39,7 +57,10 @@ This is a TypeScript Next.js 15 application with two main features:
 10. **Daily Itinerary Section** - Include a complete daily itinerary section showing each day with:
     - Day headers formatted as "Day X [Title]" where title is descriptive (e.g., "Arrival & Getting Started", "Full Day of Adventures")
     - The actual date shown below the day title in smaller text
-    - Activity cards with slightly blurred images from Supabase, activity names, ratings, and times
+    - Activity cards with images from Supabase database - **IMPORTANT: Activity images should NOT be blurred**
+    - Each activity card must display a unique image - rotate through available images to avoid duplicates
+    - If an activity has multiple images in the database, use different images for different cards
+    - Include fallback images for activities without database images
     - Activities should ONLY be shown in the daily itinerary section, not as a separate standalone section
 11. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
 12. **Trip Summary** - The trip summary section should show the price of the trip (flight + hotel subtotal only). Do not display any unlock fee or additional charges in the trip summary.

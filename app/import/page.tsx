@@ -178,7 +178,7 @@ export default function ImportPage() {
             <div>
               <label
                 htmlFor="travel-app-url"
-                className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2"
+                className="block text-lg font-bold text-slate-800 dark:text-slate-200 mb-2"
               >
                 Add you or your clients Wanderlog itinerary here
               </label>
@@ -197,7 +197,7 @@ export default function ImportPage() {
                   />
                 </div>
               </div>
-              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mt-2">
+              <p className="text-base font-semibold text-slate-600 dark:text-slate-400 mt-2">
                 Example: https://wanderlog.com/view/znjfochocj/trip-to-edmonton
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function ImportPage() {
               />
               <label
                 htmlFor="force-rescrape"
-                className="text-sm font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
+                className="text-base font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
               >
                 Force re-import (override if trip already exists)
               </label>
@@ -281,7 +281,7 @@ export default function ImportPage() {
                 </p>
 
                 {result.hint && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 italic">
+                  <p className="text-base text-slate-600 dark:text-slate-400 mb-4 italic">
                     💡 {result.hint}
                   </p>
                 )}
@@ -365,14 +365,14 @@ export default function ImportPage() {
                     </div>
 
                     {result.stats.images && (
-                      <div className="mt-3 text-sm font-bold text-slate-600 dark:text-slate-400">
+                      <div className="mt-3 text-base font-bold text-slate-600 dark:text-slate-400">
                         📸 {result.stats.images.associated} images associated with activities,{' '}
                         {result.stats.images.unassociated} unassociated
                       </div>
                     )}
 
                     {result.duration && (
-                      <div className="mt-3 text-sm font-bold text-slate-600 dark:text-slate-400">
+                      <div className="mt-3 text-base font-bold text-slate-600 dark:text-slate-400">
                         ⏱️ Completed in {result.duration}
                       </div>
                     )}
@@ -405,7 +405,7 @@ export default function ImportPage() {
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-center text-slate-600 dark:text-slate-400">
+                    <p className="text-base text-center text-slate-600 dark:text-slate-400">
                       {enhanceSuccess
                         ? '✨ Activity descriptions enhanced with AI'
                         : '🎨 Make activity descriptions more enticing with AI'}
@@ -419,7 +419,7 @@ export default function ImportPage() {
                       <Sparkles className="mr-2 h-5 w-5" />
                       Create Teaser Page
                     </Button>
-                    <p className="text-xs text-center text-slate-600 dark:text-slate-400">
+                    <p className="text-base text-center text-slate-600 dark:text-slate-400">
                       Generate a beautiful, paywalled teaser page for this trip
                     </p>
                   </div>
@@ -431,10 +431,10 @@ export default function ImportPage() {
 
         {/* Info Card */}
         <Card className="p-6 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800" style={{ fontFamily: '"Courier New", Courier, monospace' }}>
-          <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
             ℹ️ What gets imported?
           </h3>
-          <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
+          <ul className="text-base text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
             <li>Trip title, dates, and creator information</li>
             <li>Flight details with prices and times</li>
             <li>Hotel options with ratings and amenities</li>

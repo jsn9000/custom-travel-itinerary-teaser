@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?read_only=false&project_ref=eaofdajkpqyddlbawdli"
+    },
+    "pipedream": {
+      "type": "http",
+      "url": "https://mcp.pipedream.net/v2"
+    }
+  }
+}

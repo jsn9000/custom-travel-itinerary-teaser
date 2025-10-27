@@ -610,13 +610,13 @@ export default function TeaserPage() {
             {tripData.hotels.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-${hotelIdx}`;
               const isSelected = selectedHotel === hotelKey;
-              // Use different hotel images for each hotel
-              const hotelImages = [
+              // Use database hotel image if available, otherwise use fallback images
+              const fallbackHotelImages = [
                 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
                 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
                 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
               ];
-              const hotelImage = hotelImages[hotelIdx % hotelImages.length];
+              const hotelImage = (hotel as any).images?.[0] || fallbackHotelImages[hotelIdx % fallbackHotelImages.length];
 
               return (
                 <div
@@ -852,19 +852,78 @@ export default function TeaserPage() {
                             // Get description
                             const description = item.description || activityDetails?.description || 'Explore this local attraction';
 
+                            // Get activity image from database - use different images from the same activity if available
+                            // Rotate through images to avoid duplicates across different activity cards
+                            const imageIndex = actIdx % (activityDetails?.images?.length || 1);
+                            const activityImage = activityDetails?.images?.[imageIndex]?.url;
+
+                            // Fallback images based on activity type/name
+                            const getFallbackImage = (activityName: string) => {
+                              const name = activityName.toLowerCase();
+
+                              // Science/Technology attractions
+                              if (name.includes('science') || name.includes('museum') || name.includes('technology')) {
+                                return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800';
+                              }
+                              // Zoo/Wildlife
+                              if (name.includes('zoo') || name.includes('wildlife') || name.includes('animal')) {
+                                return 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=800';
+                              }
+                              // Garden/Botanical
+                              if (name.includes('garden') || name.includes('botanic') || name.includes('park')) {
+                                return 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800';
+                              }
+                              // Shopping/Mall
+                              if (name.includes('mall') || name.includes('shop')) {
+                                return 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800';
+                              }
+                              // Lake/Water
+                              if (name.includes('lake') || name.includes('water')) {
+                                return 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800';
+                              }
+
+                              // Generic travel/attraction images
+                              const genericImages = [
+                                'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800',
+                                'https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=800',
+                                'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800',
+                                'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800',
+                                'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+                              ];
+                              return genericImages[actIdx % genericImages.length];
+                            };
+
+                            const finalImage = activityImage || getFallbackImage(item.name);
+
                             return (
                               <div
                                 key={`activity-${dayIdx}-${actIdx}`}
-                                className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer"
+                                className="bg-white rounded-xl overflow-hidden border border-blue-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer"
                               >
-                                <div className="text-xs font-semibold text-cyan-700 uppercase tracking-wider mb-1">
-                                  {timeLabel}
+                                {/* Activity Image */}
+                                <div className="relative h-40">
+                                  <img
+                                    src={finalImage}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.currentTarget.src = getFallbackImage(item.name);
+                                    }}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                  <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-cyan-600/80 px-2 py-1 rounded">
+                                    {timeLabel}
+                                  </div>
                                 </div>
-                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                  {item.name}
+
+                                {/* Activity Details */}
+                                <div className="p-4">
+                                  <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                    {item.name}
+                                  </div>
+                                  <div className="text-sm text-gray-600 mb-2">{description}</div>
+                                  <div className="text-xs text-gray-500">{location}</div>
                                 </div>
-                                <div className="text-sm text-gray-600 mb-2">{description}</div>
-                                <div className="text-xs text-gray-500">{location}</div>
                               </div>
                             );
                           })}
@@ -952,50 +1011,89 @@ export default function TeaserPage() {
                           {/* Single row with Breakfast, Lunch, Dinner - all different venues */}
                           <div className="grid md:grid-cols-3 gap-4">
                             {/* Breakfast */}
-                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
-                              <div className="text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">
-                                Breakfast
+                            <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
+                              <div className="relative h-32">
+                                <img
+                                  src={(breakfastVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1533777324565-a040eb52facd?w=800'}
+                                  alt={breakfastVenue.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1533777324565-a040eb52facd?w=800';
+                                  }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-orange-600/80 px-2 py-1 rounded">
+                                  Breakfast
+                                </div>
                               </div>
-                              <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                {breakfastVenue.name}
-                              </div>
-                              <div className="text-sm text-gray-600 mb-2">
-                                {breakfastVenue.description || 'Local dining experience'}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                              <div className="p-4">
+                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                  {breakfastVenue.name}
+                                </div>
+                                <div className="text-sm text-gray-600 mb-2">
+                                  {breakfastVenue.description || 'Local dining experience'}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                                </div>
                               </div>
                             </div>
 
                             {/* Lunch */}
-                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
-                              <div className="text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">
-                                Lunch
+                            <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
+                              <div className="relative h-32">
+                                <img
+                                  src={(lunchVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'}
+                                  alt={lunchVenue.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800';
+                                  }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-orange-600/80 px-2 py-1 rounded">
+                                  Lunch
+                                </div>
                               </div>
-                              <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                {lunchVenue.name}
-                              </div>
-                              <div className="text-sm text-gray-600 mb-2">
-                                {lunchVenue.description || 'Local dining experience'}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                              <div className="p-4">
+                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                  {lunchVenue.name}
+                                </div>
+                                <div className="text-sm text-gray-600 mb-2">
+                                  {lunchVenue.description || 'Local dining experience'}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                                </div>
                               </div>
                             </div>
 
                             {/* Dinner */}
-                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
-                              <div className="text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">
-                                Dinner
+                            <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
+                              <div className="relative h-32">
+                                <img
+                                  src={(dinnerVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800'}
+                                  alt={dinnerVenue.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
+                                  }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-orange-600/80 px-2 py-1 rounded">
+                                  Dinner
+                                </div>
                               </div>
-                              <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                {dinnerVenue.name}
-                              </div>
-                              <div className="text-sm text-gray-600 mb-2">
-                                {dinnerVenue.description || 'Local dining experience'}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                              <div className="p-4">
+                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                  {dinnerVenue.name}
+                                </div>
+                                <div className="text-sm text-gray-600 mb-2">
+                                  {dinnerVenue.description || 'Local dining experience'}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                                </div>
                               </div>
                             </div>
                           </div>
