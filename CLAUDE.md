@@ -34,6 +34,24 @@ This project strictly uses **pnpm**. Do not use npm or yarn.
 **Hotel/Flight Images:**
 - Hotel and flight images should have a blur effect to maintain the teaser/paywalled aesthetic
 - Pull from database when available, use Unsplash fallbacks otherwise
+- **IMPORTANT**: Flight images must ALWAYS show commercial airplanes (not private jets, small planes, or other aircraft)
+- Verify that flight images depict large commercial passenger aircraft before using them
+
+**Adding New Images to Supabase:**
+- When the user approves a new image for use in the application, it should be added to the Supabase `wanderlog_images` table
+- Use the script pattern from `scripts/add-flight-image.mjs` as a template
+- Images should be:
+  1. Fetched from their source URL
+  2. Converted to base64 data URLs for storage
+  3. Inserted into `wanderlog_images` with appropriate metadata:
+     - `trip_id`: UUID of the associated trip
+     - `url`: Base64 data URL of the image
+     - `associated_section`: Category ('activity', 'dining', 'hotel', 'flight', 'header', etc.)
+     - `position`: Order/index for display
+     - `alt`: Descriptive alt text
+     - `caption`: Optional caption text
+- Run the script with: `source .env.local && node scripts/your-script.mjs`
+- Verify the image was added successfully before updating application code to use it
 
 ## Architecture and Design
 

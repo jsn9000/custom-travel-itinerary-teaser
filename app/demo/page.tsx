@@ -45,7 +45,7 @@ const hotelOptions: HotelOption[] = [
     type: "Modern Harbor View Hotel",
     stars: 4,
     price: 280,
-    image: "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800",
+    image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
     description: "Contemporary 4-star hotel overlooking the marina",
   },
 ];
@@ -75,7 +75,7 @@ const flightOptions: FlightOption[] = [
     price: 480,
     duration: "12h 20m",
     stops: "1 stop",
-    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800",
+    image: "https://images.unsplash.com/photo-1542296332-2e4473faf563?w=800",
     description: "Budget-friendly option with one layover",
   },
 ];
@@ -440,7 +440,6 @@ export default function TravelSelection() {
                     src={flight.image}
                     alt={flight.type}
                     className="w-full h-full object-cover"
-                    style={{ filter: "blur(2px)" }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
@@ -522,7 +521,6 @@ export default function TravelSelection() {
                     src={hotel.image}
                     alt={hotel.type}
                     className="w-full h-full object-cover"
-                    style={{ filter: "blur(2px)" }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-2 left-2 right-2">
