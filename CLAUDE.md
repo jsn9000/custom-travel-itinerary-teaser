@@ -17,25 +17,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This project strictly uses **pnpm**. Do not use npm or yarn.
 
+## Wanderlog Web Scraping
+
+**Flight Information Extraction:**
+
+When scraping Wanderlog trip pages for flight information, the scraper must look for flight data in multiple places, not just dropdown menus:
+
+1. **Airport Code Detection**: Look for 3-letter airport codes (e.g., LAX, JFK, YYC, YEG, SFO, ORD) in text content
+   - Airport codes are typically in ALL CAPS
+   - Common pattern: `ORIGIN-DESTINATION` (e.g., "LAX-JFK")
+   - May appear as: `ORIGIN to DESTINATION` or `ORIGIN → DESTINATION`
+
+2. **Flight-Related Keywords**: Search for these keywords in text paragraphs and sections:
+   - `flight`, `flights`, `aircraft`, `airplane`, `plane`
+   - `airline`, `airlines`, `carrier`
+   - `departure`, `arrival`, `layover`, `connecting`
+   - `terminal`, `gate`, `boarding`
+
+3. **Flight Details to Extract**:
+   - **Airline name**: Look for airline names near airport codes (e.g., "Delta Airlines", "Air Canada", "United")
+   - **Route**: Origin and destination airport codes
+   - **Price**: Look for currency symbols ($, CAD, USD) and numbers near flight keywords
+   - **Times**: Departure and arrival times (e.g., "10:30 AM", "2:45 PM")
+   - **Flight class**: Economy, Premium Economy, Business Class, First Class
+   - **Baggage**: Carry-on, checked bags, weight limits
+
+4. **Text Parsing Patterns**:
+   - `[Airline] [ORIGIN]-[DESTINATION] [Price] [Currency]` (e.g., "Delta Airlines LAX-JFK 450.00 USD")
+   - `[ORIGIN] to [DESTINATION] via [Airline]` (e.g., "LAX to JFK via Delta")
+   - Flight details may be in note blocks, text sections, or embedded in descriptions
+   - Look in sections with headings containing: "Flight", "Air Travel", "Transportation"
+
+5. **Fallback Strategy**:
+   - If no flight information is found in structured blocks, scan all text content for airport codes
+   - Extract surrounding context (2-3 sentences) around airport codes
+   - Look for price information within the same paragraph or nearby text
+   - Check note blocks and description fields for flight-related content
+
+**Implementation Locations**:
+- Primary: `/app/api/wanderlog/import/route.ts` - Firecrawl-based importer with enhanced flight extraction (lines 530-616)
+- Alternative: `lib/wanderlog-scraper.ts` - Browserbase-based scraper with `extractFlightsFromState()` function
+
+The active import system uses Firecrawl MCP and extracts flights using multiple strategies to ensure comprehensive detection.
+
 ## Image Guidelines
+
+**IMPORTANT - Image Priority Order:**
+1. **ALWAYS use Wanderlog scraped images first** - Images from the scraped Wanderlog site should be the primary source
+2. Only use fallback images when Wanderlog images are not available
+3. The banner/header should ALWAYS default to using images scraped from the current Wanderlog trip
+4. All images are stored in the `wanderlog_images` Supabase table after scraping
 
 **Activity Images:**
 - Activity images should be displayed WITHOUT blur effect - they should be clear and crisp
 - Each activity card must use a unique image - rotate through available database images to avoid duplicates
 - If an activity has multiple images, use different images for different cards
-- Include 6 diverse fallback images for activities without database images
+- Include 6 diverse fallback images for activities without database images (only used when Wanderlog has no images)
 - Images should be pulled from `wanderlog_images` table with `associated_section: 'activity'`
 
 **Dining Images:**
 - Dining venue images should be displayed WITHOUT blur effect - they should be clear and crisp, just like activity images
 - Use database images from associated dining activities
-- Include meal-specific fallback images (breakfast, lunch, dinner)
+- Include meal-specific fallback images (breakfast, lunch, dinner) only when Wanderlog images are unavailable
 
 **Hotel/Flight Images:**
 - Hotel and flight images should have a blur effect to maintain the teaser/paywalled aesthetic
 - Pull from database when available, use Unsplash fallbacks otherwise
 - **IMPORTANT**: Flight images must ALWAYS show commercial airplanes (not private jets, small planes, or other aircraft)
 - Verify that flight images depict large commercial passenger aircraft before using them
+
+**Header/Banner Images:**
+- **DEFAULT**: Always use images scraped from the Wanderlog trip URL for the header banner
+- Banner images are stored in `wanderlog_images` with `associated_section: 'header'`
+- The scraper automatically identifies and uploads the best images from the trip page
+- Only use destination-specific fallback images (like Edmonton images) when no Wanderlog images exist for that trip
 
 **Adding New Images to Supabase:**
 - When the user approves a new image for use in the application, it should be added to the Supabase `wanderlog_images` table

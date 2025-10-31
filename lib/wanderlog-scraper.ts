@@ -498,44 +498,162 @@ function parseStructuredDataFromMobx(
 }
 
 /**
- * Extract flights from MOBX state
+ * Extract flights from MOBX state with enhanced fallback strategies
  */
 function extractFlightsFromState(sections: any[], budget: any): WanderlogFlight[] {
   const flights: WanderlogFlight[] = [];
-  const flightSection = sections.find((s: any) => s.heading === 'Flight');
-  if (!flightSection) return flights;
 
-  flightSection.blocks?.forEach((block: any) => {
-    if (block.type === 'note' && block.text?.ops) {
-      const text = extractTextFromQuillOps(block.text.ops) || '';
-      const routePattern = /([A-Za-z\s]+Airlines?)\s+([A-Z]{3})-([A-Z]{3})\s+(\d+(?:,\d{3})*(?:\.\d{2})?)\s*(CAD|USD)/gi;
-      const routeMatches = [...text.matchAll(routePattern)];
+  // Strategy 1: Look for dedicated Flight section
+  const flightSection = sections.find((s: any) =>
+    s.heading === 'Flight' ||
+    s.heading?.toLowerCase().includes('flight') ||
+    s.heading?.toLowerCase().includes('air travel') ||
+    s.heading?.toLowerCase().includes('transportation')
+  );
 
-      routeMatches.forEach((match) => {
-        flights.push({
-          airline: match[1].trim(),
-          departureAirport: match[2],
-          arrivalAirport: match[3],
-          price: parseFloat(match[4].replace(',', '')),
-          currency: match[5],
-          departureTime: '',
-          arrivalTime: '',
-          baggageOptions: undefined,
-        });
-      });
+  if (flightSection) {
+    flightSection.blocks?.forEach((block: any) => {
+      if (block.type === 'note' && block.text?.ops) {
+        const text = extractTextFromQuillOps(block.text.ops) || '';
+        const extracted = extractFlightFromText(text);
+        flights.push(...extracted);
+      }
+    });
+  }
 
-      // Extract times
-      const timePattern = /(\d{1,2}:\d{2}\s*(?:AM|PM))\s*[–-]\s*(\d{1,2}:\d{2}\s*(?:AM|PM)(?:\+\d)?)/gi;
-      const timeMatches = [...text.matchAll(timePattern)];
+  // Strategy 2: Scan all sections for airport codes and flight keywords if no flights found
+  if (flights.length === 0) {
+    console.log('🔍 No flights found in dedicated section, scanning all text content...');
 
-      timeMatches.forEach((match, index) => {
-        if (flights[index]) {
-          flights[index].departureTime = match[1];
-          flights[index].arrivalTime = match[2];
+    sections.forEach((section: any) => {
+      // Check section heading for airport codes
+      if (section.heading) {
+        const headingFlights = extractFlightFromText(section.heading);
+        flights.push(...headingFlights);
+      }
+
+      // Check all text blocks
+      section.blocks?.forEach((block: any) => {
+        if (block.text?.ops) {
+          const text = extractTextFromQuillOps(block.text.ops) || '';
+          const extracted = extractFlightFromText(text);
+          flights.push(...extracted);
         }
+
+        // Check place descriptions for flight info
+        if (block.type === 'place' && block.place?.name) {
+          const placeText = block.place.name + ' ' + (block.place.formatted_address || '');
+          const extracted = extractFlightFromText(placeText);
+          flights.push(...extracted);
+        }
+      });
+    });
+  }
+
+  // Strategy 3: Check budget expenses for flight-related items
+  if (flights.length === 0 && budget?.expenses) {
+    console.log('🔍 Checking budget expenses for flight information...');
+    budget.expenses.forEach((expense: any) => {
+      const description = expense.description || '';
+      const isFlightExpense = /flight|airline|aircraft|plane|airfare/i.test(description);
+
+      if (isFlightExpense) {
+        const extracted = extractFlightFromText(description);
+
+        // Add price from expense if available
+        extracted.forEach(flight => {
+          if (!flight.price && expense.amount?.amount) {
+            flight.price = expense.amount.amount;
+            flight.currency = expense.amount.currencyCode || 'USD';
+          }
+        });
+
+        flights.push(...extracted);
+      }
+    });
+  }
+
+  console.log(`✈️  Extracted ${flights.length} flight(s) from Wanderlog data`);
+  return flights;
+}
+
+/**
+ * Extract flight information from any text string
+ * Looks for airport codes, airline names, prices, and times
+ */
+function extractFlightFromText(text: string): WanderlogFlight[] {
+  const flights: WanderlogFlight[] = [];
+
+  // Pattern 1: Full flight info with airline and price
+  // Example: "Delta Airlines LAX-JFK 450.00 USD"
+  const fullPattern = /([A-Za-z\s]+Airlines?)\s+([A-Z]{3})\s*[-–—]\s*([A-Z]{3})\s+(\d+(?:,\d{3})*(?:\.\d{2})?)\s*(CAD|USD|EUR|GBP)/gi;
+  const fullMatches = [...text.matchAll(fullPattern)];
+
+  fullMatches.forEach((match) => {
+    flights.push({
+      airline: match[1].trim(),
+      departureAirport: match[2],
+      arrivalAirport: match[3],
+      price: parseFloat(match[4].replace(',', '')),
+      currency: match[5],
+      departureTime: '',
+      arrivalTime: '',
+      baggageOptions: undefined,
+    });
+  });
+
+  // Pattern 2: Airport codes only (with or without airline)
+  // Example: "LAX-JFK", "LAX to JFK", "YYC → YEG"
+  const airportPattern = /([A-Z]{3})\s*(?:[-–—]|to|→)\s*([A-Z]{3})/g;
+  const airportMatches = [...text.matchAll(airportPattern)];
+
+  airportMatches.forEach((match) => {
+    // Check if this route was already captured
+    const alreadyExists = flights.some(
+      f => f.departureAirport === match[1] && f.arrivalAirport === match[2]
+    );
+
+    if (!alreadyExists) {
+      // Try to find airline name near the airport codes
+      const airlinePattern = /([A-Z][A-Za-z\s]+(?:Airlines?|Airways?|Air))/;
+      const context = text.slice(Math.max(0, match.index! - 50), match.index! + 50);
+      const airlineMatch = context.match(airlinePattern);
+
+      // Try to find price near the airport codes
+      const pricePattern = /(\$?[\d,]+\.?\d{0,2})\s*(CAD|USD|EUR|GBP)?/;
+      const priceMatch = context.match(pricePattern);
+
+      flights.push({
+        airline: airlineMatch ? airlineMatch[1].trim() : 'Airline',
+        departureAirport: match[1],
+        arrivalAirport: match[2],
+        price: priceMatch ? parseFloat(priceMatch[1].replace(/[$,]/g, '')) : 0,
+        currency: priceMatch?.[2] || 'USD',
+        departureTime: '',
+        arrivalTime: '',
+        baggageOptions: undefined,
       });
     }
   });
+
+  // Extract times for all flights found
+  const timePattern = /(\d{1,2}:\d{2}\s*(?:AM|PM))\s*[–-]\s*(\d{1,2}:\d{2}\s*(?:AM|PM)(?:\+\d)?)/gi;
+  const timeMatches = [...text.matchAll(timePattern)];
+
+  timeMatches.forEach((match, index) => {
+    if (flights[index]) {
+      flights[index].departureTime = match[1];
+      flights[index].arrivalTime = match[2];
+    }
+  });
+
+  // Extract flight class if mentioned
+  const classPattern = /\b(economy|premium economy|business class?|first class?)\b/gi;
+  const classMatch = text.match(classPattern);
+  if (classMatch && flights.length > 0) {
+    // Add to the most recently found flight
+    flights[flights.length - 1].baggageOptions = classMatch[0];
+  }
 
   return flights;
 }

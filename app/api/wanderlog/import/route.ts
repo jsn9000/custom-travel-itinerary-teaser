@@ -527,29 +527,131 @@ function parseFirecrawlData(scrapeResult: any, url: string): WanderlogTrip {
     });
   });
 
-  // Extract flight information
+  // Extract flight information with enhanced airport code detection
   const flights: WanderlogFlight[] = [];
-  const flightPatterns = [
-    /(Flair|Air Canada|WestJet|United|Delta|American)[\s\w]+/gi,
-    /(\d+:\d+\s*(?:AM|PM))[\s-]+(\d+:\d+\s*(?:AM|PM))/gi, // Times
-    /(\d+(?:,\d+)?)\s*(?:CAD|USD|\$)/gi, // Prices
-  ];
 
-  // Look for flight information
-  const flightMatches = markdown.match(/(Flair|Air Canada|WestJet|United|Delta|American)[^\\n]*/gi) || [];
-  flightMatches.forEach((flightText: string) => {
-    const priceMatch = flightText.match(/(\d+(?:,\d+)?)\s*(?:CAD|USD|\$)/);
-    const price = priceMatch ? parseInt(priceMatch[1].replace(',', '')) : undefined;
-    const timeMatch = flightText.match(/(\d+:\d+\s*(?:AM|PM))[\s-]+(\d+:\d+\s*(?:AM|PM))/);
+  console.log('\n\n🔍 ========= EXTRACTING FLIGHT INFORMATION =========');
+  console.log(`📝 Total markdown length: ${markdown.length} characters`);
+  console.log(`📝 Markdown sample (first 3000 chars):\n${markdown.substring(0, 3000)}\n`);
+
+  // Check for "LAX" specifically to verify it's in the markdown
+  const hasLAX = markdown.includes('LAX');
+  const hasMYR = markdown.includes('MYR');
+  const hasBHM = markdown.includes('BHM');
+  console.log(`🔍 Airport codes found in markdown: LAX=${hasLAX}, MYR=${hasMYR}, BHM=${hasBHM}`);
+
+  // Strategy 1: Look for airport codes (3-letter codes like LAX, MYR, BHM)
+  // More flexible pattern - just look for airport codes first
+  const simpleAirportPattern = /\b([A-Z]{3})\s*(?:to|→|-|->)\s*([A-Z]{3})\b/gi;
+  const simpleMatches = [...markdown.matchAll(simpleAirportPattern)];
+  console.log(`✈️  Found ${simpleMatches.length} simple airport code patterns`);
+
+  simpleMatches.forEach((match, idx) => {
+    console.log(`   Match ${idx + 1}: ${match[1]} → ${match[2]} at position ${match.index}`);
+    // Show context around the match
+    const start = Math.max(0, match.index! - 100);
+    const end = Math.min(markdown.length, match.index! + 300);
+    console.log(`   Context: ${markdown.substring(start, end)}`);
+  });
+
+  // Now extract full flight details from context
+  const airportMatches: any[] = [];
+  simpleMatches.forEach((match) => {
+    const departure = match[1];
+    const arrival = match[2];
+
+    // Get 500 characters of context around the match to find airline and price
+    const start = Math.max(0, match.index! - 200);
+    const end = Math.min(markdown.length, match.index! + 500);
+    const context = markdown.substring(start, end);
+
+    // Look for airline name in context
+    const airlineMatch = context.match(/(American Airlines?|Delta|Southwest|United|Spirit|Alaska|JetBlue|Frontier|Allegiant|Air Canada|WestJet)/i);
+
+    // Look for price in context - multiple patterns
+    const priceMatch = context.match(/(?:Total Price\s+)?\$?\s*(\d+(?:,\d+)?(?:\.\d{2})?)\s*(?:via|CAD|USD)?/) ||
+                      context.match(/\$\s*(\d+(?:,\d+)?(?:\.\d{2})?)/);
+
+    if (airlineMatch || priceMatch) {
+      airportMatches.push({
+        departure,
+        arrival,
+        airline: airlineMatch?.[1] || 'Airline',
+        price: priceMatch ? parseFloat(priceMatch[1].replace(',', '')) : undefined,
+        context: context.substring(0, 150)
+      });
+    }
+  });
+
+  console.log(`✈️  Extracted ${airportMatches.length} flights with details`);
+
+  airportMatches.forEach((match, idx) => {
+    const { departure, arrival, airline, price, context } = match;
+
+    // Extract times if present in context
+    const timeMatch = context.match(/(\d{1,2}:\d{2}\s*(?:AM|PM))[^\d]+(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
     const duration = timeMatch ? `${timeMatch[1]} - ${timeMatch[2]}` : undefined;
 
+    console.log(`  Flight ${idx + 1}: ${departure} → ${arrival} via ${airline} ($${price})`);
+
     flights.push({
-      name: flightText.split(/[\n\r-]/)[0].trim(),
+      name: `${airline} ${departure}-${arrival}`,
       price,
       duration,
-      stops: flightText.toLowerCase().includes('non-stop') || flightText.toLowerCase().includes('direct') ? 'Nonstop' : undefined,
+      description: `${departure} to ${arrival} via ${airline}`,
     });
   });
+
+  // Strategy 2: Look for airline names with prices (fallback)
+  if (flights.length === 0) {
+    console.log('🔍 No airport codes found, looking for airline names...');
+    const airlineMatches = markdown.match(/(American Airlines?|Delta|Southwest|United|Spirit|Alaska|JetBlue|Frontier|Allegiant|Air Canada|WestJet|Flair)[^\n]{0,300}/gi) || [];
+
+    airlineMatches.forEach((flightText: string, idx: number) => {
+      const priceMatch = flightText.match(/(?:\$|Total Price\s+)?(\d+(?:,\d+)?(?:\.\d{2})?)\s*(?:CAD|USD|\$)?/);
+      const price = priceMatch ? parseFloat(priceMatch[1].replace(',', '')) : undefined;
+      const timeMatch = flightText.match(/(\d{1,2}:\d{2}\s*(?:AM|PM))[^\d]+(\d{1,2}:\d{2}\s*(?:AM|PM))/);
+      const duration = timeMatch ? `${timeMatch[1]} - ${timeMatch[2]}` : undefined;
+
+      // Extract airport codes if present
+      const airportMatch = flightText.match(/([A-Z]{3})\s*(?:to|→|-)\s*([A-Z]{3})/);
+      const route = airportMatch ? `${airportMatch[1]}-${airportMatch[2]}` : '';
+
+      console.log(`  Flight ${idx + 1}: ${flightText.substring(0, 50)}... ($${price})`);
+
+      flights.push({
+        name: flightText.split(/[\n\r]/)[0].trim().substring(0, 100),
+        price,
+        duration,
+        stops: flightText.toLowerCase().includes('non-stop') || flightText.toLowerCase().includes('direct') ? 'Nonstop' : undefined,
+        description: route,
+      });
+    });
+  }
+
+  // Strategy 3: Look for "Total Price" mentions with flight keywords
+  if (flights.length === 0) {
+    console.log('🔍 Looking for "Total Price" flight mentions...');
+    const totalPricePattern = /Total Price\s+\$?(\d+(?:,\d+)?(?:\.\d{2})?)[^\n]{0,300}(?:flight|airline|aircraft)/gi;
+    const priceMatches = [...markdown.matchAll(totalPricePattern)];
+
+    priceMatches.forEach((match, idx) => {
+      const price = parseFloat(match[1].replace(',', ''));
+      const context = match[0];
+
+      // Try to extract airport codes from context
+      const airportMatch = context.match(/([A-Z]{3})\s*(?:to|→|-)\s*([A-Z]{3})/);
+      const route = airportMatch ? `${airportMatch[1]} to ${airportMatch[2]}` : 'Flight';
+
+      console.log(`  Flight ${idx + 1}: ${route} ($${price})`);
+
+      flights.push({
+        name: route,
+        price,
+        description: context.substring(0, 100),
+      });
+    });
+  }
 
   console.log(`✅ Parsed: ${locations.length} locations, ${itinerary.length} days, ${images.length} images, ${hotels.length} hotels, ${flights.length} flights`);
   if (description) {
