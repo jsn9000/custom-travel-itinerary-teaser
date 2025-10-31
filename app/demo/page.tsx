@@ -28,7 +28,7 @@ const hotelOptions: HotelOption[] = [
     id: "h1",
     type: "Luxury Beachfront Resort",
     stars: 5,
-    price: 450,
+    price: 280,
     image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
     description: "5-star oceanfront property with private beach access",
   },
@@ -36,7 +36,7 @@ const hotelOptions: HotelOption[] = [
     id: "h2",
     type: "Boutique Mediterranean Villa",
     stars: 4,
-    price: 320,
+    price: 240,
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
     description: "Charming 4-star villa in the heart of the coastal village",
   },
@@ -44,7 +44,7 @@ const hotelOptions: HotelOption[] = [
     id: "h3",
     type: "Modern Harbor View Hotel",
     stars: 4,
-    price: 280,
+    price: 210,
     image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
     description: "Contemporary 4-star hotel overlooking the marina",
   },
@@ -54,7 +54,7 @@ const flightOptions: FlightOption[] = [
   {
     id: "f1",
     type: "Premium Direct Flight",
-    price: 850,
+    price: 680,
     duration: "8h 45m",
     stops: "Nonstop",
     image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
@@ -63,7 +63,7 @@ const flightOptions: FlightOption[] = [
   {
     id: "f2",
     type: "Standard Direct Flight",
-    price: 620,
+    price: 520,
     duration: "8h 55m",
     stops: "Nonstop",
     image: "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=800",
@@ -72,7 +72,7 @@ const flightOptions: FlightOption[] = [
   {
     id: "f3",
     type: "Economy Connection Flight",
-    price: 480,
+    price: 420,
     duration: "12h 20m",
     stops: "1 stop",
     image: "https://images.unsplash.com/photo-1542296332-2e4473faf563?w=800",
@@ -173,6 +173,56 @@ const mockItinerary = [
     restaurants: [
       { meal: "Lunch", name: "Authentic Mezze Cafe", cuisine: "Small Plates", stars: 4, price: 2, location: "Village Square" },
       { meal: "Dinner", name: "Modern Mediterranean Fine Dining", cuisine: "Modern Mediterranean", stars: 5, price: 4, location: "Harbor View" },
+    ],
+  },
+  {
+    day: 4,
+    title: "Mountain Village & Local Markets",
+    activities: [
+      { time: "Morning", name: "Scenic Drive to Mountain Village", location: "Mountainside" },
+      { time: "Afternoon", name: "Artisan Workshop & Pottery Class", location: "Village Studio" },
+      { time: "Evening", name: "Traditional Music & Dance Performance", location: "Village Square" },
+    ],
+    restaurants: [
+      { meal: "Lunch", name: "Mountain View Bistro", cuisine: "Local Specialties", stars: 4, price: 2, location: "Mountain Village" },
+      { meal: "Dinner", name: "Rustic Stone Tavern", cuisine: "Traditional Cuisine", stars: 4, price: 3, location: "Village Center" },
+    ],
+  },
+  {
+    day: 5,
+    title: "Beach Day & Water Sports",
+    activities: [
+      { time: "Morning", name: "Snorkeling & Scuba Diving", location: "Crystal Bay" },
+      { time: "Afternoon", name: "Jet Skiing & Parasailing", location: "Adventure Beach" },
+      { time: "Evening", name: "Beach Bonfire & BBQ", location: "Private Beach" },
+    ],
+    restaurants: [
+      { meal: "Lunch", name: "Beachside Grill", cuisine: "Casual Dining", stars: 3, price: 2, location: "Beach Club" },
+      { meal: "Dinner", name: "Seafront Fine Dining", cuisine: "Seafood", stars: 5, price: 4, location: "Beachfront" },
+    ],
+  },
+  {
+    day: 6,
+    title: "Gardens & Historic Sites",
+    activities: [
+      { time: "Morning", name: "Botanical Gardens Tour", location: "Paradise Gardens" },
+      { time: "Afternoon", name: "Historic Castle Visit", location: "Cliffside Castle" },
+      { time: "Evening", name: "Sunset Photography Session", location: "Scenic Overlook" },
+    ],
+    restaurants: [
+      { meal: "Lunch", name: "Garden Terrace Cafe", cuisine: "Light Fare", stars: 4, price: 2, location: "Gardens" },
+      { meal: "Dinner", name: "Castle View Restaurant", cuisine: "Gourmet", stars: 5, price: 4, location: "Historic Quarter" },
+    ],
+  },
+  {
+    day: 7,
+    title: "Leisure & Departure",
+    activities: [
+      { time: "Morning", name: "Final Beach Walk & Souvenir Shopping", location: "Resort Area" },
+      { time: "Afternoon", name: "Farewell Lunch & Airport Transfer", location: "Resort" },
+    ],
+    restaurants: [
+      { meal: "Brunch", name: "Resort Terrace", cuisine: "International", stars: 4, price: 3, location: "Resort" },
     ],
   },
 ];
@@ -301,7 +351,7 @@ export default function TravelSelection() {
               7 Days of Sun, Sea, and Unforgettable Memories
             </p>
             <p className="text-xl md:text-2xl font-semibold text-white/95 max-w-3xl mx-auto text-center drop-shadow-lg mb-6" style={{ fontFamily: 'var(--font-inter)', textShadow: '2px 2px 6px rgba(0,0,0,0.8)' }}>
-              December 10-17, 2025
+              December 10-16, 2025
             </p>
 
             {/* Countdown Timer */}
@@ -568,7 +618,7 @@ export default function TravelSelection() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: '#1a5f7a' }}>
-            Your 3-Day Itinerary Preview
+            Your 7-Day Itinerary Preview
           </h2>
           <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
             A glimpse of the unforgettable experiences awaiting you
