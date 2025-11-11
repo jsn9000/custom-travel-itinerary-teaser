@@ -3471,11 +3471,32 @@ export default function TeaserPage() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    console.log("Edit request submitted:", editRequest);
-                    alert("Thank you! We'll update your itinerary and send you a revised version.");
-                    setShowEditModal(false);
-                    setEditRequest("");
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/send-feedback-email', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          tripId,
+                          tripData,
+                          feedbackType: 'edit_request',
+                          message: editRequest
+                        }),
+                      });
+
+                      if (response.ok) {
+                        alert("Thank you! We'll update your itinerary and send you a revised version.");
+                        setShowEditModal(false);
+                        setEditRequest("");
+                      } else {
+                        alert("There was an error submitting your request. Please try again.");
+                      }
+                    } catch (error) {
+                      console.error('Error submitting edit request:', error);
+                      alert("There was an error submitting your request. Please try again.");
+                    }
                   }}
                   disabled={!editRequest.trim()}
                   className="flex-1 px-6 py-3 bg-[#1e3a8a] text-white rounded-full font-bold hover:bg-[#152f6e] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -3539,11 +3560,32 @@ export default function TeaserPage() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    console.log("Not interested reason:", notInterestedReason);
-                    alert("Thank you for your feedback. We appreciate your time!");
-                    setShowNotInterestedModal(false);
-                    setNotInterestedReason("");
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/send-feedback-email', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          tripId,
+                          tripData,
+                          feedbackType: 'not_interested',
+                          message: notInterestedReason
+                        }),
+                      });
+
+                      if (response.ok) {
+                        alert("Thank you for your feedback. We appreciate your time!");
+                        setShowNotInterestedModal(false);
+                        setNotInterestedReason("");
+                      } else {
+                        alert("There was an error submitting your feedback. Please try again.");
+                      }
+                    } catch (error) {
+                      console.error('Error submitting feedback:', error);
+                      alert("There was an error submitting your feedback. Please try again.");
+                    }
                   }}
                   disabled={!notInterestedReason.trim()}
                   className="flex-1 px-6 py-3 bg-[#1e3a8a] text-white rounded-full font-bold hover:bg-[#152f6e] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
