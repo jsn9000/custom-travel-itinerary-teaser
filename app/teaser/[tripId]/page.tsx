@@ -43,6 +43,22 @@ interface CarRentalOption {
   insuranceIncluded: string;
   securityDeposit: number;
   notes?: string;
+  periods?: Array<{
+    location: string;
+    dates: string;
+    basePrice: number;
+    withCDW: number;
+    company: string;
+    securityDeposit: number;
+  }>;
+  options?: Array<{
+    company: string;
+    rating: string;
+    bookingNote?: string;
+    basePrice: number;
+    withCDW: number;
+    securityDeposit: number;
+  }>;
 }
 
 interface TripData {
@@ -95,6 +111,7 @@ export default function TeaserPage() {
   const [selectedHotelMexicoCity, setSelectedHotelMexicoCity] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
   const [selectedCarRental, setSelectedCarRental] = useState<string>("");
+  const [selectedCarRentalOption, setSelectedCarRentalOption] = useState<number>(0); // For Choice B options
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
@@ -216,35 +233,72 @@ export default function TeaserPage() {
           // Keep hotels array empty for Oaxaca trip (using separate arrays)
           data.hotels = [];
 
-          // Add car rental options for Oaxaca trip
+          // Add car rental options for Oaxaca trip - Choice A and Choice B
           data.carRentals = [
             {
-              id: "car-oaxaca",
-              company: "Localiza",
+              id: "car-combined",
+              company: "Multi-City Rental Package",
               pickupLocation: "OAX",
-              dropoffLocation: "OAX",
+              dropoffLocation: "MEX",
               pickupDate: "Feb 17",
-              dropoffDate: "Feb 22",
-              basePrice: 140,
-              withCDW: 211,
+              dropoffDate: "Feb 24",
+              basePrice: 164, // 140 + 24
+              withCDW: 283, // 211 + 72
               currency: "USD",
               insuranceIncluded: "Insurance included except CDW",
-              securityDeposit: 758,
-              notes: "Credit card required for security deposit"
+              securityDeposit: 975, // Higher of the two deposits
+              notes: "Credit card required for security deposit",
+              // Rental periods breakdown
+              periods: [
+                {
+                  location: "Oaxaca (OAX)",
+                  dates: "Feb 17 - Feb 22",
+                  basePrice: 140,
+                  withCDW: 211,
+                  company: "Localiza",
+                  securityDeposit: 758
+                },
+                {
+                  location: "Mexico City (MEX)",
+                  dates: "Feb 22 - Feb 25",
+                  basePrice: 24,
+                  withCDW: 72,
+                  company: "Keddy",
+                  securityDeposit: 975
+                }
+              ]
             },
             {
-              id: "car-mexico-city",
-              company: "Keddy",
-              pickupLocation: "MEX",
+              id: "car-oneway",
+              company: "One-Way Rental Options",
+              pickupLocation: "OAX",
               dropoffLocation: "MEX",
-              pickupDate: "Feb 22",
-              dropoffDate: "Feb 24",
-              basePrice: 24,
-              withCDW: 72,
+              pickupDate: "Feb 17",
+              dropoffDate: "Feb 25",
+              basePrice: 570, // Default to Dollar pricing
+              withCDW: 678, // Default to Dollar pricing
               currency: "USD",
               insuranceIncluded: "Insurance included except CDW",
-              securityDeposit: 975,
-              notes: "Credit card required for security deposit"
+              securityDeposit: 1000, // Default to Dollar deposit
+              notes: "Credit card required for security deposit",
+              // One-way rental options
+              options: [
+                {
+                  company: "Dollar Car Rental",
+                  rating: "4.1/10",
+                  basePrice: 570,
+                  withCDW: 678,
+                  securityDeposit: 1000
+                },
+                {
+                  company: "Localiza Rental Car",
+                  rating: "9.2/10",
+                  bookingNote: "Book through Rentalcars.com",
+                  basePrice: 701,
+                  withCDW: 809,
+                  securityDeposit: 759
+                }
+              ]
             }
           ];
 
@@ -260,7 +314,7 @@ export default function TeaserPage() {
               price: 1009,
               currency: "USD",
               flightCode: null,
-              baggageOptions: "Included: 1 carry-on, 1 checked bag",
+              baggageOptions: "Included: carry-on bags, personal items and seat selection",
               // Detailed flight legs with individual pricing
               legs: [
                 {
@@ -284,6 +338,936 @@ export default function TeaserPage() {
               ]
             }
           ];
+
+          // Override daily schedule - customize Day 1 and Day 2
+          if (data.dailySchedule && data.dailySchedule.length > 0) {
+            // Update Day 1 with travel day activities
+            const day1 = data.dailySchedule.find((day: any) => day.dayNumber === 1);
+            if (day1) {
+              day1.items = [
+                {
+                  id: "oaxaca-airport",
+                  name: "Oaxaca International Airport",
+                  type: "activity",
+                  category: "transportation",
+                  description: "Arrive at 10pm. Flight details: 2 personal items, 2 carry-on bags, seat selection included. Click here to buy through Expedia - Total $627",
+                  time: "10:00 PM",
+                  notes: "Airport arrival - international terminal"
+                },
+                {
+                  id: "calle-libres-murguia",
+                  name: "Calle de Los Libres & Murguía",
+                  type: "activity",
+                  category: "street food",
+                  description: "If you're out exploring after dark, head toward the corner of Calle de Los Libres and Murguía in Oaxaca City's historic center. This lively stretch comes alive at night with street vendors and local tlayuda stands that stay open well past midnight. Here you'll find some of the city's most authentic snacks — tlayudas (crispy tortillas with refried beans, avocado, and veggies), memelas, and fresh fruit juices. It's casual, local, and full of friendly energy. 💡 Vegan tip: ask for 'con frijoles, sin carne ni queso, por favor' (with beans, no meat or cheese). Stay near the well-lit stalls, keep small bills handy, and soak in the local atmosphere — it's a true taste of Oaxaca's nightlife. 🌮✨",
+                  address: "Corner of Calle de Los Libres and Murguía, Oaxaca City Historic Center",
+                  location: "Historic center of Oaxaca City",
+                  hours: "Open well past midnight",
+                  time: "Evening/Night",
+                  notes: "Street food hub with authentic local atmosphere"
+                },
+                {
+                  id: "tlayudas-libres-dona-martha",
+                  name: "Tlayudas Libres Doña Martha",
+                  type: "activity",
+                  category: "restaurant",
+                  cuisine: "Mexican",
+                  priceLevel: "$$",
+                  description: "Calle Libres (between Morelos & Murguía) – The Late-Night Hub. ⭐ Most famous for: Tlayudas Libres — open until 3–4 a.m. Expect several bean-based tlayuda stands, grilled tortillas with refried beans, avocado, and you can ask 'sin carne ni queso' (no meat, no cheese). Locals and night-shift workers gather here; it's lively and safe if you go before midnight.",
+                  address: "Calle Libres (between Morelos & Murguía), Oaxaca",
+                  location: "Just a few blocks from the Zócalo and Templo de Santo Domingo",
+                  hours: "Open until 3-4 AM",
+                  time: "Late Night",
+                  notes: "Famous late-night tlayuda spot, affordable Mexican dining",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800",
+                      alt: "Authentic Oaxacan tlayudas with toppings"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Update Day 2 with food venues and activities
+            const day2 = data.dailySchedule.find((day: any) => day.dayNumber === 2);
+            if (day2) {
+              day2.items = [
+                // Food venues
+                {
+                  id: "kiyo-cafe",
+                  name: "Kiyo Café",
+                  type: "food",
+                  category: "cafeteria",
+                  description: "Stylish café that offers vegan toast and oatmeal. Perfect spot for a healthy breakfast to start your day of exploration.",
+                  address: "Oaxaca City",
+                  distance: "8 min walk, 0.43 mi",
+                  notes: "Cafeteria/Restaurant with vegan options",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Kiyo Cafe.jpeg",
+                      alt: "Kiyo Café"
+                    }
+                  ]
+                },
+                {
+                  id: "los-muchitos",
+                  name: "Los Muchitos Comida Vegana",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Authentic vegan Mexican cuisine with traditional flavors and plant-based ingredients. A must-visit for those seeking delicious vegan options in Oaxaca.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Los Muchitos Comida Vegana.jpeg",
+                      alt: "Los Muchitos Comida Vegana"
+                    }
+                  ]
+                },
+                {
+                  id: "santa-hierba",
+                  name: "Santa Hierba Jalatlaco",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Charming restaurant in the Jalatlaco neighborhood offering fresh, flavorful dishes with a modern twist on traditional Oaxacan cuisine.",
+                  address: "Jalatlaco, Oaxaca",
+                  notes: "Restaurant in Jalatlaco neighborhood",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Santa Hierba Jalatlaco.jpeg",
+                      alt: "Santa Hierba Jalatlaco"
+                    }
+                  ]
+                },
+                // Activities
+                {
+                  id: "zocalo-oaxaca",
+                  name: "Zócalo de la Ciudad de Oaxaca (Plaza de la Constitución)",
+                  type: "activity",
+                  category: "city park",
+                  description: "Small, bustling public square surrounded by restaurants, vendors & historic buildings. The heart of Oaxaca's historic center and a perfect place to soak in local culture.",
+                  address: "Plaza de la Constitución, Oaxaca",
+                  distance: "9 min walk, 0.48 mi",
+                  notes: "City park, Sights & Landmarks, Points of Interest & Landmarks",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Hotel MX zócalo.jpeg",
+                      alt: "Zócalo de la Ciudad de Oaxaca"
+                    }
+                  ]
+                },
+                {
+                  id: "templo-santo-domingo",
+                  name: "Templo de Santo Domingo de Guzmán",
+                  type: "activity",
+                  category: "catholic cathedral",
+                  description: "Historic complex featuring a church with an opulent, gilded interior & a monastery turned museum. One of the most stunning baroque churches in Mexico with breathtaking gold-leafed decorations.",
+                  address: "Oaxaca City Historic Center",
+                  distance: "4 min walk, 0.18 mi",
+                  notes: "Catholic cathedral, Sights & Landmarks",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Templo de Santo Domingo de Guzmán.jpeg",
+                      alt: "Templo de Santo Domingo de Guzmán"
+                    }
+                  ]
+                },
+                {
+                  id: "museum-cultures-oaxaca",
+                  name: "Museum of Cultures of Oaxaca, Santo Domingo",
+                  type: "activity",
+                  category: "museum",
+                  description: "This cultural center houses archaeological artifacts & ancient books in a 17th-century convent. Explore Oaxaca's rich indigenous heritage and colonial history through fascinating exhibits.",
+                  address: "Santo Domingo Complex, Oaxaca",
+                  distance: "Adjacent to Templo de Santo Domingo",
+                  notes: "Museum, Specialty Museums",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Museum of Cultures of Oaxaca, Santo Domingo.jpeg",
+                      alt: "Museum of Cultures of Oaxaca, Santo Domingo"
+                    }
+                  ]
+                },
+                {
+                  id: "santa-maria-del-tule",
+                  name: "Santa María del Tule",
+                  type: "activity",
+                  category: "town",
+                  description: "Small town famous for being home to the Tree of Tule, one of the widest trees in the world. A charming day trip destination from Oaxaca City.",
+                  address: "Santa María del Tule, Oaxaca",
+                  notes: "Town visit",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Santa María del Tule.jpeg",
+                      alt: "Santa María del Tule"
+                    }
+                  ]
+                },
+                {
+                  id: "tree-of-tule",
+                  name: "Tree of Tule",
+                  type: "activity",
+                  category: "landmark",
+                  description: "El Árbol del Tule is a massive Montezuma cypress tree with the widest trunk diameter in the world. This 2,000-year-old natural wonder is a must-see attraction near Oaxaca.",
+                  address: "Santa María del Tule, Oaxaca",
+                  notes: "Famous ancient tree, natural landmark",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Tree of Tule.jpeg",
+                      alt: "Tree of Tule"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 3 override for Oaxaca trip
+            const day3 = data.dailySchedule.find((day: any) => day.dayNumber === 3);
+            if (day3) {
+              day3.items = [
+                {
+                  id: "citronella-barra",
+                  name: "Citronella Barra Natural",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "All-vegan breakfast, salads, drinks, and sandwiches in an interior courtyard flooded with natural light. Lighter vegan fare for breakfast and lunch such as coffee, juices, smoothies made with three types of plant milks (which are made on site), mixed cold drinks made from fresh ingredients, sweet and savory breakfast items including vegan ceviche, and a selection of salads.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant, Espresso bar",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Citronella Barra Natural.jpeg",
+                      alt: "Citronella Barra Natural"
+                    }
+                  ]
+                },
+                {
+                  id: "aguacate-oaxaca",
+                  name: "Aguacate Oaxaca | Veggie Bar",
+                  type: "food",
+                  category: "vegetarian restaurant",
+                  description: "A vegetarian restaurant serving fresh, natural, healthy and nutritious products, some of which are vegan. Located inside Casa de Barro on the first floor.",
+                  address: "Casa de Barro, Oaxaca City",
+                  notes: "Vegetarian restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Aguacate Oaxaca | Veggie Bar.jpeg",
+                      alt: "Aguacate Oaxaca Veggie Bar"
+                    }
+                  ]
+                },
+                {
+                  id: "viriditas-cocina",
+                  name: "Viriditas Cocina Vegan sushi restaurant",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "A vegan restaurant that offers dishes of the day from various cuisines. Selection may include sushi, ramen, curry, stew, smoothie, as well as desserts.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant, Bakery",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Viriditas Cocina Vegan sushi restaurant.jpeg",
+                      alt: "Viriditas Cocina Vegan sushi restaurant"
+                    }
+                  ]
+                },
+                {
+                  id: "sherbet-helados",
+                  name: "Sherbet helados florales",
+                  type: "food",
+                  category: "ice cream shop",
+                  description: "There are about 20 flavors, about half of which are water-based, meaning that they are vegan. Artisanal floral ice cream made with local flowers and natural ingredients.",
+                  address: "Oaxaca City",
+                  notes: "Ice cream shop",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Sherbet helados florales.png",
+                      alt: "Sherbet helados florales"
+                    }
+                  ]
+                },
+                {
+                  id: "hierve-el-agua",
+                  name: "Hierve el Agua",
+                  type: "activity",
+                  category: "nature preserve",
+                  description: "Ancient geological site featuring towering, waterfall-like rock formations, pools & springs. One of Oaxaca's most breathtaking natural wonders with petrified waterfalls and natural infinity pools overlooking the valley.",
+                  address: "70 km from Oaxaca City",
+                  notes: "Nature preserve, Sights & Landmarks",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Hierve el Agua.jpeg",
+                      alt: "Hierve el Agua"
+                    }
+                  ]
+                },
+                {
+                  id: "jardin-etnobotanico",
+                  name: "Jardín Etnobotánico de Oaxaca",
+                  type: "activity",
+                  category: "botanical garden",
+                  description: "Curated grounds showcasing local Oaxacan plant life, plus a cultural center in a former convent. Beautiful botanical garden with diverse ecosystems and guided tours explaining the region's unique flora.",
+                  address: "Adjacent to Santo Domingo, Oaxaca City",
+                  notes: "Botanical garden, Nature & Parks, Gardens",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Jardín Etnobotánico de Oaxaca.jpeg",
+                      alt: "Jardín Etnobotánico de Oaxaca"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 4 override for Oaxaca trip
+            const day4 = data.dailySchedule.find((day: any) => day.dayNumber === 4);
+            if (day4) {
+              day4.items = [
+                {
+                  id: "nanita",
+                  name: "Nanita",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "Plant-based comfort foods café offering Southern style dishes, desserts and drinks.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Nanita.jpeg",
+                      alt: "Nanita"
+                    }
+                  ]
+                },
+                {
+                  id: "etnofood",
+                  name: "Etnofood",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Restaurant serving traditional Oaxacan cuisine with authentic regional flavors and dishes.",
+                  address: "Oaxaca City",
+                  notes: "Traditional Oaxacan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Etnofood.jpeg",
+                      alt: "Etnofood"
+                    }
+                  ]
+                },
+                {
+                  id: "restaurante-arugula",
+                  name: "Restaurante Arugula",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Contemporary restaurant offering fresh, creative dishes with a focus on quality ingredients and modern presentation.",
+                  address: "Oaxaca City",
+                  notes: "Contemporary restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Restaurante Arugula.jpeg",
+                      alt: "Restaurante Arugula"
+                    }
+                  ]
+                },
+                {
+                  id: "monte-alban",
+                  name: "Monte Albán",
+                  type: "activity",
+                  category: "archaeological site",
+                  description: "Ancient Zapotec archaeological site featuring impressive pyramids, plazas, and tombs with panoramic views of the Oaxaca Valley. One of the most important pre-Columbian sites in Mexico.",
+                  address: "9 km from Oaxaca City",
+                  notes: "Archaeological site, UNESCO World Heritage Site",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Monte%20Albán.jpeg",
+                      alt: "Monte Albán"
+                    }
+                  ]
+                },
+                {
+                  id: "mitla",
+                  name: "Mitla",
+                  type: "activity",
+                  category: "archaeological site",
+                  description: "Pre-Columbian archaeological site known for its unique geometric stone mosaics and intricate fretwork designs. A significant Zapotec cultural center with stunning architectural details.",
+                  address: "44 km from Oaxaca City",
+                  notes: "Archaeological site, Zapotec ruins",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Mitla.jpeg",
+                      alt: "Mitla"
+                    }
+                  ]
+                },
+                {
+                  id: "teotitlan-del-valle",
+                  name: "Teotitlán del Valle",
+                  type: "activity",
+                  category: "town",
+                  description: "Traditional Zapotec village famous for its handwoven wool rugs and textiles using natural dyes. Experience authentic weaving demonstrations and shop for beautiful handcrafted pieces.",
+                  address: "31 km from Oaxaca City",
+                  notes: "Artisan village, textile weaving",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Teotitlán del Valle.jpeg",
+                      alt: "Teotitlán del Valle"
+                    }
+                  ]
+                },
+                {
+                  id: "centro-cultural-teotitlan",
+                  name: "Centro Cultural Comunitario Teotitlán del Valle",
+                  type: "activity",
+                  category: "cultural center",
+                  description: "Community cultural center showcasing local Zapotec traditions, textiles, and cultural heritage. Learn about traditional weaving techniques and indigenous culture.",
+                  address: "Teotitlán del Valle",
+                  notes: "Cultural center, community museum",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Centro Cultural Comunitario Teotitlán del Valle.jpeg",
+                      alt: "Centro Cultural Comunitario Teotitlán del Valle"
+                    }
+                  ]
+                },
+                {
+                  id: "mercado-benito-juarez",
+                  name: "Mercado Benito Juárez",
+                  type: "activity",
+                  category: "market",
+                  description: "Bustling traditional market in the heart of Oaxaca City offering local produce, crafts, textiles, and authentic Oaxacan food. A vibrant hub of local culture and commerce.",
+                  address: "Downtown Oaxaca City",
+                  notes: "Traditional market, local crafts",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Mercado Benito Juárez.jpeg",
+                      alt: "Mercado Benito Juárez"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 5 override for Oaxaca trip
+            const day5 = data.dailySchedule.find((day: any) => day.dayNumber === 5);
+            if (day5) {
+              day5.items = [
+                {
+                  id: "la-selva-de-los-gatos",
+                  name: "La Selva De Los Gatos",
+                  type: "food",
+                  category: "cafe",
+                  description: "Charming cafe with a cozy atmosphere, serving coffee, tea, and light meals in a garden-like setting.",
+                  address: "Oaxaca City",
+                  notes: "Cafe with garden setting",
+                  images: [
+                    {
+                      url: "/oaxaca/images/La Selva De Los Gatos.jpeg",
+                      alt: "La Selva De Los Gatos"
+                    }
+                  ]
+                },
+                {
+                  id: "pochote-market",
+                  name: "Pochote Xochimilco Organic and Artisinal Market",
+                  type: "food",
+                  category: "market",
+                  description: "Weekly organic and artisanal market featuring local produce, handmade crafts, and fresh food from regional vendors.",
+                  address: "Oaxaca City",
+                  notes: "Organic market, artisanal products",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Pochote Xochimilco Organic and Artisinal Market.jpeg",
+                      alt: "Pochote Xochimilco Organic and Artisinal Market"
+                    }
+                  ]
+                },
+                {
+                  id: "herbivora",
+                  name: "Herbivora - Restaurante Vegano en Oaxaca",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "Vegan restaurant offering creative plant-based interpretations of traditional Oaxacan dishes and international cuisine.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Herbivora - Restaurante Vegano en Oaxaca.jpeg",
+                      alt: "Herbivora - Restaurante Vegano en Oaxaca"
+                    }
+                  ]
+                },
+                {
+                  id: "horseback-mexico",
+                  name: "Horseback Mexico Pick Up Point",
+                  type: "activity",
+                  category: "tour",
+                  description: "Starting point for horseback riding tours through the scenic Oaxacan countryside and mountains. Experience rural Oaxaca on horseback.",
+                  address: "Oaxaca area",
+                  notes: "Horseback riding tours",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Horseback Mexico Pick Up Point.jpeg",
+                      alt: "Horseback Mexico Pick Up Point"
+                    }
+                  ]
+                },
+                {
+                  id: "playa-carrizalillo",
+                  name: "Playa Carrizalillo",
+                  type: "activity",
+                  category: "beach",
+                  description: "Beautiful crescent-shaped beach with calm, clear waters perfect for swimming and snorkeling. Accessible by a long staircase with stunning views.",
+                  address: "Puerto Escondido, Oaxaca",
+                  notes: "Beach, swimming, snorkeling",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Playa Carrizalillo.jpeg",
+                      alt: "Playa Carrizalillo"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 6 override for Oaxaca trip
+            const day6 = data.dailySchedule.find((day: any) => day.dayNumber === 6);
+            if (day6) {
+              day6.items = [
+                {
+                  id: "restaurante-taniperla",
+                  name: "Restaurante Taniperla Oaxaca",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Restaurant serving authentic Oaxacan and Mexican cuisine in a welcoming atmosphere.",
+                  address: "Oaxaca City",
+                  notes: "Traditional Oaxacan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Restaurante Taniperla Oaxaca.jpeg",
+                      alt: "Restaurante Taniperla Oaxaca"
+                    }
+                  ]
+                },
+                {
+                  id: "la-pitahaya-vegana",
+                  name: "La Pitahaya Vegana",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "100% plant-based restaurant offering creative vegan dishes with Mexican and international influences.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/La Pitahaya Vegana.png",
+                      alt: "La Pitahaya Vegana"
+                    }
+                  ]
+                },
+                {
+                  id: "plantasia",
+                  name: "Plantasia",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "Plant-based eatery specializing in healthy, organic vegan food with fresh ingredients and creative flavors.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Plantasia.jpeg",
+                      alt: "Plantasia"
+                    }
+                  ]
+                },
+                {
+                  id: "templo-mayor-museum",
+                  name: "Templo Mayor Museum",
+                  type: "activity",
+                  category: "museum",
+                  description: "Archaeological museum showcasing the ruins of the Aztec temple complex and artifacts from the ancient capital of Tenochtitlan. A fascinating glimpse into Aztec civilization.",
+                  address: "Mexico City Historic Center",
+                  notes: "Archaeological museum, Aztec ruins",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Templo Mayor Museum.jpeg",
+                      alt: "Templo Mayor Museum"
+                    }
+                  ]
+                },
+                {
+                  id: "plaza-constitucion",
+                  name: "Plaza de la Constitución",
+                  type: "activity",
+                  category: "plaza",
+                  description: "The main square of Mexico City, also known as Zócalo. One of the largest public squares in the world, surrounded by historic buildings including the Metropolitan Cathedral and National Palace.",
+                  address: "Mexico City Historic Center",
+                  notes: "Historic plaza, Zócalo",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Zócalo de la Ciudad de Oaxaca.jpeg",
+                      alt: "Plaza de la Constitución"
+                    }
+                  ]
+                },
+                {
+                  id: "oaxaca-airport",
+                  name: "Oaxaca International Airport",
+                  type: "travel",
+                  category: "airport",
+                  description: "Departure from Oaxaca International Airport (OAX). Check-in and security processing for your flight to Mexico City.",
+                  address: "Oaxaca",
+                  notes: "Airport departure",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Oaxaca International Airport.jpeg",
+                      alt: "Oaxaca International Airport"
+                    }
+                  ]
+                },
+                {
+                  id: "mexico-city-airport",
+                  name: "Mexico City International Airport Benito Juárez",
+                  type: "travel",
+                  category: "airport",
+                  description: "Arrival at Mexico City International Airport (MEX). One of Latin America's busiest airports, connecting to destinations worldwide.",
+                  address: "Mexico City",
+                  notes: "Airport arrival",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=800&q=80",
+                      alt: "Mexico City International Airport Benito Juárez"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 7 override for Oaxaca trip
+            const day7 = data.dailySchedule.find((day: any) => day.dayNumber === 7);
+            if (day7) {
+              day7.items = [
+                {
+                  id: "mora-mora",
+                  name: "Mora Mora",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Contemporary restaurant offering innovative dishes with a focus on local ingredients and modern culinary techniques.",
+                  address: "Mexico City",
+                  notes: "Contemporary dining",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Mora Mora.jpeg",
+                      alt: "Mora Mora"
+                    }
+                  ]
+                },
+                {
+                  id: "goyos-burgers",
+                  name: "Goyo's Burgers Roma",
+                  type: "food",
+                  category: "burger restaurant",
+                  description: "Popular burger joint in Roma neighborhood serving creative gourmet burgers with fresh ingredients and unique flavor combinations.",
+                  address: "Roma, Mexico City",
+                  notes: "Gourmet burgers",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Goyo%E2%80%99s%20Burgers%20Roma.jpeg",
+                      alt: "Goyo's Burgers Roma"
+                    }
+                  ]
+                },
+                {
+                  id: "gracias-madre",
+                  name: "Gracias Madre Vegan Tacos",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "100% plant-based taqueria serving delicious vegan tacos, quesadillas, and Mexican street food with authentic flavors.",
+                  address: "Mexico City",
+                  notes: "Vegan tacos and Mexican food",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Gracias Madre Vegan Tacos.jpeg",
+                      alt: "Gracias Madre Vegan Tacos"
+                    }
+                  ]
+                },
+                {
+                  id: "san-juan-teotihuacan",
+                  name: "San Juan Teotihuacán",
+                  type: "activity",
+                  category: "archaeological site",
+                  description: "Ancient Mesoamerican city and UNESCO World Heritage Site, home to the iconic Pyramids of the Sun and Moon. One of the most significant archaeological sites in Mexico.",
+                  address: "State of Mexico",
+                  notes: "Archaeological site, UNESCO World Heritage",
+                  images: [
+                    {
+                      url: "/oaxaca/images/San Juan Teotihuacán.jpeg",
+                      alt: "San Juan Teotihuacán"
+                    }
+                  ]
+                },
+                {
+                  id: "pyramid-of-the-sun",
+                  name: "Pyramid of the Sun",
+                  type: "activity",
+                  category: "archaeological site",
+                  description: "The largest building in Teotihuacán and one of the largest pyramids in Mesoamerica. Climb to the top for breathtaking views of the ancient city.",
+                  address: "Teotihuacán, State of Mexico",
+                  notes: "Ancient pyramid, UNESCO World Heritage",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Pyramid of the Sun.jpeg",
+                      alt: "Pyramid of the Sun"
+                    }
+                  ]
+                },
+                {
+                  id: "xochimilco",
+                  name: "Xochimilco",
+                  type: "activity",
+                  category: "cultural site",
+                  description: "Famous for its network of canals and colorful trajineras (gondola-like boats). Experience traditional Mexican culture while floating through ancient waterways, a UNESCO World Heritage Site.",
+                  address: "Mexico City",
+                  notes: "Canals, trajineras, UNESCO World Heritage",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Xochimilco.jpeg",
+                      alt: "Xochimilco"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 8 override for Oaxaca trip
+            const day8 = data.dailySchedule.find((day: any) => day.dayNumber === 8);
+            if (day8) {
+              day8.items = [
+                {
+                  id: "cafe-vegetal",
+                  name: "Café Vegetal",
+                  type: "food",
+                  category: "vegan cafe",
+                  description: "Plant-based cafe offering organic coffee, fresh juices, and healthy vegan breakfast and lunch options in a cozy atmosphere.",
+                  address: "Mexico City",
+                  notes: "Vegan cafe",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Café Vegetal.jpeg",
+                      alt: "Café Vegetal"
+                    }
+                  ]
+                },
+                {
+                  id: "mictlan-antojitos",
+                  name: "Mictlan Antojitos Veganos",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "Authentic vegan Mexican street food and antojitos (traditional snacks) with plant-based versions of classic dishes.",
+                  address: "Mexico City",
+                  notes: "Vegan Mexican street food",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Mictlan Antojitos Veganos.jpeg",
+                      alt: "Mictlan Antojitos Veganos"
+                    }
+                  ]
+                },
+                {
+                  id: "taco-santo-vegano",
+                  name: "Taco Santo Vegano",
+                  type: "food",
+                  category: "vegan taqueria",
+                  description: "Creative vegan taqueria serving plant-based tacos with innovative fillings and traditional Mexican flavors.",
+                  address: "Mexico City",
+                  notes: "Vegan tacos",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Taco Santo Vegano.jpeg",
+                      alt: "Taco Santo Vegano"
+                    }
+                  ]
+                },
+                {
+                  id: "bosque-chapultepec",
+                  name: "Bosque de Chapultepec",
+                  type: "activity",
+                  category: "park",
+                  description: "One of the largest city parks in the Western Hemisphere, featuring museums, lakes, a zoo, and beautiful green spaces perfect for walking and relaxation.",
+                  address: "Mexico City",
+                  notes: "City park, museums, zoo",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Bosque de Chapultepec.jpeg",
+                      alt: "Bosque de Chapultepec"
+                    }
+                  ]
+                },
+                {
+                  id: "chapultepec-castle",
+                  name: "Chapultepec Castle",
+                  type: "activity",
+                  category: "castle/museum",
+                  description: "Historic castle on Chapultepec Hill housing the National Museum of History. Offers stunning views of Mexico City and beautiful architecture.",
+                  address: "Chapultepec Park, Mexico City",
+                  notes: "Historic castle, museum, city views",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Chapultepec Castle.jpeg",
+                      alt: "Chapultepec Castle"
+                    }
+                  ]
+                },
+                {
+                  id: "mercado-ciudadela",
+                  name: "Mercado de Artesanías La Ciudadela",
+                  type: "activity",
+                  category: "artisan market",
+                  description: "Large artisan market featuring traditional Mexican handicrafts, textiles, pottery, and folk art from across the country. Perfect for souvenir shopping.",
+                  address: "Mexico City",
+                  notes: "Artisan market, handicrafts",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Mercado de Artesanías La Ciudadela.jpeg",
+                      alt: "Mercado de Artesanías La Ciudadela"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 9 override for Oaxaca trip
+            const day9 = data.dailySchedule.find((day: any) => day.dayNumber === 9);
+            if (day9) {
+              day9.items = [
+                {
+                  id: "la-selva-de-los-gatos",
+                  name: "La Selva De Los Gatos",
+                  type: "food",
+                  category: "cafe",
+                  description: "Charming cafe with a cozy atmosphere, serving coffee, tea, and light meals in a garden-like setting.",
+                  address: "Oaxaca City",
+                  notes: "Cafe with garden setting",
+                  images: [
+                    {
+                      url: "/oaxaca/images/La Selva De Los Gatos.jpeg",
+                      alt: "La Selva De Los Gatos"
+                    }
+                  ]
+                },
+                {
+                  id: "pochote-market",
+                  name: "Pochote Xochimilco Organic and Artisinal Market",
+                  type: "food",
+                  category: "market",
+                  description: "Weekly organic and artisanal market featuring local produce, handmade crafts, and fresh food from regional vendors.",
+                  address: "Oaxaca City",
+                  notes: "Organic market, artisanal products",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Pochote Xochimilco Organic and Artisinal Market.jpeg",
+                      alt: "Pochote Xochimilco Organic and Artisinal Market"
+                    }
+                  ]
+                },
+                {
+                  id: "herbivora",
+                  name: "Herbivora - Restaurante Vegano en Oaxaca",
+                  type: "food",
+                  category: "vegan restaurant",
+                  description: "Vegan restaurant offering creative plant-based interpretations of traditional Oaxacan dishes and international cuisine.",
+                  address: "Oaxaca City",
+                  notes: "Vegan restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Herbivora - Restaurante Vegano en Oaxaca.jpeg",
+                      alt: "Herbivora - Restaurante Vegano en Oaxaca"
+                    }
+                  ]
+                },
+                {
+                  id: "horseback-mexico",
+                  name: "Horseback Mexico Pick Up Point",
+                  type: "activity",
+                  category: "tour",
+                  description: "Starting point for horseback riding tours through the scenic Oaxacan countryside and mountains. Experience rural Oaxaca on horseback.",
+                  address: "Oaxaca area",
+                  notes: "Horseback riding tours",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Horseback Mexico Pick Up Point.jpeg",
+                      alt: "Horseback Mexico Pick Up Point"
+                    }
+                  ]
+                },
+                {
+                  id: "playa-carrizalillo",
+                  name: "Playa Carrizalillo",
+                  type: "activity",
+                  category: "beach",
+                  description: "Beautiful crescent-shaped beach with calm, clear waters perfect for swimming and snorkeling. Accessible by a long staircase with stunning views.",
+                  address: "Puerto Escondido, Oaxaca",
+                  notes: "Beach, swimming, snorkeling",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Playa Carrizalillo.jpeg",
+                      alt: "Playa Carrizalillo"
+                    }
+                  ]
+                }
+              ];
+            }
+
+            // Day 10 override for Oaxaca trip
+            const day10 = data.dailySchedule.find((day: any) => day.dayNumber === 10);
+            if (day10) {
+              day10.items = [
+                {
+                  id: "mexico-city-airport-departure",
+                  name: "Mexico City International Airport Benito Juárez",
+                  type: "travel",
+                  category: "airport",
+                  description: "Departure from Mexico City International Airport (MEX). Check-in and security processing for your return flight.",
+                  address: "Mexico City",
+                  notes: "Airport departure",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=800&q=80",
+                      alt: "Mexico City International Airport Benito Juárez"
+                    }
+                  ]
+                },
+                {
+                  id: "jfk-airport",
+                  name: "John F. Kennedy International Airport",
+                  type: "travel",
+                  category: "airport",
+                  description: "Arrival at John F. Kennedy International Airport (JFK) in New York.",
+                  address: "New York, USA",
+                  notes: "Airport arrival",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1583531172005-814191b8b6c0?w=800&q=80",
+                      alt: "John F. Kennedy International Airport"
+                    }
+                  ]
+                },
+                {
+                  id: "buena-tierra-mex",
+                  name: "Buena Tierra (MEX airport)",
+                  type: "food",
+                  category: "restaurant",
+                  description: "Restaurant located at Mexico City airport offering meals before departure.",
+                  address: "Mexico City International Airport",
+                  notes: "Airport restaurant",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Buena Tierra.jpeg",
+                      alt: "Buena Tierra"
+                    }
+                  ]
+                }
+              ];
+            }
+          }
         }
 
         setTripData(data);
@@ -363,6 +1347,15 @@ export default function TeaserPage() {
   const selectedFlightData = tripData?.flights.find((f) => f.id === selectedFlight);
   const selectedCarRentalData = tripData?.carRentals?.find((c) => c.id === selectedCarRental);
 
+  // Get the actual car rental cost based on whether it has options (Choice B) or not (Choice A)
+  const getCarRentalCost = () => {
+    if (!selectedCarRentalData) return 0;
+    if (selectedCarRentalData.options && selectedCarRentalData.options.length > 0) {
+      return selectedCarRentalData.options[selectedCarRentalOption].basePrice;
+    }
+    return selectedCarRentalData.basePrice;
+  };
+
   const calculateNights = () => {
     if (!tripData) return 7;
     const start = new Date(tripData.startDate);
@@ -386,7 +1379,7 @@ export default function TeaserPage() {
   }
 
   const flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
-  const carRentalCost = parseFloat((selectedCarRentalData?.basePrice || 0).toFixed(2));
+  const carRentalCost = parseFloat(getCarRentalCost().toFixed(2));
   const foodBudget = 500.0; // Fixed food budget for the trip
   // Trip cost excludes flights - includes hotels, car rental, and food budget
   const tripCost = parseFloat((hotelCost + carRentalCost + foodBudget).toFixed(2));
@@ -890,7 +1883,6 @@ export default function TeaserPage() {
                                   <div className="text-lg font-bold text-[#1e3a8a]">
                                     ${leg.price.toFixed(2)}
                                   </div>
-                                  <div className="text-xs text-gray-500">per person</div>
                                 </div>
                               </div>
                             ))}
@@ -924,7 +1916,7 @@ export default function TeaserPage() {
                             ${flight.price.toFixed(2)}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">For 2 travelers (${(flight.price / 2).toFixed(2)} per person)</p>
+                        <p className="text-xs text-gray-500 mt-2">For 2 travelers</p>
                       </div>
                     </div>
                   </div>
@@ -1381,7 +2373,7 @@ export default function TeaserPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {tripData.carRentals.map((carRental, carIdx) => {
               const carKey = carRental.id || `car-${carIdx}`;
               const isSelected = selectedCarRental === carKey;
@@ -1419,41 +2411,158 @@ export default function TeaserPage() {
                           {choiceLabel}
                         </div>
                         <h3 className="text-lg font-bold text-gray-900">
-                          {carRental.company} - {carRental.pickupLocation} to {carRental.dropoffLocation}
+                          {carRental.company}
                         </h3>
                       </div>
                     </div>
 
-                    <div className="space-y-2 mb-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Pickup:</span>
-                        <span className="font-semibold">{carRental.pickupDate} - {carRental.pickupLocation}</span>
+                    {/* Route Information */}
+                    <div className="mb-4">
+                      <div className="flex justify-between text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <div>
+                          <span className="text-gray-600">Pickup:</span>
+                          <span className="font-semibold ml-2">{carRental.pickupLocation}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Drop-off:</span>
+                          <span className="font-semibold ml-2">{carRental.dropoffLocation}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Drop-off:</span>
-                        <span className="font-semibold">{carRental.dropoffDate} - {carRental.dropoffLocation}</span>
+                      <div className="text-sm text-gray-600 text-center mt-2">
+                        {carRental.pickupDate} - {carRental.dropoffDate}
                       </div>
                     </div>
+
+                    {/* Rental Periods Breakdown (for Choice A) */}
+                    {carRental.periods && carRental.periods.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Rental Periods</h4>
+                        <div className="space-y-3">
+                          {carRental.periods.map((period, periodIdx) => (
+                            <div key={periodIdx} className="bg-gray-50 rounded-lg border border-gray-200 p-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex-1">
+                                  <div className="font-bold text-gray-900 mb-1">
+                                    {period.location.includes('Oaxaca') ? 'Oaxaca to Oaxaca (OAX)' : 'Mexico City (MEX) to Mexico City (MEX)'}
+                                  </div>
+                                  <div className="text-xs text-gray-600">{period.company}</div>
+                                  <div className="text-xs text-gray-500 mt-1">{period.dates}</div>
+                                </div>
+                              </div>
+                              <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
+                                <p>{period.company} Security Deposit: ${period.securityDeposit.toFixed(2)} (refundable)</p>
+                              </div>
+                              <div className="flex justify-between text-sm mt-2 pt-2 border-t border-gray-200">
+                                <div className="flex-1">
+                                  <div className="text-gray-600 text-xs">Without CDW:</div>
+                                  <div className="font-bold text-[#1e3a8a]">${period.basePrice.toFixed(2)}</div>
+                                </div>
+                                <div className="flex-1 text-right">
+                                  <div className="text-gray-600 text-xs">With CDW:</div>
+                                  <div className="font-semibold text-gray-700">${period.withCDW.toFixed(2)}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* One-Way Rental Options (for Choice B) */}
+                    {carRental.options && carRental.options.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Available Options - Select One</h4>
+                        <div className="space-y-3">
+                          {carRental.options.map((option, optionIdx) => {
+                            const isOptionSelected = isSelected && selectedCarRentalOption === optionIdx;
+                            return (
+                              <div
+                                key={optionIdx}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedCarRental(carKey);
+                                  setSelectedCarRentalOption(optionIdx);
+                                }}
+                                className={`cursor-pointer rounded-lg border-2 p-3 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg ${
+                                  isOptionSelected
+                                    ? 'bg-blue-50 border-blue-500 shadow-md'
+                                    : 'bg-gray-50 border-gray-200 hover:border-blue-300'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <div className="font-bold text-gray-900">{option.company}</div>
+                                      {isOptionSelected && (
+                                        <Check className="w-4 h-4 text-blue-600" />
+                                      )}
+                                    </div>
+                                    <div className="text-xs text-gray-600">Rating: {option.rating}</div>
+                                    {option.bookingNote && (
+                                      <div className="text-xs text-blue-600 mt-1">({option.bookingNote})</div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="text-xs text-gray-600 bg-white p-2 rounded mb-2">
+                                  <p>Security Deposit: ${option.securityDeposit.toFixed(2)} (refundable)</p>
+                                </div>
+                                <div className="flex justify-between text-sm mt-2 pt-2 border-t border-gray-200">
+                                  <div className="flex-1">
+                                    <div className="text-gray-600 text-xs">Without CDW:</div>
+                                    <div className="font-bold text-[#1e3a8a]">${option.basePrice.toFixed(2)}</div>
+                                  </div>
+                                  <div className="flex-1 text-right">
+                                    <div className="text-gray-600 text-xs">With CDW:</div>
+                                    <div className="font-semibold text-gray-700">${option.withCDW.toFixed(2)}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="mb-3 text-xs text-gray-600 bg-blue-50 p-3 rounded">
                       <p className="mb-1">{carRental.insuranceIncluded}</p>
-                      <p className="mb-1">Security Deposit: ${carRental.securityDeposit.toFixed(2)} (refundable)</p>
                       {carRental.notes && <p className="text-gray-500">{carRental.notes}</p>}
                     </div>
 
-                    <div className="pt-3 border-t border-gray-200">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Without CDW:</span>
-                        <span className="text-lg font-bold text-[#1e3a8a]">
-                          ${carRental.basePrice.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">With CDW:</span>
-                        <span className="text-base font-semibold text-gray-700">
-                          ${carRental.withCDW.toFixed(2)}
-                        </span>
-                      </div>
+                    <div className="pt-3 border-t-2 border-gray-300">
+                      {carRental.options && carRental.options.length > 0 ? (
+                        <>
+                          <div className="mb-3 text-xs text-gray-600 text-center">
+                            {isSelected ? 'Selected Option Pricing' : 'Select an option above to see pricing'}
+                          </div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-lg font-bold text-gray-800">Total Without CDW:</span>
+                            <span className="text-xl font-bold text-[#1e3a8a]">
+                              ${isSelected ? carRental.options[selectedCarRentalOption].basePrice.toFixed(2) : carRental.options[0].basePrice.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-bold text-gray-800">Total With CDW:</span>
+                            <span className="text-xl font-bold text-gray-700">
+                              ${isSelected ? carRental.options[selectedCarRentalOption].withCDW.toFixed(2) : carRental.options[0].withCDW.toFixed(2)}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-lg font-bold text-gray-800">Total Without CDW:</span>
+                            <span className="text-xl font-bold text-[#1e3a8a]">
+                              ${carRental.basePrice.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-bold text-gray-800">Total With CDW:</span>
+                            <span className="text-xl font-bold text-gray-700">
+                              ${carRental.withCDW.toFixed(2)}
+                            </span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1462,24 +2571,36 @@ export default function TeaserPage() {
           </div>
 
           {/* Car Rental Total Summary */}
-          <div className="mt-8 max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 text-center" style={{ fontFamily: 'var(--font-cormorant)' }}>
-              Car Rental Summary
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total without CDW:</span>
-                <span className="font-bold text-[#1e3a8a]">$164.00</span>
+          {selectedCarRentalData && (
+            <div className="mt-8 max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                Car Rental Summary
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Total without CDW:</span>
+                  <span className="font-bold text-[#1e3a8a]">
+                    ${selectedCarRentalData.options && selectedCarRentalData.options.length > 0
+                      ? selectedCarRentalData.options[selectedCarRentalOption].basePrice.toFixed(2)
+                      : selectedCarRentalData.basePrice.toFixed(2)
+                    }
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Total with CDW:</span>
+                  <span className="font-semibold text-gray-700">
+                    ${selectedCarRentalData.options && selectedCarRentalData.options.length > 0
+                      ? selectedCarRentalData.options[selectedCarRentalOption].withCDW.toFixed(2)
+                      : selectedCarRentalData.withCDW.toFixed(2)
+                    }
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-blue-200">
+                  CDW insurance may be covered by your credit card. Check with your card issuer before purchasing additional coverage.
+                </p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total with CDW:</span>
-                <span className="font-semibold text-gray-700">$283.00</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-blue-200">
-                CDW insurance may be covered by your credit card. Check with your card issuer before purchasing additional coverage.
-              </p>
             </div>
-          </div>
+          )}
         </section>
       )}
 
@@ -1521,6 +2642,7 @@ export default function TeaserPage() {
                 {/* Activities */}
                 {(() => {
                   // Deduplicate activities by name (keep the one with best rating or most info)
+                  // This function is used by both activities and dining sections
                   const deduplicateActivities = (activities: any[]) => {
                     const seen = new Map();
                     activities.forEach(activity => {
@@ -1538,8 +2660,16 @@ export default function TeaserPage() {
                     return Array.from(seen.values());
                   };
 
-                  // Filter activities (exclude hotels, dining, airports)
+                  // Store function reference outside IIFE for dining section
+                  (window as any).__deduplicateActivities = deduplicateActivities;
+
+                  // Filter activities (exclude hotels, dining, airports) - EXCEPT for customized days
                   let allActivities = day.items.filter((item: any) => {
+                    // For Day 1, 2, 3, 4, and 5 on Oaxaca trip, show activity, food, and travel items
+                    if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10)) {
+                      return item.type === 'activity' || item.type === 'food' || item.type === 'travel';
+                    }
+
                     if (item.type !== 'activity') return false;
 
                     // Check if this item is actually a hotel
@@ -1577,13 +2707,19 @@ export default function TeaserPage() {
                     return true;
                   });
 
-                  // Deduplicate activities before displaying
-                  allActivities = deduplicateActivities(allActivities.map((item: any) => {
-                    return tripData.activities.find((act: any) => act.name === item.name) || item;
-                  }));
+                  // Deduplicate activities before displaying (skip for customized Oaxaca days)
+                  if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10)) {
+                    // For customized days, use the items as-is without looking them up in activities database
+                    allActivities = allActivities;
+                  } else {
+                    allActivities = deduplicateActivities(allActivities.map((item: any) => {
+                      return tripData.activities.find((act: any) => act.name === item.name) || item;
+                    }));
+                  }
 
                   // Ensure minimum 3 activities per day - if fewer, pull from full activities list
-                  if (allActivities.length < 3) {
+                  // Skip this for customized Oaxaca days
+                  if (allActivities.length < 3 && !(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))) {
                     const allNonDiningActivities = deduplicateActivities(tripData.activities.filter((act: any) => {
                       // Exclude dining
                       const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse'];
@@ -1613,24 +2749,58 @@ export default function TeaserPage() {
 
                   if (allActivities.length === 0) return null;
 
-                  // Distribute activities across morning, afternoon, evening
-                  const activitiesPerSlot = Math.ceil(allActivities.length / 3);
-                  const timeSlots = [
-                    { label: 'MORNING', activities: allActivities.slice(0, activitiesPerSlot) },
-                    { label: 'AFTERNOON', activities: allActivities.slice(activitiesPerSlot, activitiesPerSlot * 2) },
-                    { label: 'EVENING', activities: allActivities.slice(activitiesPerSlot * 2) }
-                  ].filter(slot => slot.activities.length > 0);
-
-                  if (timeSlots.length === 0) return null;
+                  // For customized Oaxaca days, separate food, activities, and travel
+                  const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
+                    ? allActivities.filter((item: any) => item.type === 'food')
+                    : [];
+                  const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
+                    ? allActivities.filter((item: any) => item.type === 'activity' || item.type === 'travel')
+                    : allActivities;
 
                   return (
                     <>
-                      <div className="mb-6">
-                        <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
-                          Activities
-                        </h4>
-                        <div className="grid md:grid-cols-3 gap-4">
-                          {allActivities.map((item: any, actIdx: number) => {
+                      {/* Food Section - only for customized days */}
+                      {foodItems.length > 0 && (
+                        <div className="mb-6">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                            Food
+                          </h4>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            {foodItems.map((item: any, foodIdx: number) => {
+                              const description = item.description || 'Delicious local cuisine and dining experience';
+                              const foodImage = item.images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
+
+                              return (
+                                <div
+                                  key={`food-${item.id || foodIdx}`}
+                                  className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer"
+                                >
+                                  <div className="relative h-48">
+                                    <img
+                                      src={foodImage}
+                                      alt={item.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="p-4">
+                                    <h5 className="font-bold text-gray-900 mb-2">{item.name}</h5>
+                                    <p className="text-sm text-gray-600 line-clamp-3">{description}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Activities Section */}
+                      {activityItems.length > 0 && (
+                        <div className="mb-6">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                            Activities
+                          </h4>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            {activityItems.map((item: any, actIdx: number) => {
                             // Find the full activity details
                             const activityDetails = tripData.activities.find(
                               (act) => act.name === item.name
@@ -1639,23 +2809,14 @@ export default function TeaserPage() {
                             // Extract location from address
                             const location = activityDetails?.address?.split(',').slice(0, 2).join(',') || 'Local Area';
 
-                            // Determine time slot
-                            const activityIndex = actIdx;
-                            const activitiesPerSlot = Math.ceil(allActivities.length / 3);
-                            let timeLabel = 'Morning';
-                            if (activityIndex >= activitiesPerSlot * 2) {
-                              timeLabel = 'Evening';
-                            } else if (activityIndex >= activitiesPerSlot) {
-                              timeLabel = 'Afternoon';
-                            }
-
                             // Get description - use actual data or generic fallback
                             const description = item.description || activityDetails?.description || 'Explore this local attraction and discover what makes it special';
 
-                            // Get activity image from database - use different images from the same activity if available
+                            // Get activity image - check item.images first (for custom days), then fall back to database
                             // Rotate through images to avoid duplicates across different activity cards
                             const imageIndex = actIdx % (activityDetails?.images?.length || 1);
-                            const activityImage = activityDetails?.images?.[imageIndex]?.url;
+                            const itemImage = item.images?.[0]?.url; // Custom days have images directly on item
+                            const activityImage = itemImage || activityDetails?.images?.[imageIndex]?.url;
 
                             // Check for Oaxaca-specific images first
                             const oaxacaImage = getOaxacaActivityImage(item.name);
@@ -1714,9 +2875,6 @@ export default function TeaserPage() {
                                     }}
                                   />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                  <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-cyan-600/80 px-2 py-1 rounded">
-                                    {timeLabel}
-                                  </div>
                                 </div>
 
                                 {/* Activity Details */}
@@ -1753,9 +2911,15 @@ export default function TeaserPage() {
                           })}
                         </div>
                       </div>
+                      )}
+                    </>
+                  );
+                })()}
 
-                    {/* Dining Section */}
-                    {(() => {
+                    {/* Dining Section - Skip for customized Oaxaca days */}
+                    {!(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10)) && (() => {
+                      // Get deduplicate function from window
+                      const deduplicateActivities = (window as any).__deduplicateActivities;
                       // Get all dining venues from activities (deduplicated)
                       const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse', 'food', 'bakery', 'deli'];
                       const allDiningActivities = deduplicateActivities(tripData.activities.filter((act: any) => {
@@ -1974,9 +3138,6 @@ export default function TeaserPage() {
                         </div>
                       );
                     })()}
-                    </>
-                  );
-                })()}
 
                 {/* Accommodations */}
                 {day.items.filter((item: any) => item.type === 'accommodation').length > 0 && (
