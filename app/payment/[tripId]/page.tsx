@@ -104,7 +104,7 @@ export default function PaymentPage({ params }: { params: Promise<{ tripId: stri
                   <Lock className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">Secure Payment</h1>
+                  <h1 className="text-2xl font-bold text-slate-900">Payment</h1>
                   <p className="text-sm text-slate-500">Complete your booking</p>
                 </div>
               </div>
@@ -251,41 +251,6 @@ export default function PaymentPage({ params }: { params: Promise<{ tripId: stri
                     </p>
                   </div>
 
-                  {/* Package Includes */}
-                  <div className="space-y-3 pb-4 border-b border-white/30">
-                    <p className="text-sm font-semibold text-blue-100 uppercase tracking-wider">Package Includes</p>
-
-                    {/* Activities */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-semibold">Activities</div>
-                        <div className="text-blue-100 text-sm">
-                          {activitiesCount} activities scheduled
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Flights */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-semibold">Flights</div>
-                        <div className="text-blue-100 text-sm">
-                          {flightsCount} {flightsCount === 1 ? 'flight' : 'flights'} booked
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Accommodations */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-semibold">Accommodations</div>
-                        <div className="text-blue-100 text-sm">
-                          {totalNights} {totalNights === 1 ? 'night' : 'nights'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Unlock Fee */}
                   <div className="flex justify-between items-center pb-4 border-b border-white/30">
                     <div>
@@ -299,13 +264,6 @@ export default function PaymentPage({ params }: { params: Promise<{ tripId: stri
                   <div className="flex justify-between items-center pt-2">
                     <div className="text-lg font-bold">Total Amount</div>
                     <div className="text-3xl font-bold">${conciergeFee.toFixed(2)}</div>
-                  </div>
-
-                  {/* What You Get */}
-                  <div className="mt-6 pt-6 border-t border-white/30">
-                    <p className="text-sm text-blue-100 leading-relaxed">
-                      💎 Unlock all package details to begin your journey! Full access to hotel names, flight details, restaurant recommendations, and activity information.
-                    </p>
                   </div>
                 </div>
               )}
