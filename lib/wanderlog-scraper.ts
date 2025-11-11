@@ -458,14 +458,17 @@ function parseStructuredDataFromMobx(
   const allImages: WanderlogImage[] = [];
   let imagePosition = 0;
 
-  // Header images (first 5)
-  images.slice(0, 5).forEach((url) => {
-    allImages.push({
-      url,
-      position: imagePosition++,
-      associatedSection: 'header',
+  // Header images (first 5, excluding app assets and map tiles)
+  images
+    .filter((url) => !isMapTile(url) && !isAppAsset(url))
+    .slice(0, 5)
+    .forEach((url) => {
+      allImages.push({
+        url,
+        position: imagePosition++,
+        associatedSection: 'header',
+      });
     });
-  });
 
   // Activity images
   activities.forEach((activity) => {
@@ -486,7 +489,7 @@ function parseStructuredDataFromMobx(
     endDate,
     views: undefined,
     publicationDate: undefined,
-    headerImages: images.slice(0, 5),
+    headerImages: images.filter((url) => !isMapTile(url) && !isAppAsset(url)).slice(0, 5),
     notes,
     flights,
     hotels,

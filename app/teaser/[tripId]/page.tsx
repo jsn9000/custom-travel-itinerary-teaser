@@ -30,6 +30,21 @@ interface FlightOption {
   baggageOptions?: string | null;
 }
 
+interface CarRentalOption {
+  id: string;
+  company: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  pickupDate: string;
+  dropoffDate: string;
+  basePrice: number;
+  withCDW: number;
+  currency: string;
+  insuranceIncluded: string;
+  securityDeposit: number;
+  notes?: string;
+}
+
 interface TripData {
   id: string;
   title: string;
@@ -41,6 +56,7 @@ interface TripData {
   wanderlogUrl: string;
   hotels: HotelOption[];
   flights: FlightOption[];
+  carRentals?: CarRentalOption[];
   activities: {
     id: string;
     name: string;
@@ -74,6 +90,7 @@ export default function TeaserPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedHotel, setSelectedHotel] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
+  const [selectedCarRental, setSelectedCarRental] = useState<string>("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
@@ -109,14 +126,167 @@ export default function TeaserPage() {
         }
 
         const data = await response.json();
+
+        // Override dates and hotels for Oaxaca trip
+        if (tripId === 'bab29d55-7e10-46ed-b702-e0f2a342fcd7') {
+          data.startDate = '2026-02-17';
+          data.endDate = '2026-02-25';
+
+          // Override hotels with specific Oaxaca options - 7 hotels total
+          data.hotels = [
+            {
+              id: "hotel-azucenas",
+              name: "C. Azucenas 113",
+              address: "C. Azucenas 113, Oaxaca",
+              roomType: "Private Airbnb Apartment",
+              amenities: ["Hosted by 9-year Superhost", "High ratings", "10min to city center"],
+              rating: 4.5,
+              price: 497,
+              currency: "USD"
+            },
+            {
+              id: "hotel-vasconcelos",
+              name: "Lic. José Vasconcelos 307",
+              address: "Lic. José Vasconcelos 307, Oaxaca",
+              roomType: "Private Airbnb Apartment",
+              amenities: ["5min drive to city center", "18min walk to center", "Modern amenities"],
+              rating: 4.5,
+              price: 565,
+              currency: "USD"
+            },
+            {
+              id: "hotel-corazon",
+              name: "Hotel con Corazón Oaxaca",
+              address: "Oaxaca City Center",
+              roomType: "Queen Room including breakfast",
+              amenities: ["Free breakfast", "City center location", "Premium service"],
+              rating: 4.7,
+              price: 705,
+              currency: "USD"
+            },
+            {
+              id: "hotel-garibaldi",
+              name: "Hotel Plaza Garibaldi",
+              address: "Plaza Garibaldi, Mexico City",
+              roomType: "1 King Bed, Standard Room, Non Smoking",
+              amenities: ["Free breakfast", "Wyndham Rewards", "Central location"],
+              rating: 4.0,
+              price: 193,
+              currency: "USD"
+            },
+            {
+              id: "hotel-zocalo",
+              name: "Hotel MX zócalo",
+              address: "El Zócalo, Mexico City",
+              roomType: "1 Queen Bed Non Smoking",
+              amenities: ["Free breakfast", "Wyndham Rewards", "Historic district"],
+              rating: 4.2,
+              price: 227,
+              currency: "USD"
+            },
+            {
+              id: "hotel-canada",
+              name: "Hotel Canada Central & Rooftop",
+              address: "Central Mexico City",
+              roomType: "Standard Double Room",
+              amenities: ["Free breakfast", "Rooftop terrace", "Central location"],
+              rating: 4.3,
+              price: 249,
+              currency: "USD"
+            },
+            {
+              id: "hotel-mas-centro",
+              name: "Hotel MX más centro",
+              address: "Centro, Mexico City",
+              roomType: "Suite with 2 Queen Beds Non Smoking",
+              amenities: ["Free breakfast", "Wyndham Rewards", "Suite accommodation"],
+              rating: 4.1,
+              price: 240,
+              currency: "USD"
+            }
+          ];
+
+          // Add car rental options for Oaxaca trip
+          data.carRentals = [
+            {
+              id: "car-oaxaca",
+              company: "Localiza",
+              pickupLocation: "OAX",
+              dropoffLocation: "OAX",
+              pickupDate: "Feb 17",
+              dropoffDate: "Feb 22",
+              basePrice: 140,
+              withCDW: 211,
+              currency: "USD",
+              insuranceIncluded: "Insurance included except CDW",
+              securityDeposit: 758,
+              notes: "Credit card required for security deposit"
+            },
+            {
+              id: "car-mexico-city",
+              company: "Keddy",
+              pickupLocation: "MEX",
+              dropoffLocation: "MEX",
+              pickupDate: "Feb 22",
+              dropoffDate: "Feb 24",
+              basePrice: 24,
+              withCDW: 72,
+              currency: "USD",
+              insuranceIncluded: "Insurance included except CDW",
+              securityDeposit: 975,
+              notes: "Credit card required for security deposit"
+            }
+          ];
+
+          // Override flights with detailed leg information for Oaxaca trip
+          data.flights = [
+            {
+              id: "flight-oaxaca",
+              airline: "Round-trip Flight Package",
+              departureAirport: "JFK",
+              arrivalAirport: "OAX",
+              departureTime: "Feb 17, 2026",
+              arrivalTime: "Feb 25, 2026",
+              price: 1009,
+              currency: "USD",
+              flightCode: null,
+              baggageOptions: "Included: 1 carry-on, 1 checked bag",
+              // Detailed flight legs with individual pricing
+              legs: [
+                {
+                  route: "JFK-OAX",
+                  date: "Feb 17, 2026",
+                  price: 559,
+                  description: "New York to Oaxaca (layover in MEX for 2hrs)"
+                },
+                {
+                  route: "OAX-MEX",
+                  date: "Feb 22, 2026",
+                  price: 109,
+                  description: "Oaxaca to Mexico City (nonstop)"
+                },
+                {
+                  route: "MEX-JFK",
+                  date: "Feb 25, 2026",
+                  price: 450,
+                  description: "Mexico City to New York (nonstop)"
+                }
+              ]
+            }
+          ];
+        }
+
         setTripData(data);
 
-        // Auto-select first hotel and flight if available
+        // Auto-select first hotel, flight, and car rental if available
         if (data.hotels && data.hotels.length > 0) {
           setSelectedHotel(data.hotels[0].id || 'hotel-0');
         }
         if (data.flights && data.flights.length > 0) {
           setSelectedFlight(data.flights[0].id || 'flight-0');
+        }
+        if (data.carRentals && data.carRentals.length > 0) {
+          setSelectedCarRental(data.carRentals[0].id || 'car-0');
         }
 
         setError(null);
@@ -133,13 +303,13 @@ export default function TeaserPage() {
 
   // Auto-rotate banner images every 6 seconds
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !tripData?.headerImages?.length) return;
 
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % 4); // 4 Edmonton header images
+      setCurrentImageIndex((prev) => (prev + 1) % (tripData.headerImages.length || 1));
     }, 6000);
     return () => clearInterval(interval);
-  }, [mounted]);
+  }, [mounted, tripData?.headerImages]);
 
   // Countdown timer to trip start date
   useEffect(() => {
@@ -173,6 +343,7 @@ export default function TeaserPage() {
   // Calculate pricing
   const selectedHotelData = tripData?.hotels.find((h) => h.id === selectedHotel);
   const selectedFlightData = tripData?.flights.find((f) => f.id === selectedFlight);
+  const selectedCarRentalData = tripData?.carRentals?.find((c) => c.id === selectedCarRental);
 
   const calculateNights = () => {
     if (!tripData) return 7;
@@ -185,7 +356,8 @@ export default function TeaserPage() {
   const nights = calculateNights();
   const hotelCost = parseFloat(((selectedHotelData?.price || 0) * nights).toFixed(2));
   const flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
-  const tripCost = parseFloat((hotelCost + flightCost).toFixed(2));
+  const carRentalCost = parseFloat((selectedCarRentalData?.basePrice || 0).toFixed(2));
+  const tripCost = parseFloat((hotelCost + flightCost + carRentalCost).toFixed(2));
   const unlockFee = 299.0;
   const totalCost = parseFloat((tripCost + unlockFee).toFixed(2));
 
@@ -220,6 +392,25 @@ export default function TeaserPage() {
 
   // Generate descriptive day title
   const generateDayTitle = (day: any) => {
+    // For Oaxaca trip, skip date entirely and just return descriptive title
+    if (isOaxacaTrip) {
+      // Generate a title based on activities for this day
+      const activities = day.items?.filter((item: any) => item.type === 'activity') || [];
+
+      // Generate title based on first day, last day, or activity types
+      if (day.dayNumber === 1) {
+        return 'Arrival & Getting Started';
+      } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
+        return 'Final Explorations & Departure';
+      } else if (activities.length >= 3) {
+        return 'Full Day of Adventures';
+      } else if (activities.length >= 2) {
+        return 'Discovery & Exploration';
+      } else {
+        return 'Sightseeing & Relaxation';
+      }
+    }
+
     // Check if the date field contains a descriptive title (more than just date)
     const datePattern = /^[A-Za-z]{3}\s+\d{1,2}\/\d{1,2}$/; // Matches "Fri 6/27"
 
@@ -274,6 +465,23 @@ export default function TeaserPage() {
 
   // Generate descriptive hotel name based on amenities and rating
   const getHotelDescription = (hotel: HotelOption) => {
+    // Special handling for Oaxaca trip - use custom descriptions based on hotel ID
+    if (isOaxacaTrip) {
+      const oaxacaDescriptions: { [key: string]: string } = {
+        'hotel-azucenas': 'Boutique Apartment Stay - Superhost',
+        'hotel-vasconcelos': 'Central Location Private Apartment',
+        'hotel-corazon': 'Luxury Boutique Hotel with Breakfast',
+        'hotel-garibaldi': 'Comfortable City Center Hotel',
+        'hotel-zocalo': 'Historic District Hotel with Breakfast',
+        'hotel-canada': 'Central Hotel with Rooftop Terrace',
+        'hotel-mas-centro': 'Spacious Suite with Breakfast'
+      };
+
+      if (hotel.id && oaxacaDescriptions[hotel.id]) {
+        return oaxacaDescriptions[hotel.id];
+      }
+    }
+
     const rating = hotel.rating || 3;
     const amenities = hotel.amenities || [];
 
@@ -350,13 +558,114 @@ export default function TeaserPage() {
     );
   }
 
-  // Use local Edmonton header images
-  const bannerImages = [
-    '/images/edmonton/edmonton-skyline.jpeg',
-    '/images/edmonton/edmonton-lights.jpeg',
-    '/images/edmonton/edmonton-couple.jpeg',
-    '/images/edmonton/edmonton-whitehouse.jpg',
-  ];
+  // Special handling for Oaxaca trip
+  const isOaxacaTrip = tripId === 'bab29d55-7e10-46ed-b702-e0f2a342fcd7';
+
+  // Use database header images from Wanderlog scrape, fallback to destination-specific images
+  let bannerImages = tripData.headerImages && tripData.headerImages.length > 0
+    ? tripData.headerImages
+    : [
+        '/images/edmonton/edmonton-skyline.jpeg',
+        '/images/edmonton/edmonton-lights.jpeg',
+        '/images/edmonton/edmonton-couple.jpeg',
+        '/images/edmonton/edmonton-whitehouse.jpg',
+      ];
+
+  // Override with Oaxaca images for the specific trip
+  if (isOaxacaTrip) {
+    bannerImages = [
+      '/oaxaca/images/Playa Zicatela.jpeg',
+      '/oaxaca/images/Palacio de Bellas Artes.jpeg',
+      '/oaxaca/images/Grutas Tolantongo.jpeg',
+      '/oaxaca/images/TEATRO MACEDONIO ALCALÁ.jpeg',
+      '/oaxaca/images/Museo Nacional de Antropología.jpeg',
+      '/oaxaca/images/Basilica of Our Lady of Guadalupe.jpeg',
+    ];
+  }
+
+  // Helper function to get Oaxaca activity image based on name
+  const getOaxacaActivityImage = (activityName: string): string | null => {
+    if (!isOaxacaTrip) return null;
+
+    const nameLower = activityName.toLowerCase();
+
+    // Mapping of activity name keywords to image paths
+    const imageMap: { [key: string]: string } = {
+      'basilica': '/oaxaca/images/Basilica of Our Lady of Guadalupe.jpeg',
+      'guadalupe': '/oaxaca/images/Basilica of Our Lady of Guadalupe.jpeg',
+      'biblioteca': '/oaxaca/images/Biblioteca Vasconcelos.jpeg',
+      'vasconcelos': '/oaxaca/images/Biblioteca Vasconcelos.jpeg',
+      'coyoacan': '/oaxaca/images/Coyoacan Market.jpeg',
+      'frida': '/oaxaca/images/Frida Kahlo Museum.jpeg',
+      'kahlo': '/oaxaca/images/Frida Kahlo Museum.jpeg',
+      'grutas': '/oaxaca/images/Grutas Tolantongo.jpeg',
+      'tolantongo': '/oaxaca/images/Grutas Tolantongo.jpeg',
+      'antropología': '/oaxaca/images/Museo Nacional de Antropología.jpeg',
+      'antropologia': '/oaxaca/images/Museo Nacional de Antropología.jpeg',
+      'soumaya': '/oaxaca/images/Museo Soumaya.jpeg',
+      'bellas artes': '/oaxaca/images/Palacio de Bellas Artes.jpeg',
+      'palacio': '/oaxaca/images/Palacio de Bellas Artes.jpeg',
+      'zicatela': '/oaxaca/images/Playa Zicatela.jpeg',
+      'playa': '/oaxaca/images/Playa Zicatela.jpeg',
+      'coyotepec': '/oaxaca/images/San Bartolo Coyotepec.jpeg',
+      'tilcajete': '/oaxaca/images/San Martín Tilcajete.jpeg',
+      'apoala': '/oaxaca/images/Santiago Apoala.jpeg',
+      'macedonio': '/oaxaca/images/TEATRO MACEDONIO ALCALÁ.jpeg',
+      'teatro': '/oaxaca/images/TEATRO MACEDONIO ALCALÁ.jpeg',
+      'teotitlán': '/oaxaca/images/Teotitlán del Valle.jpeg',
+      'teotitlan': '/oaxaca/images/Teotitlán del Valle.jpeg',
+    };
+
+    // Check for matches
+    for (const [keyword, imagePath] of Object.entries(imageMap)) {
+      if (nameLower.includes(keyword)) {
+        return imagePath;
+      }
+    }
+
+    return null;
+  };
+
+  // Helper function to get Oaxaca hotel image based on name
+  const getOaxacaHotelImage = (hotelName: string, hotelAddress?: string | null): string | null => {
+    if (!isOaxacaTrip) return null;
+
+    const nameLower = hotelName.toLowerCase();
+    const addressLower = (hotelAddress || '').toLowerCase();
+    const combined = `${nameLower} ${addressLower}`;
+
+    // Mapping of hotel name/address keywords to image paths
+    const imageMap: { [key: string]: string } = {
+      'canada central': '/oaxaca/images/Hotel Canada Central & Rooftop.jpeg',
+      'canada': '/oaxaca/images/Hotel Canada Central & Rooftop.jpeg',
+      'corazón': '/oaxaca/images/Hotel con Corazón Oaxaca.jpeg',
+      'corazon': '/oaxaca/images/Hotel con Corazón Oaxaca.jpeg',
+      'mx más centro': '/oaxaca/images/Hotel MX más centro.jpeg',
+      'mx mas centro': '/oaxaca/images/Hotel MX más centro.jpeg',
+      'más centro': '/oaxaca/images/Hotel MX más centro.jpeg',
+      'mas centro': '/oaxaca/images/Hotel MX más centro.jpeg',
+      'mx zócalo': '/oaxaca/images/Hotel MX zócalo.jpeg',
+      'mx zocalo': '/oaxaca/images/Hotel MX zócalo.jpeg',
+      'zócalo': '/oaxaca/images/Hotel MX zócalo.jpeg',
+      'zocalo': '/oaxaca/images/Hotel MX zócalo.jpeg',
+      'plaza garibaldi': '/oaxaca/images/Hotel Plaza Garibaldi.jpeg',
+      'garibaldi': '/oaxaca/images/Hotel Plaza Garibaldi.jpeg',
+      'azucenas 113': '/oaxaca/images/hotel-C. Azucenas 113.jpeg',
+      'azucenas': '/oaxaca/images/hotel-C. Azucenas 113.jpeg',
+      'vasconcelos 307': '/oaxaca/images/hotel-Lic. José Vasconcelos 307.jpeg',
+      'josé vasconcelos': '/oaxaca/images/hotel-Lic. José Vasconcelos 307.jpeg',
+      'jose vasconcelos': '/oaxaca/images/hotel-Lic. José Vasconcelos 307.jpeg',
+    };
+
+    // Check for matches
+    for (const [keyword, imagePath] of Object.entries(imageMap)) {
+      if (combined.includes(keyword)) {
+        return imagePath;
+      }
+    }
+
+    return null;
+  };
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #faf9f7, #f5f3ef, #fdfcfa)' }}>
@@ -497,15 +806,103 @@ export default function TeaserPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              Select Your Flight
+              {isOaxacaTrip ? 'Your Flight' : 'Select Your Flight'}
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Choose the flight option that best suits your schedule and budget
+              {isOaxacaTrip ? 'Round-trip airfare included in your package' : 'Choose the flight option that best suits your schedule and budget'}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5">
-            {tripData.flights.map((flight, flightIdx) => {
+          {isOaxacaTrip ? (
+            // Static flight display for Oaxaca trip - no selection
+            <div className="max-w-2xl mx-auto">
+              {tripData.flights.map((flight, flightIdx) => {
+                const flightImage = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800';
+
+                return (
+                  <div
+                    key={flight.id || `flight-${flightIdx}`}
+                    className="rounded-xl overflow-hidden shadow-lg border border-gray-200"
+                  >
+                    <div className="relative h-48">
+                      <img
+                        src={flightImage}
+                        alt="Flight"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                          {flight.airline}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6">
+                      {/* Flight Legs Detail */}
+                      {(flight as any).legs && (flight as any).legs.length > 0 ? (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Flight Details</h4>
+                          <div className="space-y-3">
+                            {(flight as any).legs.map((leg: any, legIdx: number) => (
+                              <div key={legIdx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div className="flex-1">
+                                  <div className="font-bold text-gray-900 mb-1">{leg.route}</div>
+                                  <div className="text-xs text-gray-600">{leg.description}</div>
+                                  <div className="text-xs text-gray-500 mt-1">{leg.date}</div>
+                                </div>
+                                <div className="text-right ml-4">
+                                  <div className="text-lg font-bold text-[#1e3a8a]">
+                                    ${leg.price.toFixed(2)}
+                                  </div>
+                                  <div className="text-xs text-gray-500">per person</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid md:grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <div className="text-sm text-gray-600 mb-1">Departure</div>
+                            <div className="font-bold text-gray-900">{flight.departureAirport}</div>
+                            <div className="text-sm text-gray-600">{flight.departureTime}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600 mb-1">Return</div>
+                            <div className="font-bold text-gray-900">{flight.arrivalAirport}</div>
+                            <div className="text-sm text-gray-600">{flight.arrivalTime}</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {flight.baggageOptions && (
+                        <div className="mb-4 text-sm text-gray-600 bg-blue-50 p-3 rounded">
+                          {flight.baggageOptions}
+                        </div>
+                      )}
+
+                      <div className="pt-4 border-t-2 border-gray-300">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-bold text-gray-800">Total Airfare</span>
+                          <span className="text-2xl font-bold text-[#1e3a8a]">
+                            ${flight.price.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">For 2 travelers (${(flight.price / 2).toFixed(2)} per person)</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // Original selection grid for non-Oaxaca trips
+            <div className="grid md:grid-cols-3 gap-5">
+              {tripData.flights.map((flight, flightIdx) => {
               const flightKey = flight.id || `flight-${flightIdx}`;
               const isSelected = selectedFlight === flightKey;
               // Use different plane images for each flight
@@ -581,7 +978,7 @@ export default function TeaserPage() {
                     <div className="pt-2 border-t border-gray-200">
                       <div className="text-center">
                         <span className="text-xl font-bold text-[#1e3a8a]">
-                          ${flight.price.toFixed(2)}
+                          ${(flight.price || 0).toFixed(2)}
                         </span>
                         <span className="text-xs text-gray-600"> roundtrip</span>
                       </div>
@@ -591,6 +988,7 @@ export default function TeaserPage() {
               );
             })}
           </div>
+          )}
         </section>
       )}
 
@@ -610,13 +1008,17 @@ export default function TeaserPage() {
             {tripData.hotels.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-${hotelIdx}`;
               const isSelected = selectedHotel === hotelKey;
+
+              // Check for Oaxaca-specific hotel images first
+              const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
+
               // Use database hotel image if available, otherwise use fallback images
               const fallbackHotelImages = [
                 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
                 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
                 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
               ];
-              const hotelImage = (hotel as any).images?.[0] || fallbackHotelImages[hotelIdx % fallbackHotelImages.length];
+              const hotelImage = oaxacaHotelImage || (hotel as any).images?.[0] || fallbackHotelImages[hotelIdx % fallbackHotelImages.length];
 
               return (
                 <div
@@ -687,14 +1089,14 @@ export default function TeaserPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-xl font-bold text-[#1e3a8a]">
-                          ${hotel.price.toFixed(2)}
+                          ${(hotel.price || 0).toFixed(2)}
                         </span>
                         <span className="text-xs text-gray-600"> /night</span>
                       </div>
                       <div className="text-right text-xs text-gray-500">
                         {nights} nights
                         <div className="font-bold text-xs text-gray-900">
-                          ${(hotel.price * nights).toFixed(2)}
+                          ${((hotel.price || 0) * nights).toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -702,6 +1104,114 @@ export default function TeaserPage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+      )}
+
+      {/* Car Rental Section */}
+      {tripData.carRentals && tripData.carRentals.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+              Select Your Car Rental
+            </h2>
+            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+              Choose your transportation option for maximum flexibility
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {tripData.carRentals.map((carRental, carIdx) => {
+              const carKey = carRental.id || `car-${carIdx}`;
+              const isSelected = selectedCarRental === carKey;
+
+              return (
+                <div
+                  key={carKey}
+                  onClick={() => setSelectedCarRental(carKey)}
+                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                    isSelected
+                      ? "opacity-100 scale-105"
+                      : "opacity-60 grayscale-[50%] hover:opacity-80"
+                  }`}
+                  style={{
+                    boxShadow: isSelected
+                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                    border: isSelected ? 'none' : '1px solid #e5e5e5'
+                  }}
+                >
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                    }}>
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+
+                  <div className="bg-white p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {carRental.company} - {carRental.pickupLocation} to {carRental.dropoffLocation}
+                      </h3>
+                    </div>
+
+                    <div className="space-y-2 mb-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Pickup:</span>
+                        <span className="font-semibold">{carRental.pickupDate} - {carRental.pickupLocation}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Drop-off:</span>
+                        <span className="font-semibold">{carRental.dropoffDate} - {carRental.dropoffLocation}</span>
+                      </div>
+                    </div>
+
+                    <div className="mb-3 text-xs text-gray-600 bg-blue-50 p-3 rounded">
+                      <p className="mb-1">{carRental.insuranceIncluded}</p>
+                      <p className="mb-1">Security Deposit: ${carRental.securityDeposit.toFixed(2)} (refundable)</p>
+                      {carRental.notes && <p className="text-gray-500">{carRental.notes}</p>}
+                    </div>
+
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">Without CDW:</span>
+                        <span className="text-lg font-bold text-[#1e3a8a]">
+                          ${carRental.basePrice.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">With CDW:</span>
+                        <span className="text-base font-semibold text-gray-700">
+                          ${carRental.withCDW.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Car Rental Total Summary */}
+          <div className="mt-8 max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 text-center" style={{ fontFamily: 'var(--font-cormorant)' }}>
+              Car Rental Summary
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Total without CDW:</span>
+                <span className="font-bold text-[#1e3a8a]">$164.00</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Total with CDW:</span>
+                <span className="font-semibold text-gray-700">$283.00</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-blue-200">
+                CDW insurance may be covered by your credit card. Check with your card issuer before purchasing additional coverage.
+              </p>
+            </div>
           </div>
         </section>
       )}
@@ -743,6 +1253,24 @@ export default function TeaserPage() {
 
                 {/* Activities */}
                 {(() => {
+                  // Deduplicate activities by name (keep the one with best rating or most info)
+                  const deduplicateActivities = (activities: any[]) => {
+                    const seen = new Map();
+                    activities.forEach(activity => {
+                      const normalizedName = activity.name.toLowerCase().trim();
+                      const existing = seen.get(normalizedName);
+
+                      // Keep the activity with better data (rating, contact, hours)
+                      if (!existing ||
+                          (activity.rating && !existing.rating) ||
+                          (activity.rating > (existing.rating || 0)) ||
+                          (activity.contact && !existing.contact)) {
+                        seen.set(normalizedName, activity);
+                      }
+                    });
+                    return Array.from(seen.values());
+                  };
+
                   // Filter activities (exclude hotels, dining, airports)
                   let allActivities = day.items.filter((item: any) => {
                     if (item.type !== 'activity') return false;
@@ -782,9 +1310,14 @@ export default function TeaserPage() {
                     return true;
                   });
 
+                  // Deduplicate activities before displaying
+                  allActivities = deduplicateActivities(allActivities.map((item: any) => {
+                    return tripData.activities.find((act: any) => act.name === item.name) || item;
+                  }));
+
                   // Ensure minimum 3 activities per day - if fewer, pull from full activities list
                   if (allActivities.length < 3) {
-                    const allNonDiningActivities = tripData.activities.filter((act: any) => {
+                    const allNonDiningActivities = deduplicateActivities(tripData.activities.filter((act: any) => {
                       // Exclude dining
                       const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse'];
                       const isDining = diningKeywords.some(keyword =>
@@ -795,7 +1328,7 @@ export default function TeaserPage() {
                                                act.name.toLowerCase().includes('inn') ||
                                                act.name.toLowerCase().includes('airport');
                       return !isDining && !isHotelOrAirport;
-                    });
+                    }));
 
                     // Get additional activities to reach minimum 3
                     const needed = 3 - allActivities.length;
@@ -857,6 +1390,9 @@ export default function TeaserPage() {
                             const imageIndex = actIdx % (activityDetails?.images?.length || 1);
                             const activityImage = activityDetails?.images?.[imageIndex]?.url;
 
+                            // Check for Oaxaca-specific images first
+                            const oaxacaImage = getOaxacaActivityImage(item.name);
+
                             // Fallback images based on activity type/name
                             const getFallbackImage = (activityName: string) => {
                               const name = activityName.toLowerCase();
@@ -893,7 +1429,7 @@ export default function TeaserPage() {
                               return genericImages[actIdx % genericImages.length];
                             };
 
-                            const finalImage = activityImage || getFallbackImage(item.name);
+                            const finalImage = oaxacaImage || activityImage || getFallbackImage(item.name);
 
                             return (
                               <div
@@ -918,11 +1454,32 @@ export default function TeaserPage() {
 
                                 {/* Activity Details */}
                                 <div className="p-4">
-                                  <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                    {item.name}
+                                  <div className="flex items-start justify-between mb-1">
+                                    <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                      {item.name}
+                                    </div>
+                                    {activityDetails?.rating && (
+                                      <div className="flex items-center gap-1 ml-2">
+                                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                        <span className="text-xs font-semibold text-gray-700">{activityDetails.rating}</span>
+                                      </div>
+                                    )}
                                   </div>
                                   <div className="text-sm text-gray-600 mb-2">{description}</div>
+
+                                  {activityDetails?.hours && (
+                                    <div className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                                      <span className="font-semibold">Hours:</span> {activityDetails.hours}
+                                    </div>
+                                  )}
+
                                   <div className="text-xs text-gray-500">{location}</div>
+
+                                  {activityDetails?.contact && (
+                                    <div className="text-xs text-blue-600 mt-1">
+                                      {activityDetails.contact}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             );
@@ -932,9 +1489,9 @@ export default function TeaserPage() {
 
                     {/* Dining Section */}
                     {(() => {
-                      // Get all dining venues from activities
+                      // Get all dining venues from activities (deduplicated)
                       const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse', 'food', 'bakery', 'deli'];
-                      const allDiningActivities = tripData.activities.filter((act: any) => {
+                      const allDiningActivities = deduplicateActivities(tripData.activities.filter((act: any) => {
                         const isDining = diningKeywords.some(keyword =>
                           act.name.toLowerCase().includes(keyword)
                         );
@@ -944,7 +1501,7 @@ export default function TeaserPage() {
                                                     description.toLowerCase().includes('cuisine') ||
                                                     description.toLowerCase().includes('food');
                         return isDining || hasDiningDescription;
-                      });
+                      }));
 
                       // Pick THREE different dining venues for breakfast, lunch, and dinner
                       // Ensure they don't repeat within the same day
@@ -1027,15 +1584,33 @@ export default function TeaserPage() {
                                 </div>
                               </div>
                               <div className="p-4">
-                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                  {breakfastVenue.name}
+                                <div className="flex items-start justify-between mb-1">
+                                  <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                    {breakfastVenue.name}
+                                  </div>
+                                  {breakfastVenue.rating && (
+                                    <div className="flex items-center gap-1 ml-2">
+                                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                      <span className="text-xs font-semibold text-gray-700">{breakfastVenue.rating}</span>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
                                   {breakfastVenue.description || 'Local dining experience'}
                                 </div>
+                                {breakfastVenue.hours && (
+                                  <div className="text-xs text-gray-600 mb-1">
+                                    <span className="font-semibold">Hours:</span> {breakfastVenue.hours}
+                                  </div>
+                                )}
                                 <div className="text-xs text-gray-500">
                                   {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
                                 </div>
+                                {breakfastVenue.contact && (
+                                  <div className="text-xs text-blue-600 mt-1">
+                                    {breakfastVenue.contact}
+                                  </div>
+                                )}
                               </div>
                             </div>
 
@@ -1056,15 +1631,33 @@ export default function TeaserPage() {
                                 </div>
                               </div>
                               <div className="p-4">
-                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                  {lunchVenue.name}
+                                <div className="flex items-start justify-between mb-1">
+                                  <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                    {lunchVenue.name}
+                                  </div>
+                                  {lunchVenue.rating && (
+                                    <div className="flex items-center gap-1 ml-2">
+                                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                      <span className="text-xs font-semibold text-gray-700">{lunchVenue.rating}</span>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
                                   {lunchVenue.description || 'Local dining experience'}
                                 </div>
+                                {lunchVenue.hours && (
+                                  <div className="text-xs text-gray-600 mb-1">
+                                    <span className="font-semibold">Hours:</span> {lunchVenue.hours}
+                                  </div>
+                                )}
                                 <div className="text-xs text-gray-500">
                                   {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
                                 </div>
+                                {lunchVenue.contact && (
+                                  <div className="text-xs text-blue-600 mt-1">
+                                    {lunchVenue.contact}
+                                  </div>
+                                )}
                               </div>
                             </div>
 
@@ -1085,15 +1678,33 @@ export default function TeaserPage() {
                                 </div>
                               </div>
                               <div className="p-4">
-                                <div className="font-bold text-gray-900 mb-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                  {dinnerVenue.name}
+                                <div className="flex items-start justify-between mb-1">
+                                  <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
+                                    {dinnerVenue.name}
+                                  </div>
+                                  {dinnerVenue.rating && (
+                                    <div className="flex items-center gap-1 ml-2">
+                                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                      <span className="text-xs font-semibold text-gray-700">{dinnerVenue.rating}</span>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
                                   {dinnerVenue.description || 'Local dining experience'}
                                 </div>
+                                {dinnerVenue.hours && (
+                                  <div className="text-xs text-gray-600 mb-1">
+                                    <span className="font-semibold">Hours:</span> {dinnerVenue.hours}
+                                  </div>
+                                )}
                                 <div className="text-xs text-gray-500">
                                   {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
                                 </div>
+                                {dinnerVenue.contact && (
+                                  <div className="text-xs text-blue-600 mt-1">
+                                    {dinnerVenue.contact}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1171,6 +1782,22 @@ export default function TeaserPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-xl font-bold">${flightCost.toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
+            {selectedCarRentalData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    Car Rental
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedCarRentalData.company} • {selectedCarRentalData.pickupDate} - {selectedCarRentalData.dropoffDate}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${carRentalCost.toFixed(2)}</div>
                 </div>
               </div>
             )}

@@ -1,0 +1,39 @@
+{
+  "platform": "github",
+  "organization": "your-org-name",
+
+  "protected_branches": ["main", "master", "production", "staging"],
+
+  "branch_protection": {
+    "required_reviews": 2,
+    "require_code_owner_reviews": true,
+    "dismiss_stale_reviews": true,
+    "require_status_checks": true,
+    "strict_status_checks": true,
+    "enforce_admins": false,
+    "allow_force_pushes": false,
+    "allow_deletions": false
+  },
+
+  "team_access": {
+    "frontend-team": "push",
+    "backend-team": "push",
+    "senior-developers": "maintain",
+    "tech-leads": "admin",
+    "contractors": "pull"
+  },
+
+  "repo_settings": {
+    "has_issues": true,
+    "has_projects": true,
+    "has_wiki": false,
+    "allow_squash_merge": true,
+    "allow_merge_commit": true,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "enable_vulnerability_alerts": true,
+    "enable_automated_security_fixes": true
+  },
+
+  "repositories": []
+}
