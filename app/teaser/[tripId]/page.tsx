@@ -55,6 +55,8 @@ interface TripData {
   notes?: string | null;
   wanderlogUrl: string;
   hotels: HotelOption[];
+  hotelsOaxaca?: HotelOption[];
+  hotelsMexicoCity?: HotelOption[];
   flights: FlightOption[];
   carRentals?: CarRentalOption[];
   activities: {
@@ -89,6 +91,8 @@ export default function TeaserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedHotel, setSelectedHotel] = useState<string>("");
+  const [selectedHotelOaxaca, setSelectedHotelOaxaca] = useState<string>("");
+  const [selectedHotelMexicoCity, setSelectedHotelMexicoCity] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
   const [selectedCarRental, setSelectedCarRental] = useState<string>("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -132,8 +136,8 @@ export default function TeaserPage() {
           data.startDate = '2026-02-17';
           data.endDate = '2026-02-25';
 
-          // Override hotels with specific Oaxaca options - 7 hotels total
-          data.hotels = [
+          // Split hotels into Oaxaca (Feb 17-22) and Mexico City (Feb 22-25)
+          data.hotelsOaxaca = [
             {
               id: "hotel-azucenas",
               name: "C. Azucenas 113",
@@ -163,7 +167,10 @@ export default function TeaserPage() {
               rating: 4.7,
               price: 705,
               currency: "USD"
-            },
+            }
+          ];
+
+          data.hotelsMexicoCity = [
             {
               id: "hotel-garibaldi",
               name: "Hotel Plaza Garibaldi",
@@ -205,6 +212,9 @@ export default function TeaserPage() {
               currency: "USD"
             }
           ];
+
+          // Keep hotels array empty for Oaxaca trip (using separate arrays)
+          data.hotels = [];
 
           // Add car rental options for Oaxaca trip
           data.carRentals = [
@@ -282,6 +292,12 @@ export default function TeaserPage() {
         if (data.hotels && data.hotels.length > 0) {
           setSelectedHotel(data.hotels[0].id || 'hotel-0');
         }
+        if (data.hotelsOaxaca && data.hotelsOaxaca.length > 0) {
+          setSelectedHotelOaxaca(data.hotelsOaxaca[0].id || 'hotel-oaxaca-0');
+        }
+        if (data.hotelsMexicoCity && data.hotelsMexicoCity.length > 0) {
+          setSelectedHotelMexicoCity(data.hotelsMexicoCity[0].id || 'hotel-mexico-0');
+        }
         if (data.flights && data.flights.length > 0) {
           setSelectedFlight(data.flights[0].id || 'flight-0');
         }
@@ -342,6 +358,8 @@ export default function TeaserPage() {
 
   // Calculate pricing
   const selectedHotelData = tripData?.hotels.find((h) => h.id === selectedHotel);
+  const selectedHotelOaxacaData = tripData?.hotelsOaxaca?.find((h) => h.id === selectedHotelOaxaca);
+  const selectedHotelMexicoCityData = tripData?.hotelsMexicoCity?.find((h) => h.id === selectedHotelMexicoCity);
   const selectedFlightData = tripData?.flights.find((f) => f.id === selectedFlight);
   const selectedCarRentalData = tripData?.carRentals?.find((c) => c.id === selectedCarRental);
 
@@ -354,10 +372,24 @@ export default function TeaserPage() {
   };
 
   const nights = calculateNights();
-  const hotelCost = parseFloat(((selectedHotelData?.price || 0) * nights).toFixed(2));
+
+  // Calculate hotel costs - handle separate Oaxaca/Mexico City hotels or single hotel
+  let hotelCost = 0;
+  if (selectedHotelOaxacaData && selectedHotelMexicoCityData) {
+    // Oaxaca trip with two separate hotels - prices are already total for entire stay
+    const oaxacaHotelCost = parseFloat((selectedHotelOaxacaData.price || 0).toFixed(2));
+    const mexicoCityHotelCost = parseFloat((selectedHotelMexicoCityData.price || 0).toFixed(2));
+    hotelCost = parseFloat((oaxacaHotelCost + mexicoCityHotelCost).toFixed(2));
+  } else {
+    // Regular trip with single hotel
+    hotelCost = parseFloat(((selectedHotelData?.price || 0) * nights).toFixed(2));
+  }
+
   const flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
   const carRentalCost = parseFloat((selectedCarRentalData?.basePrice || 0).toFixed(2));
-  const tripCost = parseFloat((hotelCost + flightCost + carRentalCost).toFixed(2));
+  const foodBudget = 500.0; // Fixed food budget for the trip
+  // Trip cost excludes flights - includes hotels, car rental, and food budget
+  const tripCost = parseFloat((hotelCost + carRentalCost + foodBudget).toFixed(2));
   const unlockFee = 299.0;
   const totalCost = parseFloat((tripCost + unlockFee).toFixed(2));
 
@@ -669,6 +701,19 @@ export default function TeaserPage() {
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #faf9f7, #f5f3ef, #fdfcfa)' }}>
+      {/* Navigation Bar with Logo */}
+      <nav className="absolute top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center">
+            <img
+              src="/logo.png"
+              alt="Company Logo"
+              className="h-12 w-auto drop-shadow-lg hover:scale-105 transition-transform duration-200"
+            />
+          </Link>
+        </div>
+      </nav>
+
       {/* Hero Header with Rotating Banner */}
       <header className="relative overflow-hidden">
         <div className="relative h-[300px] md:h-[375px]">
@@ -992,7 +1037,236 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Hotels Section */}
+      {/* Oaxaca Hotels Section (Feb 17-22) */}
+      {tripData.hotelsOaxaca && tripData.hotelsOaxaca.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+              Oaxaca Accommodation
+            </h2>
+            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+              Feb 17-22 • Choose your home base in Oaxaca
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {tripData.hotelsOaxaca.map((hotel, hotelIdx) => {
+              const hotelKey = hotel.id || `hotel-oaxaca-${hotelIdx}`;
+              const isSelected = selectedHotelOaxaca === hotelKey;
+              const oaxacaNights = 5; // Feb 17-22
+
+              // Check for Oaxaca-specific hotel images first
+              const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
+
+              // Use database hotel image if available, otherwise use fallback images
+              const fallbackHotelImages = [
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+                'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
+                'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
+              ];
+              const hotelImage = oaxacaHotelImage || (hotel as any).images?.[0] || fallbackHotelImages[hotelIdx % fallbackHotelImages.length];
+
+              return (
+                <div
+                  key={hotelKey}
+                  onClick={() => setSelectedHotelOaxaca(hotelKey)}
+                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                    isSelected
+                      ? "opacity-100 scale-105"
+                      : "opacity-60 grayscale-[50%] hover:opacity-80"
+                  }`}
+                  style={{
+                    boxShadow: isSelected
+                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                    border: isSelected ? 'none' : '1px solid #e5e5e5'
+                  }}
+                >
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                    }}>
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+
+                  <div className="relative h-32">
+                    <img
+                      src={hotelImage}
+                      alt={hotel.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-3">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <h3 className="text-base font-bold text-gray-900 flex-1">
+                        {getHotelDescription(hotel)}
+                      </h3>
+                      <Building2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <p className="text-xs text-gray-600 mb-2">
+                      {hotel.roomType || "Premium accommodation with modern amenities"}
+                    </p>
+                    {hotel.amenities && hotel.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                          <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xl font-bold text-[#1e3a8a]">
+                          ${(hotel.price || 0).toFixed(2)}
+                        </span>
+                        <span className="text-xs text-gray-600"> total</span>
+                      </div>
+                      <div className="text-right text-xs text-gray-500">
+                        {oaxacaNights} nights
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Mexico City Hotels Section (Feb 22-25) */}
+      {tripData.hotelsMexicoCity && tripData.hotelsMexicoCity.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+              Mexico City Accommodation
+            </h2>
+            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+              Feb 22-25 • Choose your home base in Mexico City
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-5">
+            {tripData.hotelsMexicoCity.map((hotel, hotelIdx) => {
+              const hotelKey = hotel.id || `hotel-mexico-${hotelIdx}`;
+              const isSelected = selectedHotelMexicoCity === hotelKey;
+              const mexicoCityNights = 3; // Feb 22-25
+
+              // Check for Oaxaca-specific hotel images first
+              const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
+
+              // Use database hotel image if available, otherwise use fallback images
+              const fallbackHotelImages = [
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+                'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
+                'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
+                'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800'
+              ];
+              const hotelImage = oaxacaHotelImage || (hotel as any).images?.[0] || fallbackHotelImages[hotelIdx % fallbackHotelImages.length];
+
+              return (
+                <div
+                  key={hotelKey}
+                  onClick={() => setSelectedHotelMexicoCity(hotelKey)}
+                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                    isSelected
+                      ? "opacity-100 scale-105"
+                      : "opacity-60 grayscale-[50%] hover:opacity-80"
+                  }`}
+                  style={{
+                    boxShadow: isSelected
+                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                    border: isSelected ? 'none' : '1px solid #e5e5e5'
+                  }}
+                >
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                    }}>
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+
+                  <div className="relative h-32">
+                    <img
+                      src={hotelImage}
+                      alt={hotel.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <div className="flex items-center gap-0.5">
+                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-3">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <h3 className="text-base font-bold text-gray-900 flex-1">
+                        {getHotelDescription(hotel)}
+                      </h3>
+                      <Building2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <p className="text-xs text-gray-600 mb-2">
+                      {hotel.roomType || "Premium accommodation with modern amenities"}
+                    </p>
+                    {hotel.amenities && hotel.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                          <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xl font-bold text-[#1e3a8a]">
+                          ${(hotel.price || 0).toFixed(2)}
+                        </span>
+                        <span className="text-xs text-gray-600"> total</span>
+                      </div>
+                      <div className="text-right text-xs text-gray-500">
+                        {mexicoCityNights} nights
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Old Hotels Section - Keep for non-Oaxaca trips */}
       {tripData.hotels && tripData.hotels.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
@@ -1124,6 +1398,7 @@ export default function TeaserPage() {
             {tripData.carRentals.map((carRental, carIdx) => {
               const carKey = carRental.id || `car-${carIdx}`;
               const isSelected = selectedCarRental === carKey;
+              const choiceLabel = carIdx === 0 ? "Choice A" : "Choice B";
 
               return (
                 <div
@@ -1152,9 +1427,14 @@ export default function TeaserPage() {
 
                   <div className="bg-white p-5">
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-bold text-gray-900">
-                        {carRental.company} - {carRental.pickupLocation} to {carRental.dropoffLocation}
-                      </h3>
+                      <div>
+                        <div className="inline-block bg-gradient-to-r from-blue-600 to-blue-800 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
+                          {choiceLabel}
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {carRental.company} - {carRental.pickupLocation} to {carRental.dropoffLocation}
+                        </h3>
+                      </div>
                     </div>
 
                     <div className="space-y-2 mb-3">
@@ -1382,8 +1662,8 @@ export default function TeaserPage() {
                               timeLabel = 'Afternoon';
                             }
 
-                            // Get description
-                            const description = item.description || activityDetails?.description || 'Explore this local attraction';
+                            // Get description - use actual data or generic fallback
+                            const description = item.description || activityDetails?.description || 'Explore this local attraction and discover what makes it special';
 
                             // Get activity image from database - use different images from the same activity if available
                             // Rotate through images to avoid duplicates across different activity cards
@@ -1532,31 +1812,21 @@ export default function TeaserPage() {
                           name: 'Local Dining Spot',
                           description: 'Curated dining experience featuring local cuisine and fresh ingredients',
                         };
-                      } else if (allDiningActivities.length === 1) {
-                        // Only 1 venue - use it once and create generics
+                      } else if (allDiningActivities.length === 2) {
+                        // Only 2 venues - use both, skip the third meal slot
                         breakfastVenue = allDiningActivities[0];
-                        lunchVenue = {
-                          name: 'Local Lunch Spot',
-                          description: 'Authentic local dishes for midday dining',
-                        };
-                        dinnerVenue = {
-                          name: 'Local Dinner Spot',
-                          description: 'Evening dining experience with regional specialties',
-                        };
+                        lunchVenue = allDiningActivities[1];
+                        dinnerVenue = null;
+                      } else if (allDiningActivities.length === 1) {
+                        // Only 1 venue - use it for breakfast only
+                        breakfastVenue = allDiningActivities[0];
+                        lunchVenue = null;
+                        dinnerVenue = null;
                       } else {
-                        // No venues - create generics
-                        breakfastVenue = {
-                          name: 'Local Breakfast Spot',
-                          description: 'Morning dining experience with fresh ingredients',
-                        };
-                        lunchVenue = {
-                          name: 'Local Lunch Spot',
-                          description: 'Authentic local dishes for midday dining',
-                        };
-                        dinnerVenue = {
-                          name: 'Local Dinner Spot',
-                          description: 'Evening dining experience with regional specialties',
-                        };
+                        // No venues - skip dining section entirely
+                        breakfastVenue = null;
+                        lunchVenue = null;
+                        dinnerVenue = null;
                       }
 
                       return (
@@ -1565,9 +1835,10 @@ export default function TeaserPage() {
                             Dining
                           </h4>
 
-                          {/* Single row with Breakfast, Lunch, Dinner - all different venues */}
+                          {/* Single row with Breakfast, Lunch, Dinner - only show actual venues */}
                           <div className="grid md:grid-cols-3 gap-4">
                             {/* Breakfast */}
+                            {breakfastVenue && (
                             <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
                               <div className="relative h-32">
                                 <img
@@ -1596,7 +1867,7 @@ export default function TeaserPage() {
                                   )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
-                                  {breakfastVenue.description || 'Local dining experience'}
+                                  {breakfastVenue.description || 'Delicious breakfast options to start your day'}
                                 </div>
                                 {breakfastVenue.hours && (
                                   <div className="text-xs text-gray-600 mb-1">
@@ -1604,7 +1875,7 @@ export default function TeaserPage() {
                                   </div>
                                 )}
                                 <div className="text-xs text-gray-500">
-                                  {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                                  {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
                                 </div>
                                 {breakfastVenue.contact && (
                                   <div className="text-xs text-blue-600 mt-1">
@@ -1613,8 +1884,10 @@ export default function TeaserPage() {
                                 )}
                               </div>
                             </div>
+                            )}
 
                             {/* Lunch */}
+                            {lunchVenue && (
                             <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
                               <div className="relative h-32">
                                 <img
@@ -1643,7 +1916,7 @@ export default function TeaserPage() {
                                   )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
-                                  {lunchVenue.description || 'Local dining experience'}
+                                  {lunchVenue.description || 'Authentic local flavors for your midday meal'}
                                 </div>
                                 {lunchVenue.hours && (
                                   <div className="text-xs text-gray-600 mb-1">
@@ -1651,7 +1924,7 @@ export default function TeaserPage() {
                                   </div>
                                 )}
                                 <div className="text-xs text-gray-500">
-                                  {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                                  {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
                                 </div>
                                 {lunchVenue.contact && (
                                   <div className="text-xs text-blue-600 mt-1">
@@ -1660,8 +1933,10 @@ export default function TeaserPage() {
                                 )}
                               </div>
                             </div>
+                            )}
 
                             {/* Dinner */}
+                            {dinnerVenue && (
                             <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
                               <div className="relative h-32">
                                 <img
@@ -1690,7 +1965,7 @@ export default function TeaserPage() {
                                   )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
-                                  {dinnerVenue.description || 'Local dining experience'}
+                                  {dinnerVenue.description || 'Evening dining experience with regional specialties'}
                                 </div>
                                 {dinnerVenue.hours && (
                                   <div className="text-xs text-gray-600 mb-1">
@@ -1698,7 +1973,7 @@ export default function TeaserPage() {
                                   </div>
                                 )}
                                 <div className="text-xs text-gray-500">
-                                  {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local Area'}
+                                  {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
                                 </div>
                                 {dinnerVenue.contact && (
                                   <div className="text-xs text-blue-600 mt-1">
@@ -1707,6 +1982,7 @@ export default function TeaserPage() {
                                 )}
                               </div>
                             </div>
+                            )}
                           </div>
                         </div>
                       );
@@ -1754,7 +2030,41 @@ export default function TeaserPage() {
             Your Trip Summary
           </h2>
           <div className="max-w-md mx-auto space-y-4" style={{ fontFamily: 'var(--font-inter)' }}>
-            {selectedHotelData && (
+            {/* Show separate hotels for Oaxaca trip */}
+            {selectedHotelOaxacaData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    {getHotelDescription(selectedHotelOaxacaData)} (Oaxaca)
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedHotelOaxacaData.rating ? `${selectedHotelOaxacaData.rating} stars` : ""} • 5 nights
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${(selectedHotelOaxacaData.price || 0).toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
+            {selectedHotelMexicoCityData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    {getHotelDescription(selectedHotelMexicoCityData)} (Mexico City)
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedHotelMexicoCityData.rating ? `${selectedHotelMexicoCityData.rating} stars` : ""} • 3 nights
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${(selectedHotelMexicoCityData.price || 0).toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Show single hotel for regular trips */}
+            {selectedHotelData && !selectedHotelOaxacaData && !selectedHotelMexicoCityData && (
               <div className="flex justify-between items-center pb-3 border-b border-white/30">
                 <div>
                   <div className="font-semibold text-base">
@@ -1766,22 +2076,6 @@ export default function TeaserPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-xl font-bold">${hotelCost.toFixed(2)}</div>
-                </div>
-              </div>
-            )}
-
-            {selectedFlightData && (
-              <div className="flex justify-between items-center pb-3 border-b border-white/30">
-                <div>
-                  <div className="font-semibold text-base">
-                    {getFlightClass(selectedFlightData.price)}
-                  </div>
-                  <div className="text-blue-100 text-sm">
-                    {selectedFlightData.departureTime} • {selectedFlightData.departureAirport} → {selectedFlightData.arrivalAirport}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold">${flightCost.toFixed(2)}</div>
                 </div>
               </div>
             )}
@@ -1801,6 +2095,21 @@ export default function TeaserPage() {
                 </div>
               </div>
             )}
+
+            {/* Food Budget */}
+            <div className="flex justify-between items-center pb-3 border-b border-white/30">
+              <div>
+                <div className="font-semibold text-base">
+                  Food & Dining Budget
+                </div>
+                <div className="text-blue-100 text-sm">
+                  Estimated for entire trip
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xl font-bold">${foodBudget.toFixed(2)}</div>
+              </div>
+            </div>
 
             <div className="flex justify-between items-center pb-3 border-b border-white/30">
               <div className="text-base font-semibold">Trip Subtotal</div>
@@ -1847,10 +2156,6 @@ export default function TeaserPage() {
               >
                 Not Interested
               </button>
-
-              <p className="text-center text-sm text-blue-100 mt-3">
-                Secure payment • Instant access • All sales are final
-              </p>
             </div>
           </div>
         </div>
