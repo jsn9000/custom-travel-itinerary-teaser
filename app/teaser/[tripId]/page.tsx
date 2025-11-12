@@ -241,7 +241,7 @@ export default function TeaserPage() {
               pickupLocation: "OAX",
               dropoffLocation: "MEX",
               pickupDate: "Feb 17",
-              dropoffDate: "Feb 24",
+              dropoffDate: "Feb 25",
               basePrice: 164, // 140 + 24
               withCDW: 283, // 211 + 72
               currency: "USD",
@@ -311,7 +311,7 @@ export default function TeaserPage() {
               arrivalAirport: "OAX",
               departureTime: "Feb 17, 2026",
               arrivalTime: "Feb 25, 2026",
-              price: 1009,
+              price: 1337,
               currency: "USD",
               flightCode: null,
               baggageOptions: "Included: carry-on bags, personal items and seat selection",
@@ -320,19 +320,19 @@ export default function TeaserPage() {
                 {
                   route: "JFK-OAX",
                   date: "Feb 17, 2026",
-                  price: 559,
+                  price: 627,
                   description: "New York to Oaxaca (layover in MEX for 2hrs)"
                 },
                 {
                   route: "OAX-MEX",
                   date: "Feb 22, 2026",
-                  price: 109,
+                  price: 147,
                   description: "Oaxaca to Mexico City (nonstop)"
                 },
                 {
                   route: "MEX-JFK",
                   date: "Feb 25, 2026",
-                  price: 450,
+                  price: 563,
                   description: "Mexico City to New York (nonstop)"
                 }
               ]
@@ -2418,17 +2418,7 @@ export default function TeaserPage() {
 
                     {/* Route Information */}
                     <div className="mb-4">
-                      <div className="flex justify-between text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
-                        <div>
-                          <span className="text-gray-600">Pickup:</span>
-                          <span className="font-semibold ml-2">{carRental.pickupLocation}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Drop-off:</span>
-                          <span className="font-semibold ml-2">{carRental.dropoffLocation}</span>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-600 text-center mt-2">
+                      <div className="text-sm text-gray-600 text-center">
                         {carRental.pickupDate} - {carRental.dropoffDate}
                       </div>
                     </div>
