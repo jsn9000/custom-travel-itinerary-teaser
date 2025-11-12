@@ -1128,89 +1128,8 @@ export default function TeaserPage() {
             // Day 9 override for Oaxaca trip
             const day9 = data.dailySchedule.find((day: any) => day.dayNumber === 9);
             if (day9) {
+              day9.dayTitle = "Final Explorations & Departure";
               day9.items = [
-                {
-                  id: "la-selva-de-los-gatos",
-                  name: "La Selva De Los Gatos",
-                  type: "food",
-                  category: "cafe",
-                  description: "Charming cafe with a cozy atmosphere, serving coffee, tea, and light meals in a garden-like setting.",
-                  address: "Oaxaca City",
-                  notes: "Cafe with garden setting",
-                  images: [
-                    {
-                      url: "/oaxaca/images/La Selva De Los Gatos.jpeg",
-                      alt: "La Selva De Los Gatos"
-                    }
-                  ]
-                },
-                {
-                  id: "pochote-market",
-                  name: "Pochote Xochimilco Organic and Artisinal Market",
-                  type: "food",
-                  category: "market",
-                  description: "Weekly organic and artisanal market featuring local produce, handmade crafts, and fresh food from regional vendors.",
-                  address: "Oaxaca City",
-                  notes: "Organic market, artisanal products",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Pochote Xochimilco Organic and Artisinal Market.jpeg",
-                      alt: "Pochote Xochimilco Organic and Artisinal Market"
-                    }
-                  ]
-                },
-                {
-                  id: "herbivora",
-                  name: "Herbivora - Restaurante Vegano en Oaxaca",
-                  type: "food",
-                  category: "vegan restaurant",
-                  description: "Vegan restaurant offering creative plant-based interpretations of traditional Oaxacan dishes and international cuisine.",
-                  address: "Oaxaca City",
-                  notes: "Vegan restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Herbivora - Restaurante Vegano en Oaxaca.jpeg",
-                      alt: "Herbivora - Restaurante Vegano en Oaxaca"
-                    }
-                  ]
-                },
-                {
-                  id: "horseback-mexico",
-                  name: "Horseback Mexico Pick Up Point",
-                  type: "activity",
-                  category: "tour",
-                  description: "Starting point for horseback riding tours through the scenic Oaxacan countryside and mountains. Experience rural Oaxaca on horseback.",
-                  address: "Oaxaca area",
-                  notes: "Horseback riding tours",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Horseback Mexico Pick Up Point.jpeg",
-                      alt: "Horseback Mexico Pick Up Point"
-                    }
-                  ]
-                },
-                {
-                  id: "playa-carrizalillo",
-                  name: "Playa Carrizalillo",
-                  type: "activity",
-                  category: "beach",
-                  description: "Beautiful crescent-shaped beach with calm, clear waters perfect for swimming and snorkeling. Accessible by a long staircase with stunning views.",
-                  address: "Puerto Escondido, Oaxaca",
-                  notes: "Beach, swimming, snorkeling",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Playa Carrizalillo.jpeg",
-                      alt: "Playa Carrizalillo"
-                    }
-                  ]
-                }
-              ];
-            }
-
-            // Day 10 override for Oaxaca trip
-            const day10 = data.dailySchedule.find((day: any) => day.dayNumber === 10);
-            if (day10) {
-              day10.items = [
                 {
                   id: "mexico-city-airport-departure",
                   name: "Mexico City International Airport Benito Juárez",
@@ -1258,6 +1177,7 @@ export default function TeaserPage() {
                 }
               ];
             }
+
           }
         }
 
@@ -1416,6 +1336,8 @@ export default function TeaserPage() {
       // Generate title based on first day, last day, or activity types
       if (day.dayNumber === 1) {
         return 'Arrival & Getting Started';
+      } else if (day.dayNumber === 9) {
+        return 'Final Explorations & Departure';
       } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
         return 'Final Explorations & Departure';
       } else if (activities.length >= 3) {
@@ -2591,7 +2513,9 @@ export default function TeaserPage() {
           </div>
 
           <div className="space-y-8">
-            {tripData.dailySchedule.map((day, dayIdx) => (
+            {tripData.dailySchedule
+              .filter((day: any) => !(isOaxacaTrip && day.dayNumber === 10))
+              .map((day, dayIdx) => (
               <div
                 key={`day-${day.dayNumber}-${dayIdx}`}
                 className="bg-white rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ease-out"
@@ -2639,8 +2563,8 @@ export default function TeaserPage() {
 
                   // Filter activities (exclude hotels, dining, airports) - EXCEPT for customized days
                   let allActivities = day.items.filter((item: any) => {
-                    // For Day 1, 2, 3, 4, and 5 on Oaxaca trip, show activity, food, and travel items
-                    if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10)) {
+                    // For Day 1, 2, 3, 4, 5, 6, 7, 8, 9 on Oaxaca trip, show activity, food, and travel items
+                    if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) {
                       return item.type === 'activity' || item.type === 'food' || item.type === 'travel';
                     }
 
@@ -2682,7 +2606,7 @@ export default function TeaserPage() {
                   });
 
                   // Deduplicate activities before displaying (skip for customized Oaxaca days)
-                  if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10)) {
+                  if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) {
                     // For customized days, use the items as-is without looking them up in activities database
                     allActivities = allActivities;
                   } else {
@@ -2693,7 +2617,7 @@ export default function TeaserPage() {
 
                   // Ensure minimum 3 activities per day - if fewer, pull from full activities list
                   // Skip this for customized Oaxaca days
-                  if (allActivities.length < 3 && !(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))) {
+                  if (allActivities.length < 3 && !(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))) {
                     const allNonDiningActivities = deduplicateActivities(tripData.activities.filter((act: any) => {
                       // Exclude dining
                       const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse'];
@@ -2724,13 +2648,13 @@ export default function TeaserPage() {
                   if (allActivities.length === 0) return null;
 
                   // For customized Oaxaca days, separate food, activities, and travel
-                  const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
+                  const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'food')
                     : [];
-                  const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 10))
+                  const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'travel')
                     : [];
-                  const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
+                  const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'activity')
                     : allActivities;
 
@@ -2928,7 +2852,7 @@ export default function TeaserPage() {
                 })()}
 
                     {/* Dining Section - Skip for customized Oaxaca days */}
-                    {!(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10)) && (() => {
+                    {!(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) && (() => {
                       // Get deduplicate function from window
                       const deduplicateActivities = (window as any).__deduplicateActivities;
                       // Get all dining venues from activities (deduplicated)
