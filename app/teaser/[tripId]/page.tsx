@@ -1834,7 +1834,7 @@ export default function TeaserPage() {
             <img
               src="/mame-dee-logo.png"
               alt="Mame Dee Travel World"
-              className="h-48 md:h-64 object-contain"
+              className="h-32 md:h-44 object-contain"
             />
           </div>
 
