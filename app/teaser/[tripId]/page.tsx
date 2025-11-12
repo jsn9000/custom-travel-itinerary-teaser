@@ -2727,7 +2727,7 @@ export default function TeaserPage() {
                   const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
                     ? allActivities.filter((item: any) => item.type === 'food')
                     : [];
-                  const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 10))
+                  const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 10))
                     ? allActivities.filter((item: any) => item.type === 'travel')
                     : [];
                   const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
