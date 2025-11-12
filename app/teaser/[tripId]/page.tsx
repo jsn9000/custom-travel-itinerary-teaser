@@ -364,7 +364,13 @@ export default function TeaserPage() {
                   location: "Historic center of Oaxaca City",
                   hours: "Open well past midnight",
                   time: "Evening/Night",
-                  notes: "Street food hub with authentic local atmosphere"
+                  notes: "Street food hub with authentic local atmosphere",
+                  images: [
+                    {
+                      url: "/oaxaca/images/calle de los.png",
+                      alt: "Calle de Los Libres & Murguía"
+                    }
+                  ]
                 },
                 {
                   id: "tlayudas-libres-dona-martha",
@@ -710,21 +716,6 @@ export default function TeaserPage() {
                     {
                       url: "/oaxaca/images/Teotitlán del Valle.jpeg",
                       alt: "Teotitlán del Valle"
-                    }
-                  ]
-                },
-                {
-                  id: "centro-cultural-teotitlan",
-                  name: "Centro Cultural Comunitario Teotitlán del Valle",
-                  type: "activity",
-                  category: "cultural center",
-                  description: "Community cultural center showcasing local Zapotec traditions, textiles, and cultural heritage. Learn about traditional weaving techniques and indigenous culture.",
-                  address: "Teotitlán del Valle",
-                  notes: "Cultural center, community museum",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Centro Cultural Comunitario Teotitlán del Valle.jpeg",
-                      alt: "Centro Cultural Comunitario Teotitlán del Valle"
                     }
                   ]
                 },
@@ -2425,6 +2416,20 @@ export default function TeaserPage() {
                       </div>
                     </div>
 
+                    {/* Pickup and Drop-off (for Choice B only) */}
+                    {carRental.options && carRental.options.length > 0 && (
+                      <div className="mb-3">
+                        <div className="flex justify-between text-sm text-gray-700">
+                          <div>
+                            <span className="font-semibold">Pickup:</span> {carRental.pickupLocation}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Drop-off:</span> {carRental.dropoffLocation}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Route Information */}
                     <div className="mb-4">
                       <div className="text-sm text-gray-600 text-center">
@@ -2570,36 +2575,6 @@ export default function TeaserPage() {
           </div>
 
           {/* Car Rental Total Summary */}
-          {selectedCarRentalData && (
-            <div className="mt-8 max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                Car Rental Summary
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total without CDW:</span>
-                  <span className="font-bold text-[#1e3a8a]">
-                    ${selectedCarRentalData.options && selectedCarRentalData.options.length > 0
-                      ? selectedCarRentalData.options[selectedCarRentalOption].basePrice.toFixed(2)
-                      : selectedCarRentalData.basePrice.toFixed(2)
-                    }
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total with CDW:</span>
-                  <span className="font-semibold text-gray-700">
-                    ${selectedCarRentalData.options && selectedCarRentalData.options.length > 0
-                      ? selectedCarRentalData.options[selectedCarRentalOption].withCDW.toFixed(2)
-                      : selectedCarRentalData.withCDW.toFixed(2)
-                    }
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-blue-200">
-                  CDW insurance may be covered by your credit card. Check with your card issuer before purchasing additional coverage.
-                </p>
-              </div>
-            </div>
-          )}
         </section>
       )}
 
