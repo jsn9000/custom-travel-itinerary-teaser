@@ -1829,6 +1829,15 @@ export default function TeaserPage() {
       {/* Flights Section */}
       {tripData.flights && tripData.flights.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <img
+              src="/mame-dee-logo.png"
+              alt="Mame Dee Travel World"
+              className="h-48 md:h-64 object-contain"
+            />
+          </div>
+
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
               {isOaxacaTrip ? 'Your Flight' : 'Select Your Flight'}
