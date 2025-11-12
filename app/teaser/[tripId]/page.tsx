@@ -908,7 +908,7 @@ export default function TeaserPage() {
                   notes: "Airport departure",
                   images: [
                     {
-                      url: "/oaxaca/images/Oaxaca International Airport.jpeg",
+                      url: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80",
                       alt: "Oaxaca International Airport"
                     }
                   ]
@@ -2727,8 +2727,11 @@ export default function TeaserPage() {
                   const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
                     ? allActivities.filter((item: any) => item.type === 'food')
                     : [];
+                  const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 10))
+                    ? allActivities.filter((item: any) => item.type === 'travel')
+                    : [];
                   const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9 || day.dayNumber === 10))
-                    ? allActivities.filter((item: any) => item.type === 'activity' || item.type === 'travel')
+                    ? allActivities.filter((item: any) => item.type === 'activity')
                     : allActivities;
 
                   return (
@@ -2885,6 +2888,40 @@ export default function TeaserPage() {
                           })}
                         </div>
                       </div>
+                      )}
+
+                      {/* Travel Section - for Day 5 and Day 6 */}
+                      {travelItems.length > 0 && (
+                        <div className="mb-6">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                            Travel
+                          </h4>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            {travelItems.map((item: any, travelIdx: number) => {
+                              const description = item.description || 'Travel information';
+                              const travelImage = item.images?.[0]?.url || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800';
+
+                              return (
+                                <div
+                                  key={`travel-${item.id || travelIdx}`}
+                                  className="bg-white rounded-xl overflow-hidden border border-blue-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer"
+                                >
+                                  <div className="relative h-48">
+                                    <img
+                                      src={travelImage}
+                                      alt={item.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="p-4">
+                                    <h5 className="font-bold text-gray-900 mb-2">{item.name}</h5>
+                                    <p className="text-sm text-gray-600 line-clamp-3">{description}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       )}
                     </>
                   );
