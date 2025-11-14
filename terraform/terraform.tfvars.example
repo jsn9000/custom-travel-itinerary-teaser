@@ -1,0 +1,40 @@
+# Terraform Variables Example
+# Copy this file to terraform.tfvars and customize as needed
+
+# AWS Region
+aws_region = "us-east-1"
+
+# Project Configuration
+project_name         = "custom-itinerary"
+ecr_repository_name  = "custom-itinerary-travel"
+ecs_cluster_name     = "custom-itinerary-cluster"
+ecs_service_name     = "custom-itinerary-service"
+ecs_task_family      = "custom-itinerary-task"
+container_name       = "custom-itinerary-container"
+
+# Task Configuration
+task_cpu    = "1024"  # 1 vCPU
+task_memory = "2048"  # 2 GB
+
+# Service Configuration
+desired_count = 1
+
+# Whether to create the ECS service
+# Set to false initially if you need to create secrets first
+create_ecs_service = false
+
+# Monitoring
+enable_container_insights = true
+log_retention_days       = 7
+
+# Supabase Configuration
+supabase_url              = "https://eaofdajkpqyddlbawdli.supabase.co"
+supabase_bucket           = "wanderlog-edmonton-images"
+supabase_edge_function_url = "https://eaofdajkpqyddlbawdli.functions.supabase.co/fetch-and-store-image"
+
+# Tags
+tags = {
+  Project     = "custom-itinerary-travel"
+  Environment = "production"
+  ManagedBy   = "Terraform"
+}
