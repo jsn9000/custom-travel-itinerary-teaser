@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     // Email recipients
     const recipients = [
       'jsn9000@gmail.com',
-      'Dejabryant28@gmail.com'
+      'support@mamedeeworld.com'
     ];
 
     // Create email content
