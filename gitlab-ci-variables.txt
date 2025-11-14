@@ -1,0 +1,205 @@
+================================================================================
+GitLab CI/CD Variables Configuration
+================================================================================
+
+Add these variables in GitLab:
+Settings → CI/CD → Variables → Add Variable
+
+================================================================================
+REQUIRED VARIABLES
+================================================================================
+
+Variable Name: AWS_ACCESS_KEY_ID
+Type: Variable
+Value: <Your AWS IAM Access Key ID>
+Protected: Yes (✓)
+Masked: Yes (✓)
+Expand variable reference: No
+Description: AWS IAM access key for ECR and ECS operations
+
+---
+
+Variable Name: AWS_SECRET_ACCESS_KEY
+Type: Variable
+Value: <Your AWS IAM Secret Access Key>
+Protected: Yes (✓)
+Masked: Yes (✓)
+Expand variable reference: No
+Description: AWS IAM secret key for ECR and ECS operations
+
+---
+
+Variable Name: AWS_ACCOUNT_ID
+Type: Variable
+Value: <Your 12-digit AWS Account ID>
+Protected: Yes (✓)
+Masked: No
+Expand variable reference: No
+Description: Your AWS account ID (e.g., 123456789012)
+
+---
+
+Variable Name: AWS_DEFAULT_REGION
+Type: Variable
+Value: us-east-1
+Protected: No
+Masked: No
+Expand variable reference: No
+Description: AWS region where resources are deployed
+
+================================================================================
+OPTIONAL VARIABLES (Override defaults)
+================================================================================
+
+Variable Name: ECR_REPOSITORY
+Type: Variable
+Value: custom-itinerary-travel
+Protected: No
+Masked: No
+Description: ECR repository name (default: custom-itinerary-travel)
+
+---
+
+Variable Name: ECS_CLUSTER
+Type: Variable
+Value: custom-itinerary-cluster
+Protected: No
+Masked: No
+Description: ECS cluster name (default: custom-itinerary-cluster)
+
+---
+
+Variable Name: ECS_SERVICE
+Type: Variable
+Value: custom-itinerary-service
+Protected: No
+Masked: No
+Description: ECS service name (default: custom-itinerary-service)
+
+---
+
+Variable Name: ECS_TASK_DEFINITION
+Type: Variable
+Value: custom-itinerary-task
+Protected: No
+Masked: No
+Description: ECS task definition family name (default: custom-itinerary-task)
+
+================================================================================
+IAM PERMISSIONS REQUIRED
+================================================================================
+
+Your AWS IAM user/role needs the following permissions:
+
+ECR Permissions:
+- ecr:GetAuthorizationToken
+- ecr:BatchCheckLayerAvailability
+- ecr:GetDownloadUrlForLayer
+- ecr:BatchGetImage
+- ecr:PutImage
+- ecr:InitiateLayerUpload
+- ecr:UploadLayerPart
+- ecr:CompleteLayerUpload
+
+ECS Permissions:
+- ecs:DescribeTaskDefinition
+- ecs:RegisterTaskDefinition
+- ecs:UpdateService
+- ecs:DescribeServices
+
+IAM Permissions:
+- iam:PassRole (for ECS task execution role)
+
+Example IAM Policy:
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeTaskDefinition",
+        "ecs:RegisterTaskDefinition",
+        "ecs:UpdateService",
+        "ecs:DescribeServices"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::*:role/ecsTaskExecutionRole",
+        "arn:aws:iam::*:role/ecsTaskRole"
+      ]
+    }
+  ]
+}
+
+================================================================================
+VERIFICATION CHECKLIST
+================================================================================
+
+Before running the pipeline:
+☐ All 4 required variables added to GitLab
+☐ AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are masked
+☐ IAM user has necessary permissions
+☐ ECR repository exists in AWS
+☐ ECS cluster exists in AWS
+☐ Task definition registered in AWS
+☐ ECS service created
+☐ AWS Secrets Manager secrets created
+☐ ecs-task-definition.json updated with your AWS account ID
+
+================================================================================
+TESTING GITLAB VARIABLES
+================================================================================
+
+To test if variables are set correctly, add this to your pipeline temporarily:
+
+test:
+  stage: test
+  script:
+    - echo "AWS Account ID: $AWS_ACCOUNT_ID"
+    - echo "AWS Region: $AWS_DEFAULT_REGION"
+    - echo "ECR Repository: $ECR_REPOSITORY"
+    - aws --version
+    - aws sts get-caller-identity
+  only:
+    - branches
+
+Run the pipeline and check the output. Remove this test job after verification.
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Error: "Unable to locate credentials"
+→ Check AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set correctly
+
+Error: "An error occurred (AccessDeniedException)"
+→ Verify IAM permissions listed above
+
+Error: "RepositoryNotFoundException"
+→ Create ECR repository: aws ecr create-repository --repository-name custom-itinerary-travel
+
+Error: "ClusterNotFoundException"
+→ Create ECS cluster: aws ecs create-cluster --cluster-name custom-itinerary-cluster
+
+Error: "ServiceNotFoundException"
+→ Create ECS service (see DEPLOYMENT-QUICKSTART.md)
+
+================================================================================

@@ -1,0 +1,99 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  AWS_DEFAULT_REGION: us-east-1
+  ECR_REPOSITORY: custom-itinerary-travel
+  ECS_CLUSTER: custom-itinerary-cluster
+  ECS_SERVICE: custom-itinerary-service
+  ECS_TASK_DEFINITION: custom-itinerary-task
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+# Build and push Docker image to AWS ECR
+build:
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  before_script:
+    - apk add --no-cache python3 py3-pip aws-cli
+    - aws --version
+    - docker --version
+    # Login to AWS ECR
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  script:
+    # Build Docker image
+    - echo "Building Docker image..."
+    - docker build
+        --build-arg NODE_ENV=production
+        -t $ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA
+        -t $ECR_REPOSITORY:latest
+        .
+
+    # Tag images for ECR
+    - docker tag $ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA
+    - docker tag $ECR_REPOSITORY:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+
+    # Push to ECR
+    - echo "Pushing to ECR..."
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+  only:
+    - main
+    - develop
+  tags:
+    - docker
+
+# Deploy to AWS ECS Fargate
+deploy:
+  stage: deploy
+  image:
+    name: amazon/aws-cli:latest
+    entrypoint: [""]
+  before_script:
+    - yum install -y jq
+  script:
+    # Get current task definition
+    - echo "Fetching current task definition..."
+    - aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION --region $AWS_DEFAULT_REGION > task-definition.json
+
+    # Update task definition with new image
+    - echo "Updating task definition with new image..."
+    - cat task-definition.json | jq --arg IMAGE "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' > new-task-definition.json
+
+    # Register new task definition
+    - echo "Registering new task definition..."
+    - aws ecs register-task-definition --cli-input-json file://new-task-definition.json --region $AWS_DEFAULT_REGION > registered-task.json
+
+    # Get new task definition ARN
+    - NEW_TASK_ARN=$(cat registered-task.json | jq -r '.taskDefinition.taskDefinitionArn')
+    - echo "New task definition ARN: $NEW_TASK_ARN"
+
+    # Update ECS service with new task definition
+    - echo "Updating ECS service..."
+    - aws ecs update-service
+        --cluster $ECS_CLUSTER
+        --service $ECS_SERVICE
+        --task-definition $NEW_TASK_ARN
+        --force-new-deployment
+        --region $AWS_DEFAULT_REGION
+
+    # Wait for service to stabilize (optional but recommended)
+    - echo "Waiting for service to stabilize..."
+    - aws ecs wait services-stable
+        --cluster $ECS_CLUSTER
+        --services $ECS_SERVICE
+        --region $AWS_DEFAULT_REGION
+
+    - echo "Deployment completed successfully!"
+  only:
+    - main
+  tags:
+    - docker
+  environment:
+    name: production
+    url: https://your-app-url.com
+  needs:
+    - build

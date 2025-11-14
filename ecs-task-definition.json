@@ -1,0 +1,102 @@
+{
+  "family": "custom-itinerary-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "custom-itinerary-container",
+      "image": "YOUR_AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/custom-itinerary-travel:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "NEXT_TELEMETRY_DISABLED",
+          "value": "1"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "HOSTNAME",
+          "value": "0.0.0.0"
+        },
+        {
+          "name": "NEXT_PUBLIC_SUPABASE_URL",
+          "value": "https://eaofdajkpqyddlbawdli.supabase.co"
+        },
+        {
+          "name": "SUPABASE_URL",
+          "value": "https://eaofdajkpqyddlbawdli.supabase.co"
+        },
+        {
+          "name": "SUPABASE_BUCKET",
+          "value": "wanderlog-edmonton-images"
+        },
+        {
+          "name": "SUPABASE_EDGE_FUNCTION_URL",
+          "value": "https://eaofdajkpqyddlbawdli.functions.supabase.co/fetch-and-store-image"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "OPENAI_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:openai-api-key:OPENAI_API_KEY::"
+        },
+        {
+          "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:supabase-keys:NEXT_PUBLIC_SUPABASE_ANON_KEY::"
+        },
+        {
+          "name": "SUPABASE_ANON_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:supabase-keys:SUPABASE_ANON_KEY::"
+        },
+        {
+          "name": "FIRECRAWL_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:firecrawl-api-key:FIRECRAWL_API_KEY::"
+        },
+        {
+          "name": "BROWSERBASE_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:browserbase-keys:BROWSERBASE_API_KEY::"
+        },
+        {
+          "name": "BROWSERBASE_PROJECT_ID",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:browserbase-keys:BROWSERBASE_PROJECT_ID::"
+        },
+        {
+          "name": "RESEND_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_AWS_ACCOUNT_ID:secret:resend-api-key:RESEND_API_KEY::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/custom-itinerary-task",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
