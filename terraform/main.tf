@@ -329,11 +329,11 @@ resource "aws_ecs_service" "app" {
   deployment_configuration {
     maximum_percent         = 200
     minimum_healthy_percent = 100
-  }
 
-  deployment_circuit_breaker {
-    enable   = true
-    rollback = true
+    deployment_circuit_breaker {
+      enable   = true
+      rollback = true
+    }
   }
 
   tags = var.tags
