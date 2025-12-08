@@ -2423,9 +2423,6 @@ export default function TeaserPage() {
                   <div className="bg-white p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="inline-block bg-gradient-to-r from-blue-600 to-blue-800 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
-                          {choiceLabel}
-                        </div>
                         <h3 className="text-lg font-bold text-gray-900">
                           {carRental.company}
                         </h3>
