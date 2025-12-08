@@ -327,7 +327,7 @@ export default function TeaserPage() {
             },
             {
               id: "flight-option-2",
-              airline: "Round Trip Flight Option 2",
+              airline: "Round Trip Flight Option 2 Delta Airlines",
               departureAirport: "SYR",
               arrivalAirport: "OAX",
               departureTime: "Feb 18, 2026",
