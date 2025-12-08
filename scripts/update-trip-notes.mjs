@@ -8,7 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const TRIP_ID = 'bab29d55-7e10-46ed-b702-e0f2a342fcd7';
 
 // New appropriate trip description for Taryn's journey
-const NEW_NOTES = "Get ready for an unforgettable adventure! From world-class attractions to culinary delights, this carefully curated itinerary will take you on a journey of discovery. Experience the perfect blend of urban excitement and natural beauty.";
+const NEW_NOTES = "Taryn get ready for an unforgettable adventure! From world-class attractions to culinary delights, this carefully curated itinerary will take you on a journey of discovery. Experience the perfect blend of urban excitement and natural beauty!";
 
 async function updateTripNotes() {
   console.log('📝 Updating trip notes...\n');
