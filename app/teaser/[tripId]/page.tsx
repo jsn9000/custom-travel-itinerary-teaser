@@ -1822,7 +1822,7 @@ export default function TeaserPage() {
                             {(flight as any).legs.map((leg: any, legIdx: number) => (
                               <div key={legIdx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                                 <div className="flex-1">
-                                  <div className="font-bold text-gray-900 mb-1">{leg.route}</div>
+                                  {flightIdx !== 0 && <div className="font-bold text-gray-900 mb-1">{leg.route}</div>}
                                   <div className="text-xs text-gray-600">{leg.description}</div>
                                   <div className="text-xs text-gray-500 mt-1">{leg.date}</div>
                                 </div>
