@@ -306,7 +306,7 @@ export default function TeaserPage() {
           data.flights = [
             {
               id: "flight-option-1",
-              airline: "Round Trip Flight Option 1",
+              airline: "Round Trip Flight Option 1 American Airlines",
               departureAirport: "ALB",
               arrivalAirport: "OAX",
               departureTime: "Feb 18, 2026",
@@ -319,9 +319,9 @@ export default function TeaserPage() {
               legs: [
                 {
                   route: "ALB ↔ OAX",
-                  date: "Feb 18 - 26, 2026",
+                  date: "",
                   price: 1357.00,
-                  description: "Round trip - One layover"
+                  description: "ALB-OAX (1 layover)"
                 }
               ]
             },
@@ -1824,7 +1824,7 @@ export default function TeaserPage() {
                                 <div className="flex-1">
                                   {flightIdx !== 0 && <div className="font-bold text-gray-900 mb-1">{leg.route}</div>}
                                   <div className="text-xs text-gray-600">{leg.description}</div>
-                                  <div className="text-xs text-gray-500 mt-1">{leg.date}</div>
+                                  {leg.date && <div className="text-xs text-gray-500 mt-1">{leg.date}</div>}
                                 </div>
                                 <div className="text-right ml-4">
                                   <div className="text-lg font-bold text-[#1e3a8a]">
