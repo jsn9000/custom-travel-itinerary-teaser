@@ -334,36 +334,31 @@ export default function TeaserPage() {
                   name: "Oaxaca International Airport",
                   type: "activity",
                   category: "transportation",
-                  description: "Arrival day. Flight options include 2 personal items, 2 carry-on bags, and seat selection. See flight options above for detailed pricing and routes.",
-                  time: "Evening Arrival",
-                  notes: "Airport arrival - international terminal"
-                },
-                {
-                  id: "calle-libres-murguia",
-                  name: "Calle de Los Libres & Murguía",
-                  type: "activity",
-                  category: "street food",
-                  description: "If you're out exploring after dark, head toward the corner of Calle de Los Libres and Murguía in Oaxaca City's historic center. This lively stretch comes alive at night with street vendors and local tlayuda stands that stay open well past midnight. Here you'll find some of the city's most authentic snacks — tlayudas (crispy tortillas with refried beans, avocado, and veggies), memelas, and fresh fruit juices. It's casual, local, and full of friendly energy. 💡 Vegan tip: ask for 'con frijoles, sin carne ni queso, por favor' (with beans, no meat or cheese). Stay near the well-lit stalls, keep small bills handy, and soak in the local atmosphere — it's a true taste of Oaxaca's nightlife. 🌮✨",
-                  address: "Corner of Calle de Los Libres and Murguía, Oaxaca City Historic Center",
-                  location: "Historic center of Oaxaca City",
-                  hours: "Open well past midnight",
-                  time: "Evening/Night",
-                  notes: "Street food hub with authentic local atmosphere",
+                  categoryLabel: "International airport • Airport",
+                  description: "Arrive at 1:12pm through American Airlines for Round Trip total $1,137",
+                  time: "1:12 PM",
+                  details: [
+                    "2 personal items",
+                    "2 carry on",
+                    "Seat selection included"
+                  ],
+                  notes: "Airport arrival - international terminal",
                   images: [
                     {
-                      url: "/oaxaca/images/calle de los.png",
-                      alt: "Calle de Los Libres & Murguía"
+                      url: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
+                      alt: "Oaxaca International Airport"
                     }
                   ]
                 },
                 {
                   id: "tlayudas-libres-dona-martha",
                   name: "Tlayudas Libres Doña Martha",
-                  type: "activity",
+                  type: "food",
                   category: "restaurant",
+                  categoryLabel: "$$$ • affordable • Mexican restaurant",
                   cuisine: "Mexican",
-                  priceLevel: "$$",
-                  description: "Calle Libres (between Morelos & Murguía) – The Late-Night Hub. ⭐ Most famous for: Tlayudas Libres — open until 3–4 a.m. Expect several bean-based tlayuda stands, grilled tortillas with refried beans, avocado, and you can ask 'sin carne ni queso' (no meat, no cheese). Locals and night-shift workers gather here; it's lively and safe if you go before midnight.",
+                  priceLevel: "$$$",
+                  description: "Calle Libres (between Morelos & Murguía) – The Late-Night Hub\n⭐ Most famous for: Tlayudas Libres — open until 3–4 a.m.\nExpect several bean-based tlayuda stands, grilled tortillas with refried beans, avocado, and you can ask \"sin carne ni queso\" (no meat, no cheese).\nLocals and night-shift workers gather here; it's lively and safe if you go before midnight.",
                   address: "Calle Libres (between Morelos & Murguía), Oaxaca",
                   location: "Just a few blocks from the Zócalo and Templo de Santo Domingo",
                   hours: "Open until 3-4 AM",
@@ -372,7 +367,23 @@ export default function TeaserPage() {
                   images: [
                     {
                       url: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800",
-                      alt: "Authentic Oaxacan tlayudas with toppings"
+                      alt: "Tlayudas Libres Doña Martha - Authentic Oaxacan tlayudas"
+                    }
+                  ]
+                },
+                {
+                  id: "tree-of-tule",
+                  name: "Tree of Tule",
+                  type: "activity",
+                  category: "landmark",
+                  categoryLabel: "Historical landmark • Sights & Landmarks",
+                  description: "This Montezuma cypress is the widest tree in the world & is thought to be over 1,400 years old.",
+                  location: "Santa María del Tule, Oaxaca",
+                  notes: "Iconic ancient tree, must-see landmark",
+                  images: [
+                    {
+                      url: "https://itin-dev.wanderlogstatic.com/freeImage/BuGxyb8pOQlCRQ2kuJUlpmTaBjD4BPZH",
+                      alt: "Tree of Tule - Ancient Montezuma cypress"
                     }
                   ]
                 }
@@ -389,8 +400,10 @@ export default function TeaserPage() {
                   name: "Kiyo Café",
                   type: "food",
                   category: "cafeteria",
-                  description: "Stylish café that offers vegan toast and oatmeal. Perfect spot for a healthy breakfast to start your day of exploration.",
+                  categoryLabel: "Cafeteria • Restaurant",
+                  description: "Stylish café that offers vegan toast and oatmeal",
                   address: "Oaxaca City",
+                  location: "Oaxaca City",
                   distance: "8 min walk, 0.43 mi",
                   notes: "Cafeteria/Restaurant with vegan options",
                   images: [
@@ -508,6 +521,23 @@ export default function TeaserPage() {
                       alt: "Tree of Tule"
                     }
                   ]
+                },
+                {
+                  id: "hierve-el-agua",
+                  name: "Hierve el Agua",
+                  type: "activity",
+                  category: "nature preserve",
+                  categoryLabel: "Nature preserve • Sights & Landmarks",
+                  description: "Ancient geological site featuring towering, waterfall-like rock formations, pools & springs.",
+                  address: "San Lorenzo Albarradas, Oaxaca",
+                  location: "San Lorenzo Albarradas, Oaxaca",
+                  notes: "Natural wonder with petrified waterfalls and mineral springs",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1580699298566-c4ea3e42c991?w=800",
+                      alt: "Hierve el Agua - Petrified waterfalls and mineral pools"
+                    }
+                  ]
                 }
               ];
             }
@@ -521,8 +551,10 @@ export default function TeaserPage() {
                   name: "Citronella Barra Natural",
                   type: "food",
                   category: "vegan restaurant",
+                  categoryLabel: "Vegan restaurant • Espresso bar",
                   description: "All-vegan breakfast, salads, drinks, and sandwiches in an interior courtyard flooded with natural light. Lighter vegan fare for breakfast and lunch such as coffee, juices, smoothies made with three types of plant milks (which are made on site), mixed cold drinks made from fresh ingredients, sweet and savory breakfast items including vegan ceviche, and a selection of salads.",
                   address: "Oaxaca City",
+                  location: "Oaxaca City",
                   notes: "Vegan restaurant, Espresso bar",
                   images: [
                     {
@@ -605,6 +637,23 @@ export default function TeaserPage() {
                       alt: "Jardín Etnobotánico de Oaxaca"
                     }
                   ]
+                },
+                {
+                  id: "monte-alban",
+                  name: "Monte Albán",
+                  type: "activity",
+                  category: "archaeological site",
+                  categoryLabel: "Archaeological site • Sights & Landmarks",
+                  description: "The famous Monte Alban ruins. Located about 20 minutes southwest of the city, Monte Alban was once one of the most important cities of the Zapotec civilization. The city historically served as a political, economic, and religious center for 1,000+ years!\n\nTime on site: 1.5–2 hours\nThis includes walking the Great Plaza, viewpoints, and a few main structures",
+                  address: "9 km from Oaxaca City",
+                  location: "About 20 minutes southwest of Oaxaca City",
+                  notes: "Archaeological site, UNESCO World Heritage Site",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Monte%20Albán.jpeg",
+                      alt: "Monte Albán"
+                    }
+                  ]
                 }
               ];
             }
@@ -618,8 +667,10 @@ export default function TeaserPage() {
                   name: "Nanita",
                   type: "food",
                   category: "vegan restaurant",
+                  categoryLabel: "Vegan restaurant",
                   description: "Plant-based comfort foods café offering Southern style dishes, desserts and drinks.",
                   address: "Oaxaca City",
+                  location: "Oaxaca City",
                   notes: "Vegan restaurant",
                   images: [
                     {
@@ -659,17 +710,19 @@ export default function TeaserPage() {
                   ]
                 },
                 {
-                  id: "monte-alban",
-                  name: "Monte Albán",
+                  id: "teotitlan-del-valle",
+                  name: "Teotitlan Del Valle",
                   type: "activity",
-                  category: "archaeological site",
-                  description: "Ancient Zapotec archaeological site featuring impressive pyramids, plazas, and tombs with panoramic views of the Oaxaca Valley. One of the most important pre-Columbian sites in Mexico.",
-                  address: "9 km from Oaxaca City",
-                  notes: "Archaeological site, UNESCO World Heritage Site",
+                  category: "historical landmark",
+                  categoryLabel: "Historical landmark • Sights & Landmarks",
+                  description: "One of the oldest and most culturally rich Zapotec villages in the region. It's best known for its handwoven textiles made with natural dyes from plants, minerals, and insects — an art form passed down through generations.",
+                  address: "Oaxaca Valley",
+                  location: "Oaxaca Valley",
+                  notes: "Historical landmark, Zapotec village",
                   images: [
                     {
-                      url: "/oaxaca/images/Monte%20Albán.jpeg",
-                      alt: "Monte Albán"
+                      url: "/oaxaca/images/Teotitlan Del Valle.jpeg",
+                      alt: "Teotitlan Del Valle"
                     }
                   ]
                 },
@@ -726,17 +779,19 @@ export default function TeaserPage() {
             if (day5) {
               day5.items = [
                 {
-                  id: "la-selva-de-los-gatos",
-                  name: "La Selva De Los Gatos",
+                  id: "sweet-spot-cafe",
+                  name: "Sweet Spot Café & Restaurant",
                   type: "food",
-                  category: "cafe",
-                  description: "Charming cafe with a cozy atmosphere, serving coffee, tea, and light meals in a garden-like setting.",
+                  category: "vegan restaurant",
+                  categoryLabel: "Vegan restaurant • Restaurant",
+                  description: "Good for vegan breakfasts, toasts, salads, and lighter meals",
                   address: "Oaxaca City",
-                  notes: "Cafe with garden setting",
+                  location: "Oaxaca City",
+                  notes: "Vegan restaurant",
                   images: [
                     {
-                      url: "/oaxaca/images/La Selva De Los Gatos.jpeg",
-                      alt: "La Selva De Los Gatos"
+                      url: "/oaxaca/images/Sweet Spot Café & Restaurant.jpeg",
+                      alt: "Sweet Spot Café & Restaurant"
                     }
                   ]
                 },
@@ -797,6 +852,24 @@ export default function TeaserPage() {
                     {
                       url: "/oaxaca/images/Playa Carrizalillo.jpeg",
                       alt: "Playa Carrizalillo"
+                    }
+                  ]
+                },
+                {
+                  id: "omars-sportfishing",
+                  name: "Omar's Sportfishing & boat trips",
+                  type: "activity",
+                  category: "fishing charter",
+                  categoryLabel: "Fishing charter • Adventure sports center",
+                  description: "3hr Dolphin & Whale Watching in Puerto Escondido",
+                  time: "11:00 AM - 2:00 PM",
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Meeting Point - Puerto Escondido",
+                  notes: "Scheduled: 11:00 AM - 2:00 PM, Dolphin & Whale Watching",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Omar's Sportfishing & boat trips.jpeg",
+                      alt: "Omar's Sportfishing & boat trips"
                     }
                   ]
                 }
@@ -2775,8 +2848,26 @@ export default function TeaserPage() {
                                     />
                                   </div>
                                   <div className="p-4">
+                                    {/* Category Label */}
+                                    {item.categoryLabel && (
+                                      <div className="text-xs text-gray-500 mb-1">
+                                        {item.categoryLabel}
+                                      </div>
+                                    )}
                                     <h5 className="font-bold text-gray-900 mb-2">{item.name}</h5>
-                                    <p className="text-sm text-gray-600 line-clamp-3">{description}</p>
+                                    <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">{description}</p>
+
+                                    {item.hours && (
+                                      <div className="text-xs text-gray-600 mb-1">
+                                        <span className="font-semibold">Hours:</span> {item.hours}
+                                      </div>
+                                    )}
+
+                                    {item.location && (
+                                      <div className="text-xs text-gray-500">
+                                        {item.location}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               );
@@ -2871,6 +2962,13 @@ export default function TeaserPage() {
 
                                 {/* Activity Details */}
                                 <div className="p-4">
+                                  {/* Category Label */}
+                                  {item.categoryLabel && (
+                                    <div className="text-xs text-gray-500 mb-1">
+                                      {item.categoryLabel}
+                                    </div>
+                                  )}
+
                                   <div className="flex items-start justify-between mb-1">
                                     <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
                                       {item.name}
@@ -2882,7 +2980,32 @@ export default function TeaserPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <div className="text-sm text-gray-600 mb-2">{description}</div>
+
+                                  {/* Description with optional booking link */}
+                                  {item.bookingLink ? (
+                                    <a
+                                      href={item.bookingLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block hover:underline"
+                                    >
+                                      {description}
+                                    </a>
+                                  ) : (
+                                    <div className="text-sm text-gray-600 mb-2">{description}</div>
+                                  )}
+
+                                  {/* Details list (for airport info) */}
+                                  {item.details && item.details.length > 0 && (
+                                    <ul className="text-xs text-gray-600 mb-2 space-y-1">
+                                      {item.details.map((detail: string, idx: number) => (
+                                        <li key={idx} className="flex items-start">
+                                          <span className="mr-2">•</span>
+                                          <span>{detail}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
 
                                   {activityDetails?.hours && (
                                     <div className="text-xs text-gray-600 mb-1 flex items-center gap-1">
