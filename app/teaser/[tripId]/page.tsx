@@ -153,7 +153,7 @@ export default function TeaserPage() {
           data.startDate = '2026-02-18';
           data.endDate = '2026-02-26';
 
-          // Split hotels into Oaxaca (Feb 17-22) and Mexico City (Feb 22-25)
+          // Split hotels into Oaxaca (Feb 18-22) and Mexico City (Feb 22-26)
           data.hotelsOaxaca = [
             {
               id: "hotel-azucenas",
@@ -240,8 +240,8 @@ export default function TeaserPage() {
               company: "Multi-City Rental Package",
               pickupLocation: "OAX",
               dropoffLocation: "MEX",
-              pickupDate: "Feb 17",
-              dropoffDate: "Feb 25",
+              pickupDate: "Feb 18",
+              dropoffDate: "Feb 26",
               basePrice: 164, // 140 + 24
               withCDW: 283, // 211 + 72
               currency: "USD",
@@ -252,7 +252,7 @@ export default function TeaserPage() {
               periods: [
                 {
                   location: "Oaxaca (OAX)",
-                  dates: "Feb 17 - Feb 22",
+                  dates: "Feb 18 - Feb 22",
                   basePrice: 140,
                   withCDW: 211,
                   company: "Localiza",
@@ -260,7 +260,7 @@ export default function TeaserPage() {
                 },
                 {
                   location: "Mexico City (MEX)",
-                  dates: "Feb 22 - Feb 25",
+                  dates: "Feb 22 - Feb 26",
                   basePrice: 24,
                   withCDW: 72,
                   company: "Keddy",
@@ -273,8 +273,8 @@ export default function TeaserPage() {
               company: "One-Way Rental Options",
               pickupLocation: "OAX",
               dropoffLocation: "MEX",
-              pickupDate: "Feb 17",
-              dropoffDate: "Feb 25",
+              pickupDate: "Feb 18",
+              dropoffDate: "Feb 26",
               basePrice: 570, // Default to Dollar pricing
               withCDW: 678, // Default to Dollar pricing
               currency: "USD",
@@ -306,7 +306,7 @@ export default function TeaserPage() {
           data.flights = [
             {
               id: "flight-option-1",
-              airline: "Round Trip Flight Option 1 - American Airlines",
+              airline: "Round Trip Flight Option 1",
               departureAirport: "ALB",
               arrivalAirport: "OAX",
               departureTime: "Feb 18, 2026",
@@ -315,25 +315,19 @@ export default function TeaserPage() {
               currency: "USD",
               flightCode: null,
               baggageOptions: "2 personal items | 2 carry-on bags | Seat selection included",
-              // Detailed flight legs with individual pricing
+              // Detailed flight legs - total airfare for two travelers
               legs: [
                 {
-                  route: "ALB → OAX",
-                  date: "Feb 18, 2026",
-                  price: 678.50,
-                  description: "Albany to Oaxaca (layover in DFW for 53min)"
-                },
-                {
-                  route: "OAX → ALB",
-                  date: "Feb 26, 2026",
-                  price: 678.50,
-                  description: "Oaxaca to Albany (layover in DFW for 1hr 20min)"
+                  route: "ALB ↔ OAX",
+                  date: "Feb 18 - 26, 2026",
+                  price: 1357.00,
+                  description: "Round trip - One layover"
                 }
               ]
             },
             {
               id: "flight-option-2",
-              airline: "Round Trip Flight Option 2 - Delta Airlines",
+              airline: "Round Trip Flight Option 2",
               departureAirport: "SYR",
               arrivalAirport: "OAX",
               departureTime: "Feb 18, 2026",
@@ -342,19 +336,13 @@ export default function TeaserPage() {
               currency: "USD",
               flightCode: null,
               baggageOptions: "2 personal items | 2 carry-on bags | Seat selection included",
-              // Detailed flight legs with individual pricing
+              // Detailed flight legs - total airfare for two travelers
               legs: [
                 {
-                  route: "SYR → OAX",
-                  date: "Feb 18, 2026",
-                  price: 612.50,
-                  description: "Syracuse to Oaxaca (layovers in ATL for 3hr 22min and MEX for 2hr 35min)"
-                },
-                {
-                  route: "OAX → SYR",
-                  date: "Feb 26, 2026",
-                  price: 612.50,
-                  description: "Oaxaca to Syracuse (layovers in MEX for 3hr 25min and ATL for 3hr 18min)"
+                  route: "SYR ↔ OAX",
+                  date: "Feb 18 - 26, 2026",
+                  price: 1225.00,
+                  description: "Round trip - Two layovers"
                 }
               ]
             }
@@ -1975,7 +1963,7 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Oaxaca Hotels Section (Feb 17-22) */}
+      {/* Oaxaca Hotels Section (Feb 18-22) */}
       {tripData.hotelsOaxaca && tripData.hotelsOaxaca.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
@@ -1983,7 +1971,7 @@ export default function TeaserPage() {
               Oaxaca Accommodation
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Feb 17-22 • Choose your home base in Oaxaca
+              Feb 18-22 • Choose your home base in Oaxaca
             </p>
           </div>
 
@@ -1991,7 +1979,7 @@ export default function TeaserPage() {
             {tripData.hotelsOaxaca.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-oaxaca-${hotelIdx}`;
               const isSelected = selectedHotelOaxaca === hotelKey;
-              const oaxacaNights = 5; // Feb 17-22
+              const oaxacaNights = 5; // Feb 18-22
 
               // Check for Oaxaca-specific hotel images first
               const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
@@ -2089,7 +2077,7 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Mexico City Hotels Section (Feb 22-25) */}
+      {/* Mexico City Hotels Section (Feb 22-26) */}
       {tripData.hotelsMexicoCity && tripData.hotelsMexicoCity.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
@@ -2097,7 +2085,7 @@ export default function TeaserPage() {
               Mexico City Accommodation
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Feb 22-25 • Choose your home base in Mexico City
+              Feb 22-26 • Choose your home base in Mexico City
             </p>
           </div>
 
@@ -2105,7 +2093,7 @@ export default function TeaserPage() {
             {tripData.hotelsMexicoCity.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-mexico-${hotelIdx}`;
               const isSelected = selectedHotelMexicoCity === hotelKey;
-              const mexicoCityNights = 3; // Feb 22-25
+              const mexicoCityNights = 4; // Feb 22-26
 
               // Check for Oaxaca-specific hotel images first
               const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
