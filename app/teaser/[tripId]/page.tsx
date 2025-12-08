@@ -150,8 +150,8 @@ export default function TeaserPage() {
 
         // Override dates and hotels for Oaxaca trip
         if (tripId === 'bab29d55-7e10-46ed-b702-e0f2a342fcd7') {
-          data.startDate = '2026-02-17';
-          data.endDate = '2026-02-25';
+          data.startDate = '2026-02-18';
+          data.endDate = '2026-02-26';
 
           // Split hotels into Oaxaca (Feb 17-22) and Mexico City (Feb 22-25)
           data.hotelsOaxaca = [
@@ -305,35 +305,56 @@ export default function TeaserPage() {
           // Override flights with detailed leg information for Oaxaca trip
           data.flights = [
             {
-              id: "flight-oaxaca",
-              airline: "Round-trip Flight Package",
-              departureAirport: "JFK",
+              id: "flight-option-1",
+              airline: "Round Trip Flight Option 1 - American Airlines",
+              departureAirport: "ALB",
               arrivalAirport: "OAX",
-              departureTime: "Feb 17, 2026",
-              arrivalTime: "Feb 25, 2026",
-              price: 1337,
+              departureTime: "Feb 18, 2026",
+              arrivalTime: "Feb 26, 2026",
+              price: 1357,
               currency: "USD",
               flightCode: null,
-              baggageOptions: "Included: carry-on bags, personal items and seat selection",
+              baggageOptions: "2 personal items | 2 carry-on bags | Seat selection included",
               // Detailed flight legs with individual pricing
               legs: [
                 {
-                  route: "JFK-OAX",
-                  date: "Feb 17, 2026",
-                  price: 627,
-                  description: "New York to Oaxaca (layover in MEX for 2hrs)"
+                  route: "ALB → OAX",
+                  date: "Feb 18, 2026",
+                  price: 678.50,
+                  description: "Albany to Oaxaca (layover in DFW for 53min)"
                 },
                 {
-                  route: "OAX-MEX",
-                  date: "Feb 22, 2026",
-                  price: 147,
-                  description: "Oaxaca to Mexico City (nonstop)"
+                  route: "OAX → ALB",
+                  date: "Feb 26, 2026",
+                  price: 678.50,
+                  description: "Oaxaca to Albany (layover in DFW for 1hr 20min)"
+                }
+              ]
+            },
+            {
+              id: "flight-option-2",
+              airline: "Round Trip Flight Option 2 - Delta Airlines",
+              departureAirport: "SYR",
+              arrivalAirport: "OAX",
+              departureTime: "Feb 18, 2026",
+              arrivalTime: "Feb 26, 2026",
+              price: 1225,
+              currency: "USD",
+              flightCode: null,
+              baggageOptions: "2 personal items | 2 carry-on bags | Seat selection included",
+              // Detailed flight legs with individual pricing
+              legs: [
+                {
+                  route: "SYR → OAX",
+                  date: "Feb 18, 2026",
+                  price: 612.50,
+                  description: "Syracuse to Oaxaca (layovers in ATL for 3hr 22min and MEX for 2hr 35min)"
                 },
                 {
-                  route: "MEX-JFK",
-                  date: "Feb 25, 2026",
-                  price: 563,
-                  description: "Mexico City to New York (nonstop)"
+                  route: "OAX → SYR",
+                  date: "Feb 26, 2026",
+                  price: 612.50,
+                  description: "Oaxaca to Syracuse (layovers in MEX for 3hr 25min and ATL for 3hr 18min)"
                 }
               ]
             }
@@ -350,8 +371,8 @@ export default function TeaserPage() {
                   name: "Oaxaca International Airport",
                   type: "activity",
                   category: "transportation",
-                  description: "Arrive at 10pm. Flight details: 2 personal items, 2 carry-on bags, seat selection included. Click here to buy through Expedia - Total $627",
-                  time: "10:00 PM",
+                  description: "Arrival day. Flight options include 2 personal items, 2 carry-on bags, and seat selection. See flight options above for detailed pricing and routes.",
+                  time: "Evening Arrival",
                   notes: "Airport arrival - international terminal"
                 },
                 {
@@ -1292,8 +1313,8 @@ export default function TeaserPage() {
   const flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
   const carRentalCost = parseFloat(getCarRentalCost().toFixed(2));
   const foodBudget = 500.0; // Fixed food budget for the trip
-  // Trip cost excludes flights - includes hotels, car rental, and food budget
-  const tripCost = parseFloat((hotelCost + carRentalCost + foodBudget).toFixed(2));
+  // Trip cost includes flights, hotels, car rental, and food budget
+  const tripCost = parseFloat((hotelCost + flightCost + carRentalCost + foodBudget).toFixed(2));
   const unlockFee = 299.0;
   const totalCost = parseFloat((tripCost + unlockFee).toFixed(2));
 
@@ -1753,23 +1774,34 @@ export default function TeaserPage() {
 
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              {isOaxacaTrip ? 'Your Flight' : 'Select Your Flight'}
+              Select Your Flight
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              {isOaxacaTrip ? 'Round-trip airfare included in your package' : 'Choose the flight option that best suits your schedule and budget'}
+              Choose the flight option that best suits your schedule and budget
             </p>
           </div>
 
           {isOaxacaTrip ? (
-            // Static flight display for Oaxaca trip - no selection
-            <div className="max-w-2xl mx-auto">
+            // Selectable flight cards for Oaxaca trip - side by side
+            <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
               {tripData.flights.map((flight, flightIdx) => {
-                const flightImage = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800';
+                const flightKey = flight.id || `flight-${flightIdx}`;
+                const isSelected = selectedFlight === flightKey;
+                const planeImages = [
+                  'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800',
+                  'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=800'
+                ];
+                const flightImage = planeImages[flightIdx % planeImages.length];
 
                 return (
                   <div
-                    key={flight.id || `flight-${flightIdx}`}
-                    className="rounded-xl overflow-hidden shadow-lg border border-gray-200"
+                    key={flightKey}
+                    onClick={() => setSelectedFlight(flightKey)}
+                    className={`rounded-xl overflow-hidden shadow-lg border-2 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                      isSelected
+                        ? 'border-blue-600 scale-105'
+                        : 'border-gray-200 opacity-60 grayscale-[50%]'
+                    }`}
                   >
                     <div className="relative h-48">
                       <img
@@ -1782,10 +1814,15 @@ export default function TeaserPage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                        <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-cormorant)' }}>
                           {flight.airline}
                         </h3>
                       </div>
+                      {isSelected && (
+                        <div className="absolute top-4 right-4 bg-blue-600 text-white p-2 rounded-full">
+                          <Check className="w-5 h-5" />
+                        </div>
+                      )}
                     </div>
 
                     <div className="bg-white p-6">
@@ -3159,6 +3196,23 @@ export default function TeaserPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-xl font-bold">${hotelCost.toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Flight Cost */}
+            {selectedFlightData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    Round-trip Flight
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedFlightData.departureAirport} ↔ {selectedFlightData.arrivalAirport} • 2 travelers
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${flightCost.toFixed(2)}</div>
                 </div>
               </div>
             )}
