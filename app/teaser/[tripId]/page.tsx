@@ -285,7 +285,7 @@ export default function TeaserPage() {
                 },
                 {
                   location: "Puerto Escondido",
-                  dates: "Feb 22 - Feb 25",
+                  dates: "Feb 21 - Feb 25",
                   basePrice: 24,
                   withCDW: 72,
                   company: "Keddy",
@@ -2101,7 +2101,7 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Puerto Escondido Hotels Section (Feb 22-25) */}
+      {/* Puerto Escondido Hotels Section (Feb 21-25) */}
       {tripData.hotelsMexicoCity && tripData.hotelsMexicoCity.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
@@ -2109,7 +2109,7 @@ export default function TeaserPage() {
               Puerto Escondido Accommodation
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Feb 22-25 • Choose your home base in Puerto Escondido
+              Feb 21-25 • Choose your home base in Puerto Escondido
             </p>
           </div>
 
@@ -2117,7 +2117,7 @@ export default function TeaserPage() {
             {tripData.hotelsMexicoCity.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-mexico-${hotelIdx}`;
               const isSelected = selectedHotelMexicoCity === hotelKey;
-              const mexicoCityNights = 4; // Feb 22-25
+              const mexicoCityNights = 5; // Feb 21-25
 
               // Check for Oaxaca-specific hotel images first
               const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
