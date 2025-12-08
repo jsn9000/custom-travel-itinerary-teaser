@@ -258,72 +258,22 @@ export default function TeaserPage() {
           // Keep hotels array empty for Oaxaca trip (using separate arrays)
           data.hotels = [];
 
-          // Add car rental options for Oaxaca trip - Choice A and Choice B
+          // Car rental for Oaxaca trip
           data.carRentals = [
             {
-              id: "car-combined",
-              company: "Multi-City Rental Package",
+              id: "car-rental-alamo",
+              company: "Alamo",
               pickupLocation: "OAX",
-              dropoffLocation: "MEX",
+              dropoffLocation: "OAX",
               pickupDate: "Feb 18",
               dropoffDate: "Feb 26",
-              basePrice: 164, // 140 + 24
-              withCDW: 283, // 211 + 72
+              basePrice: 94,
+              withCDW: 202,
               currency: "USD",
-              insuranceIncluded: "Insurance included except CDW",
-              securityDeposit: 975, // Higher of the two deposits
-              notes: "Credit card required for security deposit",
-              // Rental periods breakdown
-              periods: [
-                {
-                  location: "Oaxaca (OAX)",
-                  dates: "Feb 18 - Feb 21",
-                  basePrice: 140,
-                  withCDW: 211,
-                  company: "Localiza",
-                  securityDeposit: 758
-                },
-                {
-                  location: "Puerto Escondido",
-                  dates: "Feb 21 - Feb 25",
-                  basePrice: 24,
-                  withCDW: 72,
-                  company: "Keddy",
-                  securityDeposit: 975
-                }
-              ]
-            },
-            {
-              id: "car-oneway",
-              company: "One-Way Rental Options",
-              pickupLocation: "OAX",
-              dropoffLocation: "MEX",
-              pickupDate: "Feb 18",
-              dropoffDate: "Feb 26",
-              basePrice: 570, // Default to Dollar pricing
-              withCDW: 678, // Default to Dollar pricing
-              currency: "USD",
-              insuranceIncluded: "Insurance included except CDW",
-              securityDeposit: 1000, // Default to Dollar deposit
-              notes: "Credit card required for security deposit",
-              // One-way rental options
-              options: [
-                {
-                  company: "Dollar Car Rental",
-                  rating: "4.1/10",
-                  basePrice: 570,
-                  withCDW: 678,
-                  securityDeposit: 1000
-                },
-                {
-                  company: "Localiza Rental Car",
-                  rating: "9.2/10",
-                  bookingNote: "Book through Rentalcars.com",
-                  basePrice: 701,
-                  withCDW: 809,
-                  securityDeposit: 759
-                }
-              ]
+              insuranceIncluded: "includes insurance except for CDW (collision damage waiver) insurance but you can find this on credit cards. Adding CDW if you don't have a credit card is $211",
+              securityDeposit: 202,
+              notes: "*They also need a credit card in order to put the security deposit of $202 that is refunded back to you when you return the car",
+              bookingLink: "click here to book on Rentalcars.com"
             }
           ];
 
