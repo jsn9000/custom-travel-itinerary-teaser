@@ -189,43 +189,33 @@ export default function TeaserPage() {
 
           data.hotelsMexicoCity = [
             {
-              id: "hotel-garibaldi",
-              name: "Hotel Plaza Garibaldi",
-              address: "Plaza Garibaldi, Mexico City",
-              roomType: "1 King Bed, Standard Room, Non Smoking",
-              amenities: ["Free breakfast", "Wyndham Rewards", "Central location"],
-              rating: 4.0,
-              price: 193,
+              id: "hotel-casa-beu",
+              name: "Casa Beu",
+              address: "Puerto Escondido",
+              roomType: "Queen Room",
+              amenities: ["Click here to book on booking.com"],
+              rating: 4.5,
+              price: 465,
               currency: "USD"
             },
             {
-              id: "hotel-zocalo",
-              name: "Hotel MX zócalo",
-              address: "El Zócalo, Mexico City",
-              roomType: "1 Queen Bed Non Smoking",
-              amenities: ["Free breakfast", "Wyndham Rewards", "Historic district"],
-              rating: 4.2,
-              price: 227,
+              id: "hotel-quiote-quiote",
+              name: "Quiote Quiote",
+              address: "Puerto Escondido",
+              roomType: "Deluxe Double Studio",
+              amenities: ["Click here to book on booking.com"],
+              rating: 4.5,
+              price: 643,
               currency: "USD"
             },
             {
-              id: "hotel-canada",
-              name: "Hotel Canada Central & Rooftop",
-              address: "Central Mexico City",
-              roomType: "Standard Double Room",
-              amenities: ["Free breakfast", "Rooftop terrace", "Central location"],
-              rating: 4.3,
-              price: 249,
-              currency: "USD"
-            },
-            {
-              id: "hotel-mas-centro",
-              name: "Hotel MX más centro",
-              address: "Centro, Mexico City",
-              roomType: "Suite with 2 Queen Beds Non Smoking",
-              amenities: ["Free breakfast", "Wyndham Rewards", "Suite accommodation"],
-              rating: 4.1,
-              price: 240,
+              id: "hotel-casa-ita-surf",
+              name: "Casa Ita Surf",
+              address: "Puerto Escondido",
+              roomType: "Deluxe Double Room",
+              amenities: ["Click here to book on booking.com"],
+              rating: 4.5,
+              price: 709,
               currency: "USD"
             }
           ];
@@ -2076,23 +2066,23 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Mexico City Hotels Section (Feb 22-26) */}
+      {/* Puerto Escondido Hotels Section (Feb 22-26) */}
       {tripData.hotelsMexicoCity && tripData.hotelsMexicoCity.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              Mexico City Accommodation
+              Puerto Escondido Accommodation
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Feb 22-26 • Choose your home base in Mexico City
+              Feb 22-26 • Choose your home base in Puerto Escondido
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-5">
+          <div className="grid md:grid-cols-3 gap-5">
             {tripData.hotelsMexicoCity.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-mexico-${hotelIdx}`;
               const isSelected = selectedHotelMexicoCity === hotelKey;
-              const mexicoCityNights = 4; // Feb 22-26
+              const mexicoCityNights = 5; // Feb 22-26
 
               // Check for Oaxaca-specific hotel images first
               const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
