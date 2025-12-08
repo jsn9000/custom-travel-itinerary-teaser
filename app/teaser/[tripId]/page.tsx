@@ -2259,7 +2259,7 @@ export default function TeaserPage() {
                     <img
                       src={hotelImage}
                       alt={hotel.name}
-                      className="w-full h-full object-cover blur-sm"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.src = fallbackHotelImages[0];
                       }}
