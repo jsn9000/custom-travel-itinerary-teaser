@@ -109,6 +109,7 @@ export default function TeaserPage() {
   const [selectedHotel, setSelectedHotel] = useState<string>("");
   const [selectedHotelOaxaca, setSelectedHotelOaxaca] = useState<string>("");
   const [selectedHotelMexicoCity, setSelectedHotelMexicoCity] = useState<string>("");
+  const [selectedHotelOaxacaReturn, setSelectedHotelOaxacaReturn] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
   const [selectedCarRental, setSelectedCarRental] = useState<string>("");
   const [selectedCarRentalOption, setSelectedCarRentalOption] = useState<number>(0); // For Choice B options
@@ -220,6 +221,40 @@ export default function TeaserPage() {
             }
           ];
 
+          // Oaxaca return stay (Feb 25-26)
+          data.hotelsOaxacaReturn = [
+            {
+              id: "hotel-ayook",
+              name: "Budget-Friendly Hotel with Breakfast",
+              address: "Oaxaca",
+              roomType: "Economy Double Room",
+              amenities: ["Click here to book on booking.com", "Breakfast included"],
+              rating: 4.5,
+              price: 142,
+              currency: "USD"
+            },
+            {
+              id: "hotel-maria-ines",
+              name: "Standard Hotel Suite",
+              address: "Oaxaca",
+              roomType: "Standard Room",
+              amenities: ["Click here to book on booking.com"],
+              rating: 4.5,
+              price: 94,
+              currency: "USD"
+            },
+            {
+              id: "hotel-sauve-casa",
+              name: "Boutique Hotel with Breakfast",
+              address: "Oaxaca",
+              roomType: "Standard King Room",
+              amenities: ["Click here to book on booking.com", "Breakfast included"],
+              rating: 4.5,
+              price: 248,
+              currency: "USD"
+            }
+          ];
+
           // Keep hotels array empty for Oaxaca trip (using separate arrays)
           data.hotels = [];
 
@@ -249,8 +284,8 @@ export default function TeaserPage() {
                   securityDeposit: 758
                 },
                 {
-                  location: "Mexico City (MEX)",
-                  dates: "Feb 22 - Feb 26",
+                  location: "Puerto Escondido",
+                  dates: "Feb 22 - Feb 25",
                   basePrice: 24,
                   withCDW: 72,
                   company: "Keddy",
@@ -2066,7 +2101,7 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Puerto Escondido Hotels Section (Feb 22-26) */}
+      {/* Puerto Escondido Hotels Section (Feb 22-25) */}
       {tripData.hotelsMexicoCity && tripData.hotelsMexicoCity.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
@@ -2074,7 +2109,7 @@ export default function TeaserPage() {
               Puerto Escondido Accommodation
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Feb 22-26 • Choose your home base in Puerto Escondido
+              Feb 22-25 • Choose your home base in Puerto Escondido
             </p>
           </div>
 
@@ -2082,7 +2117,7 @@ export default function TeaserPage() {
             {tripData.hotelsMexicoCity.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-mexico-${hotelIdx}`;
               const isSelected = selectedHotelMexicoCity === hotelKey;
-              const mexicoCityNights = 5; // Feb 22-26
+              const mexicoCityNights = 4; // Feb 22-25
 
               // Check for Oaxaca-specific hotel images first
               const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
@@ -2171,6 +2206,105 @@ export default function TeaserPage() {
                       </div>
                       <div className="text-right text-xs text-gray-500">
                         {mexicoCityNights} nights
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Oaxaca Return Hotels Section (Feb 25-26) */}
+      {tripData.hotelsOaxacaReturn && tripData.hotelsOaxacaReturn.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+              Oaxaca Accommodation
+            </h2>
+            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+              Feb 25-26 • Choose your final night in Oaxaca
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {tripData.hotelsOaxacaReturn.map((hotel, hotelIdx) => {
+              const hotelKey = hotel.id || `hotel-oaxaca-return-${hotelIdx}`;
+              const isSelected = selectedHotelOaxacaReturn === hotelKey;
+              const oaxacaReturnNights = 1; // Feb 25-26
+
+              // Check for Oaxaca-specific hotel images first
+              const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
+
+              // Use database hotel image if available, otherwise use fallback images
+              const fallbackHotelImages = [
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+                'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
+                'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800'
+              ];
+              const hotelImage = oaxacaHotelImage || (hotel as any).images?.[0] || fallbackHotelImages[hotelIdx % fallbackHotelImages.length];
+
+              return (
+                <div
+                  key={hotelKey}
+                  onClick={() => setSelectedHotelOaxacaReturn(hotelKey)}
+                  className={`rounded-xl overflow-hidden shadow-lg border-2 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                    isSelected
+                      ? 'border-blue-600 scale-105'
+                      : 'border-gray-200 opacity-60 grayscale-[50%]'
+                  }`}
+                >
+                  <div className="relative h-48">
+                    <img
+                      src={hotelImage}
+                      alt={hotel.name}
+                      className="w-full h-full object-cover blur-sm"
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackHotelImages[0];
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                        {hotel.name}
+                      </h3>
+                    </div>
+                    {isSelected && (
+                      <div className="absolute top-4 right-4 bg-blue-600 text-white p-2 rounded-full">
+                        <Check className="w-5 h-5" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-white p-6">
+                    <div className="flex items-center mb-2">
+                      <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                      <span className="ml-1 text-sm font-semibold text-gray-700">
+                        {hotel.rating}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3" style={{ fontFamily: 'var(--font-inter)' }}>
+                      {hotel.roomType}
+                    </p>
+                    {hotel.amenities && hotel.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                          <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xl font-bold text-[#1e3a8a]">
+                          ${(hotel.price || 0).toFixed(2)}
+                        </span>
+                        <span className="text-xs text-gray-600"> total</span>
+                      </div>
+                      <div className="text-right text-xs text-gray-500">
+                        {oaxacaReturnNights} night
                       </div>
                     </div>
                   </div>
