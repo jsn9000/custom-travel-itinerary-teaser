@@ -153,7 +153,7 @@ export default function TeaserPage() {
           data.startDate = '2026-02-18';
           data.endDate = '2026-02-26';
 
-          // Split hotels into Oaxaca (Feb 18-22) and Mexico City (Feb 22-26)
+          // Split hotels into Oaxaca (Feb 18-21) and Mexico City (Feb 22-26)
           data.hotelsOaxaca = [
             {
               id: "hotel-azucenas",
@@ -162,7 +162,7 @@ export default function TeaserPage() {
               roomType: "Private Airbnb Apartment",
               amenities: ["Hosted by 9-year Superhost", "High ratings", "10min to city center"],
               rating: 4.5,
-              price: 497,
+              price: 367,
               currency: "USD"
             },
             {
@@ -172,7 +172,7 @@ export default function TeaserPage() {
               roomType: "Private Airbnb Apartment",
               amenities: ["5min drive to city center", "18min walk to center", "Modern amenities"],
               rating: 4.5,
-              price: 565,
+              price: 350,
               currency: "USD"
             },
             {
@@ -182,7 +182,7 @@ export default function TeaserPage() {
               roomType: "Queen Room including breakfast",
               amenities: ["Free breakfast", "City center location", "Premium service"],
               rating: 4.7,
-              price: 705,
+              price: 483,
               currency: "USD"
             }
           ];
@@ -252,7 +252,7 @@ export default function TeaserPage() {
               periods: [
                 {
                   location: "Oaxaca (OAX)",
-                  dates: "Feb 18 - Feb 22",
+                  dates: "Feb 18 - Feb 21",
                   basePrice: 140,
                   withCDW: 211,
                   company: "Localiza",
@@ -1962,7 +1962,7 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Oaxaca Hotels Section (Feb 18-22) */}
+      {/* Oaxaca Hotels Section (Feb 18-21) */}
       {tripData.hotelsOaxaca && tripData.hotelsOaxaca.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
@@ -1970,7 +1970,7 @@ export default function TeaserPage() {
               Oaxaca Accommodation
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Feb 18-22 • Choose your home base in Oaxaca
+              Feb 18-21 • Choose your home base in Oaxaca
             </p>
           </div>
 
@@ -1978,7 +1978,7 @@ export default function TeaserPage() {
             {tripData.hotelsOaxaca.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-oaxaca-${hotelIdx}`;
               const isSelected = selectedHotelOaxaca === hotelKey;
-              const oaxacaNights = 5; // Feb 18-22
+              const oaxacaNights = 4; // Feb 18-21
 
               // Check for Oaxaca-specific hotel images first
               const oaxacaHotelImage = getOaxacaHotelImage(hotel.name, hotel.address);
