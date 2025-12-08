@@ -112,7 +112,7 @@ export default function TeaserPage() {
   const [selectedHotelOaxacaReturn, setSelectedHotelOaxacaReturn] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
   const [selectedCarRental, setSelectedCarRental] = useState<string>("");
-  const [selectedCarRentalOption, setSelectedCarRentalOption] = useState<number>(0); // For Choice B options
+  const [selectedCarRentalCDW, setSelectedCarRentalCDW] = useState<boolean>(false); // CDW insurance selection
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
@@ -1242,13 +1242,10 @@ export default function TeaserPage() {
   const selectedFlightData = tripData?.flights.find((f) => f.id === selectedFlight);
   const selectedCarRentalData = tripData?.carRentals?.find((c) => c.id === selectedCarRental);
 
-  // Get the actual car rental cost based on whether it has options (Choice B) or not (Choice A)
+  // Get the actual car rental cost based on CDW selection
   const getCarRentalCost = () => {
     if (!selectedCarRentalData) return 0;
-    if (selectedCarRentalData.options && selectedCarRentalData.options.length > 0) {
-      return selectedCarRentalData.options[selectedCarRentalOption].basePrice;
-    }
-    return selectedCarRentalData.basePrice;
+    return selectedCarRentalCDW ? selectedCarRentalData.withCDW : selectedCarRentalData.basePrice;
   };
 
   const calculateNights = () => {
@@ -2386,18 +2383,17 @@ export default function TeaserPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              Select Your Car Rental
+              Car Rental
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
               Choose your transportation option for maximum flexibility
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-1 gap-6 max-w-3xl mx-auto">
             {tripData.carRentals.map((carRental, carIdx) => {
               const carKey = carRental.id || `car-${carIdx}`;
               const isSelected = selectedCarRental === carKey;
-              const choiceLabel = carIdx === 0 ? "Choice A" : "Choice B";
 
               return (
                 <div
@@ -2552,41 +2548,41 @@ export default function TeaserPage() {
                       {carRental.notes && <p className="text-gray-500">{carRental.notes}</p>}
                     </div>
 
+                    {/* CDW Selection Buttons */}
                     <div className="pt-3 border-t-2 border-gray-300">
-                      {carRental.options && carRental.options.length > 0 ? (
-                        <>
-                          <div className="mb-3 text-xs text-gray-600 text-center">
-                            {isSelected ? 'Selected Option Pricing' : 'Select an option above to see pricing'}
-                          </div>
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-lg font-bold text-gray-800">Total Without CDW:</span>
-                            <span className="text-xl font-bold text-[#1e3a8a]">
-                              ${isSelected ? carRental.options[selectedCarRentalOption].basePrice.toFixed(2) : carRental.options[0].basePrice.toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-bold text-gray-800">Total With CDW:</span>
-                            <span className="text-xl font-bold text-gray-700">
-                              ${isSelected ? carRental.options[selectedCarRentalOption].withCDW.toFixed(2) : carRental.options[0].withCDW.toFixed(2)}
-                            </span>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-lg font-bold text-gray-800">Total Without CDW:</span>
-                            <span className="text-xl font-bold text-[#1e3a8a]">
-                              ${carRental.basePrice.toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-bold text-gray-800">Total With CDW:</span>
-                            <span className="text-xl font-bold text-gray-700">
-                              ${carRental.withCDW.toFixed(2)}
-                            </span>
-                          </div>
-                        </>
-                      )}
+                      <div className="mb-4">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3 text-center">Choose Insurance Option</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCarRentalCDW(false);
+                            }}
+                            className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                              !selectedCarRentalCDW
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                            }`}
+                          >
+                            <div className="text-sm">Without CDW</div>
+                            <div className="text-xl font-bold">${carRental.basePrice.toFixed(2)}</div>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCarRentalCDW(true);
+                            }}
+                            className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                              selectedCarRentalCDW
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                            }`}
+                          >
+                            <div className="text-sm">With CDW</div>
+                            <div className="text-xl font-bold">${carRental.withCDW.toFixed(2)}</div>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
