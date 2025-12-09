@@ -330,11 +330,20 @@ export default function TeaserPage() {
             if (day1) {
               day1.items = [
                 {
+                  id: "arrival-header",
+                  name: "Arrival",
+                  type: "header",
+                  category: "section",
+                  description: "Welcome to Oaxaca! Your adventure begins.",
+                  notes: "Day 1 section header"
+                },
+                {
                   id: "oaxaca-airport",
                   name: "Oaxaca International Airport",
                   type: "activity",
                   category: "transportation",
                   categoryLabel: "International airport • Airport",
+                  rating: 4.2,
                   description: "Arrive at 1:12pm through American Airlines for Round Trip total $1,137",
                   time: "1:12 PM",
                   details: [
@@ -342,6 +351,8 @@ export default function TeaserPage() {
                     "2 carry on",
                     "Seat selection included"
                   ],
+                  address: "Oaxaca - Puerto Angel, Santa Cruz",
+                  location: "Oaxaca - Puerto Angel, Santa Cruz",
                   notes: "Airport arrival - international terminal",
                   images: [
                     {
@@ -394,7 +405,6 @@ export default function TeaserPage() {
             const day2 = data.dailySchedule.find((day: any) => day.dayNumber === 2);
             if (day2) {
               day2.items = [
-                // Food venues
                 {
                   id: "kiyo-cafe",
                   name: "Kiyo Café",
@@ -414,115 +424,6 @@ export default function TeaserPage() {
                   ]
                 },
                 {
-                  id: "los-muchitos",
-                  name: "Los Muchitos Comida Vegana",
-                  type: "food",
-                  category: "restaurant",
-                  description: "Authentic vegan Mexican cuisine with traditional flavors and plant-based ingredients. A must-visit for those seeking delicious vegan options in Oaxaca.",
-                  address: "Oaxaca City",
-                  notes: "Vegan restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Los Muchitos Comida Vegana.jpeg",
-                      alt: "Los Muchitos Comida Vegana"
-                    }
-                  ]
-                },
-                {
-                  id: "santa-hierba",
-                  name: "Santa Hierba Jalatlaco",
-                  type: "food",
-                  category: "restaurant",
-                  description: "Charming restaurant in the Jalatlaco neighborhood offering fresh, flavorful dishes with a modern twist on traditional Oaxacan cuisine.",
-                  address: "Jalatlaco, Oaxaca",
-                  notes: "Restaurant in Jalatlaco neighborhood",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Santa Hierba Jalatlaco.jpeg",
-                      alt: "Santa Hierba Jalatlaco"
-                    }
-                  ]
-                },
-                // Activities
-                {
-                  id: "zocalo-oaxaca",
-                  name: "Zócalo de la Ciudad de Oaxaca (Plaza de la Constitución)",
-                  type: "activity",
-                  category: "city park",
-                  description: "Small, bustling public square surrounded by restaurants, vendors & historic buildings. The heart of Oaxaca's historic center and a perfect place to soak in local culture.",
-                  address: "Plaza de la Constitución, Oaxaca",
-                  distance: "9 min walk, 0.48 mi",
-                  notes: "City park, Sights & Landmarks, Points of Interest & Landmarks",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Hotel MX zócalo.jpeg",
-                      alt: "Zócalo de la Ciudad de Oaxaca"
-                    }
-                  ]
-                },
-                {
-                  id: "templo-santo-domingo",
-                  name: "Templo de Santo Domingo de Guzmán",
-                  type: "activity",
-                  category: "catholic cathedral",
-                  description: "Historic complex featuring a church with an opulent, gilded interior & a monastery turned museum. One of the most stunning baroque churches in Mexico with breathtaking gold-leafed decorations.",
-                  address: "Oaxaca City Historic Center",
-                  distance: "4 min walk, 0.18 mi",
-                  notes: "Catholic cathedral, Sights & Landmarks",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Templo de Santo Domingo de Guzmán.jpeg",
-                      alt: "Templo de Santo Domingo de Guzmán"
-                    }
-                  ]
-                },
-                {
-                  id: "museum-cultures-oaxaca",
-                  name: "Museum of Cultures of Oaxaca, Santo Domingo",
-                  type: "activity",
-                  category: "museum",
-                  description: "This cultural center houses archaeological artifacts & ancient books in a 17th-century convent. Explore Oaxaca's rich indigenous heritage and colonial history through fascinating exhibits.",
-                  address: "Santo Domingo Complex, Oaxaca",
-                  distance: "Adjacent to Templo de Santo Domingo",
-                  notes: "Museum, Specialty Museums",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Museum of Cultures of Oaxaca, Santo Domingo.jpeg",
-                      alt: "Museum of Cultures of Oaxaca, Santo Domingo"
-                    }
-                  ]
-                },
-                {
-                  id: "santa-maria-del-tule",
-                  name: "Santa María del Tule",
-                  type: "activity",
-                  category: "town",
-                  description: "Small town famous for being home to the Tree of Tule, one of the widest trees in the world. A charming day trip destination from Oaxaca City.",
-                  address: "Santa María del Tule, Oaxaca",
-                  notes: "Town visit",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Santa María del Tule.jpeg",
-                      alt: "Santa María del Tule"
-                    }
-                  ]
-                },
-                {
-                  id: "tree-of-tule",
-                  name: "Tree of Tule",
-                  type: "activity",
-                  category: "landmark",
-                  description: "El Árbol del Tule is a massive Montezuma cypress tree with the widest trunk diameter in the world. This 2,000-year-old natural wonder is a must-see attraction near Oaxaca.",
-                  address: "Santa María del Tule, Oaxaca",
-                  notes: "Famous ancient tree, natural landmark",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Tree of Tule.jpeg",
-                      alt: "Tree of Tule"
-                    }
-                  ]
-                },
-                {
                   id: "hierve-el-agua",
                   name: "Hierve el Agua",
                   type: "activity",
@@ -534,7 +435,7 @@ export default function TeaserPage() {
                   notes: "Natural wonder with petrified waterfalls and mineral springs",
                   images: [
                     {
-                      url: "https://images.unsplash.com/photo-1580699298566-c4ea3e42c991?w=800",
+                      url: "/oaxaca/images/Hierve el Agua.jpeg",
                       alt: "Hierve el Agua - Petrified waterfalls and mineral pools"
                     }
                   ]
@@ -1411,8 +1312,9 @@ export default function TeaserPage() {
   // Format dates
   const formatDateRange = () => {
     if (!tripData) return "";
-    const start = new Date(tripData.startDate);
-    const end = new Date(tripData.endDate);
+    // Ensure dates are parsed correctly for display
+    const start = new Date(tripData.startDate + 'T00:00:00');
+    const end = new Date(tripData.endDate + 'T00:00:00');
     return `${start.toLocaleDateString("en-US", { month: "long", day: "numeric" })} - ${end.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`;
   };
 
@@ -2794,9 +2696,9 @@ export default function TeaserPage() {
 
                   // Filter activities (exclude hotels, dining, airports) - EXCEPT for customized days
                   let allActivities = day.items.filter((item: any) => {
-                    // For Day 1, 2, 3, 4, 5, 6, 7, 8, 9 on Oaxaca trip, show activity, food, and travel items
+                    // For Day 1, 2, 3, 4, 5, 6, 7, 8, 9 on Oaxaca trip, show activity, food, travel, and header items
                     if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) {
-                      return item.type === 'activity' || item.type === 'food' || item.type === 'travel';
+                      return item.type === 'activity' || item.type === 'food' || item.type === 'travel' || item.type === 'header';
                     }
 
                     if (item.type !== 'activity') return false;
@@ -2878,7 +2780,10 @@ export default function TeaserPage() {
 
                   if (allActivities.length === 0) return null;
 
-                  // For customized Oaxaca days, separate food, activities, and travel
+                  // For customized Oaxaca days, separate food, activities, travel, and headers
+                  const headerItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
+                    ? allActivities.filter((item: any) => item.type === 'header')
+                    : [];
                   const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'food')
                     : [];
@@ -2891,6 +2796,20 @@ export default function TeaserPage() {
 
                   return (
                     <>
+                      {/* Header Sections - only for customized days */}
+                      {headerItems.map((headerItem: any, headerIdx: number) => (
+                        <div key={`header-${headerItem.id || headerIdx}`} className="mb-6">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                            {headerItem.name}
+                          </h3>
+                          {headerItem.description && (
+                            <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                              {headerItem.description}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+
                       {/* Food Section - only for customized days */}
                       {foodItems.length > 0 && (
                         <div className="mb-6">
