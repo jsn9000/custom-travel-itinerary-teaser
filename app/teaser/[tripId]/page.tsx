@@ -623,106 +623,30 @@ export default function TeaserPage() {
                   category: "health food restaurant",
                   categoryLabel: "$$ • affordable • Health food restaurant",
                   description: "Casual, relaxed spot with several vegetarian/vegan-friendly menu items (smoothie bowls, plant-milk coffee, etc.).",
-                  address: "Oaxaca City",
-                  location: "Oaxaca City",
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Puerto Escondido, Oaxaca",
                   notes: "Health food restaurant with vegan options",
                   images: [
                     {
-                      url: "/oaxaca/images/Café Elephant Garden.jpeg",
+                      url: "/oaxaca/images/elephant-garden-breakfast.jpeg",
                       alt: "Café Elephant Garden"
                     }
                   ]
                 },
                 {
-                  id: "goyos-burgers",
-                  name: "Goyo's Burgers Roma",
-                  type: "food",
-                  category: "burger restaurant",
-                  description: "Popular burger joint in Roma neighborhood serving creative gourmet burgers with fresh ingredients and unique flavor combinations.",
-                  address: "Roma, Mexico City",
-                  notes: "Gourmet burgers",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Goyo%E2%80%99s%20Burgers%20Roma.jpeg",
-                      alt: "Goyo's Burgers Roma"
-                    }
-                  ]
-                },
-                {
-                  id: "gracias-madre",
-                  name: "Gracias Madre Vegan Tacos",
-                  type: "food",
-                  category: "vegan restaurant",
-                  description: "100% plant-based taqueria serving delicious vegan tacos, quesadillas, and Mexican street food with authentic flavors.",
-                  address: "Mexico City",
-                  notes: "Vegan tacos and Mexican food",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Gracias Madre Vegan Tacos.jpeg",
-                      alt: "Gracias Madre Vegan Tacos"
-                    }
-                  ]
-                },
-                {
-                  id: "san-juan-teotihuacan",
-                  name: "San Juan Teotihuacán",
+                  id: "la-punta-zicatela",
+                  name: "La Punta Zicatela",
                   type: "activity",
-                  category: "archaeological site",
-                  description: "Ancient Mesoamerican city and UNESCO World Heritage Site, home to the iconic Pyramids of the Sun and Moon. One of the most significant archaeological sites in Mexico.",
-                  address: "State of Mexico",
-                  notes: "Archaeological site, UNESCO World Heritage",
-                  images: [
-                    {
-                      url: "/oaxaca/images/San Juan Teotihuacán.jpeg",
-                      alt: "San Juan Teotihuacán"
-                    }
-                  ]
-                },
-                {
-                  id: "pyramid-of-the-sun",
-                  name: "Pyramid of the Sun",
-                  type: "activity",
-                  category: "archaeological site",
-                  description: "The largest building in Teotihuacán and one of the largest pyramids in Mesoamerica. Climb to the top for breathtaking views of the ancient city.",
-                  address: "Teotihuacán, State of Mexico",
-                  notes: "Ancient pyramid, UNESCO World Heritage",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Pyramid of the Sun.jpeg",
-                      alt: "Pyramid of the Sun"
-                    }
-                  ]
-                },
-                {
-                  id: "xochimilco",
-                  name: "Xochimilco",
-                  type: "activity",
-                  category: "cultural site",
-                  description: "Famous for its network of canals and colorful trajineras (gondola-like boats). Experience traditional Mexican culture while floating through ancient waterways, a UNESCO World Heritage Site.",
-                  address: "Mexico City",
-                  notes: "Canals, trajineras, UNESCO World Heritage",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Xochimilco.jpeg",
-                      alt: "Xochimilco"
-                    }
-                  ]
-                },
-                {
-                  id: "fundacion-casa-wabi",
-                  name: "Fundación Casa Wabi",
-                  type: "activity",
-                  category: "art center",
-                  categoryLabel: "Art center • Cultural site",
-                  description: "An art foundation built by renowned architect, Tadao Ando. This beautiful space offers artist residencies as well as social programs for the community.\n\nYou can visit Casa Wabi on guided tours only. Check the website above for available times and to reserve for total donation price of $66",
-                  price: 66.00,
+                  category: "public beach",
+                  categoryLabel: "Public beach • Surf spot",
+                  description: "A great surfing spot – it has a consistent wave off the point. You can find plenty of lesson or board rental options in this little community. Sunset watching (one of the best in Puerto Escondido), surf culture & people-watching, walking around in the evening (lots of cafes, juice bars, small shops). Chill, bohemian vibes (more lively than Carrizalillo). Not ideal to swim.",
                   address: "Puerto Escondido, Oaxaca",
                   location: "Puerto Escondido, Oaxaca",
-                  notes: "Guided tours only, total donation price $66",
+                  notes: "Surfing, sunset watching, bohemian atmosphere. Not ideal for swimming.",
                   images: [
                     {
-                      url: "/oaxaca/images/Fundación Casa Wabi.jpeg",
-                      alt: "Fundación Casa Wabi"
+                      url: "/oaxaca/images/la-punta-zicatela.jpeg",
+                      alt: "La Punta Zicatela beach and sunset"
                     }
                   ]
                 }
@@ -734,92 +658,19 @@ export default function TeaserPage() {
             if (day8) {
               day8.items = [
                 {
-                  id: "cafe-vegetal",
-                  name: "Café Vegetal",
+                  id: "thai-pei-huatulco",
+                  name: "THAI PEI HUATULCO",
                   type: "food",
-                  category: "vegan cafe",
-                  description: "Plant-based cafe offering organic coffee, fresh juices, and healthy vegan breakfast and lunch options in a cozy atmosphere.",
-                  address: "Mexico City",
-                  notes: "Vegan cafe",
+                  category: "asian restaurant",
+                  categoryLabel: "Asian restaurant • Indian restaurant • Thai restaurant",
+                  description: "Well-loved restaurant offering Thai-inspired and Asian fusion dishes with vegetarian and vegan-friendly options.",
+                  address: "Huatulco, Oaxaca",
+                  location: "Huatulco, Oaxaca",
+                  notes: "Asian fusion, Thai cuisine, vegan-friendly options",
                   images: [
                     {
-                      url: "/oaxaca/images/Café Vegetal.jpeg",
-                      alt: "Café Vegetal"
-                    }
-                  ]
-                },
-                {
-                  id: "mictlan-antojitos",
-                  name: "Mictlan Antojitos Veganos",
-                  type: "food",
-                  category: "vegan restaurant",
-                  description: "Authentic vegan Mexican street food and antojitos (traditional snacks) with plant-based versions of classic dishes.",
-                  address: "Mexico City",
-                  notes: "Vegan Mexican street food",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Mictlan Antojitos Veganos.jpeg",
-                      alt: "Mictlan Antojitos Veganos"
-                    }
-                  ]
-                },
-                {
-                  id: "taco-santo-vegano",
-                  name: "Taco Santo Vegano",
-                  type: "food",
-                  category: "vegan taqueria",
-                  description: "Creative vegan taqueria serving plant-based tacos with innovative fillings and traditional Mexican flavors.",
-                  address: "Mexico City",
-                  notes: "Vegan tacos",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Taco Santo Vegano.jpeg",
-                      alt: "Taco Santo Vegano"
-                    }
-                  ]
-                },
-                {
-                  id: "bosque-chapultepec",
-                  name: "Bosque de Chapultepec",
-                  type: "activity",
-                  category: "park",
-                  description: "One of the largest city parks in the Western Hemisphere, featuring museums, lakes, a zoo, and beautiful green spaces perfect for walking and relaxation.",
-                  address: "Mexico City",
-                  notes: "City park, museums, zoo",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Bosque de Chapultepec.jpeg",
-                      alt: "Bosque de Chapultepec"
-                    }
-                  ]
-                },
-                {
-                  id: "chapultepec-castle",
-                  name: "Chapultepec Castle",
-                  type: "activity",
-                  category: "castle/museum",
-                  description: "Historic castle on Chapultepec Hill housing the National Museum of History. Offers stunning views of Mexico City and beautiful architecture.",
-                  address: "Chapultepec Park, Mexico City",
-                  notes: "Historic castle, museum, city views",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Chapultepec Castle.jpeg",
-                      alt: "Chapultepec Castle"
-                    }
-                  ]
-                },
-                {
-                  id: "mercado-ciudadela",
-                  name: "Mercado de Artesanías La Ciudadela",
-                  type: "activity",
-                  category: "artisan market",
-                  description: "Large artisan market featuring traditional Mexican handicrafts, textiles, pottery, and folk art from across the country. Perfect for souvenir shopping.",
-                  address: "Mexico City",
-                  notes: "Artisan market, handicrafts",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Mercado de Artesanías La Ciudadela.jpeg",
-                      alt: "Mercado de Artesanías La Ciudadela"
+                      url: "/oaxaca/images/thai-pei-huatulco.jpeg",
+                      alt: "THAI PEI HUATULCO"
                     }
                   ]
                 }
@@ -829,50 +680,22 @@ export default function TeaserPage() {
             // Day 9 override for Oaxaca trip
             const day9 = data.dailySchedule.find((day: any) => day.dayNumber === 9);
             if (day9) {
-              day9.dayTitle = "Final Explorations & Departure";
+              day9.dayTitle = "Saying Goodbye to Oaxaca";
               day9.items = [
                 {
-                  id: "mexico-city-airport-departure",
-                  name: "Mexico City International Airport Benito Juárez",
+                  id: "oaxaca-airport-departure",
+                  name: "Oaxaca International Airport",
                   type: "travel",
                   category: "airport",
-                  description: "Departure from Mexico City International Airport (MEX). Check-in and security processing for your return flight.",
-                  address: "Mexico City",
-                  notes: "Airport departure",
+                  categoryLabel: "International airport • Airport",
+                  description: "Depart at 2:08pm so arrive around 11am",
+                  address: "Oaxaca",
+                  location: "Oaxaca International Airport",
+                  notes: "Airport departure - arrive around 11am for 2:08pm flight",
                   images: [
                     {
-                      url: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=800&q=80",
-                      alt: "Mexico City International Airport Benito Juárez"
-                    }
-                  ]
-                },
-                {
-                  id: "jfk-airport",
-                  name: "John F. Kennedy International Airport",
-                  type: "travel",
-                  category: "airport",
-                  description: "Arrival at John F. Kennedy International Airport (JFK) in New York.",
-                  address: "New York, USA",
-                  notes: "Airport arrival",
-                  images: [
-                    {
-                      url: "https://images.unsplash.com/photo-1583531172005-814191b8b6c0?w=800&q=80",
-                      alt: "John F. Kennedy International Airport"
-                    }
-                  ]
-                },
-                {
-                  id: "buena-tierra-mex",
-                  name: "Buena Tierra (MEX airport)",
-                  type: "food",
-                  category: "restaurant",
-                  description: "Restaurant located at Mexico City airport offering meals before departure.",
-                  address: "Mexico City International Airport",
-                  notes: "Airport restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Buena Tierra.jpeg",
-                      alt: "Buena Tierra"
+                      url: "/oaxaca/images/oaxaca-airport-departure.jpeg",
+                      alt: "Oaxaca International Airport"
                     }
                   ]
                 }
