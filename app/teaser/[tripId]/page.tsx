@@ -465,81 +465,6 @@ export default function TeaserPage() {
                   ]
                 },
                 {
-                  id: "aguacate-oaxaca",
-                  name: "Aguacate Oaxaca | Veggie Bar",
-                  type: "food",
-                  category: "vegetarian restaurant",
-                  description: "A vegetarian restaurant serving fresh, natural, healthy and nutritious products, some of which are vegan. Located inside Casa de Barro on the first floor.",
-                  address: "Casa de Barro, Oaxaca City",
-                  notes: "Vegetarian restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Aguacate Oaxaca | Veggie Bar.jpeg",
-                      alt: "Aguacate Oaxaca Veggie Bar"
-                    }
-                  ]
-                },
-                {
-                  id: "viriditas-cocina",
-                  name: "Viriditas Cocina Vegan sushi restaurant",
-                  type: "food",
-                  category: "vegan restaurant",
-                  description: "A vegan restaurant that offers dishes of the day from various cuisines. Selection may include sushi, ramen, curry, stew, smoothie, as well as desserts.",
-                  address: "Oaxaca City",
-                  notes: "Vegan restaurant, Bakery",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Viriditas Cocina Vegan sushi restaurant.jpeg",
-                      alt: "Viriditas Cocina Vegan sushi restaurant"
-                    }
-                  ]
-                },
-                {
-                  id: "sherbet-helados",
-                  name: "Sherbet helados florales",
-                  type: "food",
-                  category: "ice cream shop",
-                  description: "There are about 20 flavors, about half of which are water-based, meaning that they are vegan. Artisanal floral ice cream made with local flowers and natural ingredients.",
-                  address: "Oaxaca City",
-                  notes: "Ice cream shop",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Sherbet helados florales.png",
-                      alt: "Sherbet helados florales"
-                    }
-                  ]
-                },
-                {
-                  id: "hierve-el-agua",
-                  name: "Hierve el Agua",
-                  type: "activity",
-                  category: "nature preserve",
-                  description: "Ancient geological site featuring towering, waterfall-like rock formations, pools & springs. One of Oaxaca's most breathtaking natural wonders with petrified waterfalls and natural infinity pools overlooking the valley.",
-                  address: "70 km from Oaxaca City",
-                  notes: "Nature preserve, Sights & Landmarks",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Hierve el Agua.jpeg",
-                      alt: "Hierve el Agua"
-                    }
-                  ]
-                },
-                {
-                  id: "jardin-etnobotanico",
-                  name: "Jardín Etnobotánico de Oaxaca",
-                  type: "activity",
-                  category: "botanical garden",
-                  description: "Curated grounds showcasing local Oaxacan plant life, plus a cultural center in a former convent. Beautiful botanical garden with diverse ecosystems and guided tours explaining the region's unique flora.",
-                  address: "Adjacent to Santo Domingo, Oaxaca City",
-                  notes: "Botanical garden, Nature & Parks, Gardens",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Jardín Etnobotánico de Oaxaca.jpeg",
-                      alt: "Jardín Etnobotánico de Oaxaca"
-                    }
-                  ]
-                },
-                {
                   id: "monte-alban",
                   name: "Monte Albán",
                   type: "activity",
@@ -581,36 +506,6 @@ export default function TeaserPage() {
                   ]
                 },
                 {
-                  id: "etnofood",
-                  name: "Etnofood",
-                  type: "food",
-                  category: "restaurant",
-                  description: "Restaurant serving traditional Oaxacan cuisine with authentic regional flavors and dishes.",
-                  address: "Oaxaca City",
-                  notes: "Traditional Oaxacan restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Etnofood.jpeg",
-                      alt: "Etnofood"
-                    }
-                  ]
-                },
-                {
-                  id: "restaurante-arugula",
-                  name: "Restaurante Arugula",
-                  type: "food",
-                  category: "restaurant",
-                  description: "Contemporary restaurant offering fresh, creative dishes with a focus on quality ingredients and modern presentation.",
-                  address: "Oaxaca City",
-                  notes: "Contemporary restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Restaurante Arugula.jpeg",
-                      alt: "Restaurante Arugula"
-                    }
-                  ]
-                },
-                {
                   id: "teotitlan-del-valle",
                   name: "Teotitlan Del Valle",
                   type: "activity",
@@ -624,51 +519,6 @@ export default function TeaserPage() {
                     {
                       url: "/oaxaca/images/Teotitlan Del Valle.jpeg",
                       alt: "Teotitlan Del Valle"
-                    }
-                  ]
-                },
-                {
-                  id: "mitla",
-                  name: "Mitla",
-                  type: "activity",
-                  category: "archaeological site",
-                  description: "Pre-Columbian archaeological site known for its unique geometric stone mosaics and intricate fretwork designs. A significant Zapotec cultural center with stunning architectural details.",
-                  address: "44 km from Oaxaca City",
-                  notes: "Archaeological site, Zapotec ruins",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Mitla.jpeg",
-                      alt: "Mitla"
-                    }
-                  ]
-                },
-                {
-                  id: "teotitlan-del-valle",
-                  name: "Teotitlán del Valle",
-                  type: "activity",
-                  category: "town",
-                  description: "Traditional Zapotec village famous for its handwoven wool rugs and textiles using natural dyes. Experience authentic weaving demonstrations and shop for beautiful handcrafted pieces.",
-                  address: "31 km from Oaxaca City",
-                  notes: "Artisan village, textile weaving",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Teotitlán del Valle.jpeg",
-                      alt: "Teotitlán del Valle"
-                    }
-                  ]
-                },
-                {
-                  id: "mercado-benito-juarez",
-                  name: "Mercado Benito Juárez",
-                  type: "activity",
-                  category: "market",
-                  description: "Bustling traditional market in the heart of Oaxaca City offering local produce, crafts, textiles, and authentic Oaxacan food. A vibrant hub of local culture and commerce.",
-                  address: "Downtown Oaxaca City",
-                  notes: "Traditional market, local crafts",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Mercado Benito Juárez.jpeg",
-                      alt: "Mercado Benito Juárez"
                     }
                   ]
                 }
@@ -697,36 +547,6 @@ export default function TeaserPage() {
                   ]
                 },
                 {
-                  id: "pochote-market",
-                  name: "Pochote Xochimilco Organic and Artisinal Market",
-                  type: "food",
-                  category: "market",
-                  description: "Weekly organic and artisanal market featuring local produce, handmade crafts, and fresh food from regional vendors.",
-                  address: "Oaxaca City",
-                  notes: "Organic market, artisanal products",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Pochote Xochimilco Organic and Artisinal Market.jpeg",
-                      alt: "Pochote Xochimilco Organic and Artisinal Market"
-                    }
-                  ]
-                },
-                {
-                  id: "herbivora",
-                  name: "Herbivora - Restaurante Vegano en Oaxaca",
-                  type: "food",
-                  category: "vegan restaurant",
-                  description: "Vegan restaurant offering creative plant-based interpretations of traditional Oaxacan dishes and international cuisine.",
-                  address: "Oaxaca City",
-                  notes: "Vegan restaurant",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Herbivora - Restaurante Vegano en Oaxaca.jpeg",
-                      alt: "Herbivora - Restaurante Vegano en Oaxaca"
-                    }
-                  ]
-                },
-                {
                   id: "chill-a-kill",
                   name: "Restaurante Bar Chill A Kill",
                   type: "food",
@@ -740,36 +560,6 @@ export default function TeaserPage() {
                     {
                       url: "/oaxaca/images/Restaurante Bar Chill A Kill.jpeg",
                       alt: "Restaurante Bar Chill A Kill"
-                    }
-                  ]
-                },
-                {
-                  id: "horseback-mexico",
-                  name: "Horseback Mexico Pick Up Point",
-                  type: "activity",
-                  category: "tour",
-                  description: "Starting point for horseback riding tours through the scenic Oaxacan countryside and mountains. Experience rural Oaxaca on horseback.",
-                  address: "Oaxaca area",
-                  notes: "Horseback riding tours",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Horseback Mexico Pick Up Point.jpeg",
-                      alt: "Horseback Mexico Pick Up Point"
-                    }
-                  ]
-                },
-                {
-                  id: "playa-carrizalillo",
-                  name: "Playa Carrizalillo",
-                  type: "activity",
-                  category: "beach",
-                  description: "Beautiful crescent-shaped beach with calm, clear waters perfect for swimming and snorkeling. Accessible by a long staircase with stunning views.",
-                  address: "Puerto Escondido, Oaxaca",
-                  notes: "Beach, swimming, snorkeling",
-                  images: [
-                    {
-                      url: "/oaxaca/images/Playa Carrizalillo.jpeg",
-                      alt: "Playa Carrizalillo"
                     }
                   ]
                 },
@@ -2796,19 +2586,72 @@ export default function TeaserPage() {
 
                   return (
                     <>
-                      {/* Header Sections - only for customized days */}
-                      {headerItems.map((headerItem: any, headerIdx: number) => (
-                        <div key={`header-${headerItem.id || headerIdx}`} className="mb-6">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-                            {headerItem.name}
+                      {/* Special rendering for Day 1 with Arrival header */}
+                      {isOaxacaTrip && day.dayNumber === 1 && headerItems.length > 0 && (
+                        <div className="mb-6">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                            {headerItems[0].name}
                           </h3>
-                          {headerItem.description && (
+                          {headerItems[0].description && (
                             <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
-                              {headerItem.description}
+                              {headerItems[0].description}
                             </p>
                           )}
+                          {/* Airport card under Arrival */}
+                          {activityItems.filter((item: any) => item.id === 'oaxaca-airport').map((item: any, idx: number) => {
+                            const description = item.description || 'Airport arrival';
+                            const itemImage = item.images?.[0]?.url || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800';
+
+                            return (
+                              <div
+                                key={`arrival-airport-${idx}`}
+                                className="bg-white rounded-xl overflow-hidden border border-blue-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer mb-6"
+                              >
+                                <div className="relative h-40">
+                                  <img
+                                    src={itemImage}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                </div>
+                                <div className="p-4">
+                                  {item.categoryLabel && (
+                                    <div className="text-xs text-gray-500 mb-1">
+                                      {item.categoryLabel}
+                                    </div>
+                                  )}
+                                  <div className="flex items-start justify-between mb-1">
+                                    <div className="font-bold text-gray-900 flex-1">{item.name}</div>
+                                    {item.rating && (
+                                      <div className="flex items-center ml-2">
+                                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1" />
+                                        <span className="text-sm font-semibold text-gray-700">{item.rating}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-sm text-gray-600 mb-2">{description}</div>
+                                  {item.details && item.details.length > 0 && (
+                                    <ul className="text-xs text-gray-600 mb-2 space-y-1">
+                                      {item.details.map((detail: string, detailIdx: number) => (
+                                        <li key={detailIdx} className="flex items-start">
+                                          <span className="mr-2">•</span>
+                                          <span>{detail}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                  {item.location && (
+                                    <div className="text-xs text-gray-500 mt-2">
+                                      {item.location}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      ))}
+                      )}
 
                       {/* Food Section - only for customized days */}
                       {foodItems.length > 0 && (
@@ -2869,7 +2712,9 @@ export default function TeaserPage() {
                             Activities
                           </h4>
                           <div className="grid md:grid-cols-3 gap-4">
-                            {activityItems.map((item: any, actIdx: number) => {
+                            {activityItems
+                              .filter((item: any) => !(isOaxacaTrip && day.dayNumber === 1 && item.id === 'oaxaca-airport'))
+                              .map((item: any, actIdx: number) => {
                             // Find the full activity details
                             const activityDetails = tripData.activities.find(
                               (act) => act.name === item.name
