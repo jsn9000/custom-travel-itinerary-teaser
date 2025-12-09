@@ -572,7 +572,44 @@ export default function TeaserPage() {
             // Day 6 override for Oaxaca trip
             const day6 = data.dailySchedule.find((day: any) => day.dayNumber === 6);
             if (day6) {
-              day6.items = [];
+              day6.items = [
+                {
+                  id: "chill-a-kill-day6",
+                  name: "Restaurante Bar Chill A Kill",
+                  type: "food",
+                  category: "mexican restaurant",
+                  categoryLabel: "Mexican restaurant • Bar",
+                  description: "Vegan tacos and vegan sandwich",
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Puerto Escondido, Oaxaca",
+                  notes: "Mexican restaurant with vegan options",
+                  images: [
+                    {
+                      url: "/oaxaca/images/chill-a-kill-tacos.jpeg",
+                      alt: "Restaurante Bar Chill A Kill"
+                    }
+                  ]
+                },
+                {
+                  id: "sunset-horseback-beach",
+                  name: "Sunset by Horse on the Beach",
+                  type: "activity",
+                  category: "horseback riding",
+                  categoryLabel: "Horseback riding • Beach tour",
+                  description: "Enjoy the best horse riding and Sunset in the local and virgin beach! Horses, farming fields, river crossings, beach, sunset all this elements will make your best horse riding experience.",
+                  price: 115.00,
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Puerto Escondido, Oaxaca",
+                  rating: 4.5,
+                  notes: "From $115 per person, 4.5 star rating with 26 reviews",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1568042972221-99e6379c8f33?w=800&q=80",
+                      alt: "Sunset horseback riding on beach"
+                    }
+                  ]
+                }
+              ];
             }
 
             // Day 7 override for Oaxaca trip
