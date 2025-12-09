@@ -877,9 +877,9 @@ export default function TeaserPage() {
       if (day.dayNumber === 1) {
         return 'Arrival & Getting Started';
       } else if (day.dayNumber === 9) {
-        return 'Final Explorations & Departure';
+        return 'Saying Goodbye to Your Oaxaca Adventure';
       } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
-        return 'Final Explorations & Departure';
+        return 'Saying Goodbye to Your Oaxaca Adventure';
       } else if (activities.length >= 3) {
         return 'Full Day of Adventures';
       } else if (activities.length >= 2) {
@@ -914,7 +914,7 @@ export default function TeaserPage() {
     if (day.dayNumber === 1) {
       return 'Arrival & Getting Started';
     } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
-      return 'Final Explorations & Departure';
+      return 'Saying Goodbye to Your Oaxaca Adventure';
     } else if (activities.length >= 3) {
       return 'Full Day of Adventures';
     } else if (activities.length >= 2) {
@@ -2396,7 +2396,7 @@ export default function TeaserPage() {
                           <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
                             Food
                           </h4>
-                          <div className="grid md:grid-cols-3 gap-4">
+                          <div className={`grid gap-4 ${foodItems.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' : 'md:grid-cols-3'}`}>
                             {foodItems.map((item: any, foodIdx: number) => {
                               const description = item.description || 'Delicious local cuisine and dining experience';
                               const foodImage = item.images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
@@ -2448,7 +2448,7 @@ export default function TeaserPage() {
                           <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
                             Activities
                           </h4>
-                          <div className="grid md:grid-cols-3 gap-4">
+                          <div className={`grid gap-4 ${activityItems.filter((item: any) => !(isOaxacaTrip && day.dayNumber === 1 && item.id === 'oaxaca-airport')).length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' : 'md:grid-cols-3'}`}>
                             {activityItems
                               .filter((item: any) => !(isOaxacaTrip && day.dayNumber === 1 && item.id === 'oaxaca-airport'))
                               .map((item: any, actIdx: number) => {
