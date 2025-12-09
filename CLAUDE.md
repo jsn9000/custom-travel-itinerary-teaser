@@ -136,7 +136,7 @@ This is a TypeScript Next.js 15 application with two main features:
     - Include fallback images for activities without database images
     - Activities should ONLY be shown in the daily itinerary section, not as a separate standalone section
 11. **Totals** - All the options that are chosen with prices should be totaled to show a total cost for the flight and hotel in a section at the bottom of the website.
-12. **Trip Summary** - The trip summary section should show the price of the trip (flight + hotel subtotal only). Do not display any unlock fee or additional charges in the trip summary.
+12. **Trip Summary** - The trip summary section should show the price of the trip (hotel + car rental subtotal only). **IMPORTANT: Do NOT include flight costs in the trip subtotal.** Flight costs should be displayed separately but not added to the subtotal. Do not display any unlock fee or additional charges in the trip summary.
 13. **Always Check Images** - Always double check images to make sure they are truly representative of the destination. Correct and choose another image if necessary on initial setup. Use actual Wanderlog images stored in Supabase with proper associations.
 14. **Wanderlog URL** - Always make sure to use the Wanderlog URL provided to pull the newest information for the generated page based on the template that is here.
 15. **Buttons, Color, Theme** - The button and colors and themes must all be based on the Wanderlog url provided since it will have the destination and location of the visit.
