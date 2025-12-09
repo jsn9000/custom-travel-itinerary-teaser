@@ -826,6 +826,23 @@ export default function TeaserPage() {
                   ]
                 },
                 {
+                  id: "chill-a-kill",
+                  name: "Restaurante Bar Chill A Kill",
+                  type: "food",
+                  category: "mexican restaurant",
+                  categoryLabel: "Mexican restaurant • Bar",
+                  description: "Vegan tacos and vegan sandwich",
+                  address: "Oaxaca City",
+                  location: "Oaxaca City",
+                  notes: "Mexican restaurant with vegan options",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Restaurante Bar Chill A Kill.jpeg",
+                      alt: "Restaurante Bar Chill A Kill"
+                    }
+                  ]
+                },
+                {
                   id: "horseback-mexico",
                   name: "Horseback Mexico Pick Up Point",
                   type: "activity",
@@ -956,6 +973,26 @@ export default function TeaserPage() {
                   ]
                 },
                 {
+                  id: "sunset-horseback-ride",
+                  name: "4hr Sunset by horse (river and beach)",
+                  type: "activity",
+                  category: "horseback riding",
+                  categoryLabel: "Horseback riding • Adventure tour",
+                  description: "Ride through river, lagoon, and beach landscapes. Learn about local culture and bioluminescence. Enjoy a sunset horseback ride along the Pacific coast. Visit a local family's beach cabin for refreshments.",
+                  time: "3:00 PM - 7:00 PM",
+                  price: 181.00,
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Pacific coast - Puerto Escondido",
+                  bookingLink: "https://www.viator.com",
+                  notes: "Scheduled: 3:00 PM - 7:00 PM, Total price $181",
+                  images: [
+                    {
+                      url: "https://images.unsplash.com/photo-1568042972221-99e6379c8f33?w=800&q=80",
+                      alt: "Sunset horseback riding on beach"
+                    }
+                  ]
+                },
+                {
                   id: "oaxaca-airport",
                   name: "Oaxaca International Airport",
                   type: "travel",
@@ -993,17 +1030,19 @@ export default function TeaserPage() {
             if (day7) {
               day7.items = [
                 {
-                  id: "mora-mora",
-                  name: "Mora Mora",
+                  id: "cafe-elephant-garden",
+                  name: "Café Elephant Garden",
                   type: "food",
-                  category: "restaurant",
-                  description: "Contemporary restaurant offering innovative dishes with a focus on local ingredients and modern culinary techniques.",
-                  address: "Mexico City",
-                  notes: "Contemporary dining",
+                  category: "health food restaurant",
+                  categoryLabel: "$$ • affordable • Health food restaurant",
+                  description: "Casual, relaxed spot with several vegetarian/vegan-friendly menu items (smoothie bowls, plant-milk coffee, etc.).",
+                  address: "Oaxaca City",
+                  location: "Oaxaca City",
+                  notes: "Health food restaurant with vegan options",
                   images: [
                     {
-                      url: "/oaxaca/images/Mora Mora.jpeg",
-                      alt: "Mora Mora"
+                      url: "/oaxaca/images/Café Elephant Garden.jpeg",
+                      alt: "Café Elephant Garden"
                     }
                   ]
                 },
@@ -1079,6 +1118,24 @@ export default function TeaserPage() {
                     {
                       url: "/oaxaca/images/Xochimilco.jpeg",
                       alt: "Xochimilco"
+                    }
+                  ]
+                },
+                {
+                  id: "fundacion-casa-wabi",
+                  name: "Fundación Casa Wabi",
+                  type: "activity",
+                  category: "art center",
+                  categoryLabel: "Art center • Cultural site",
+                  description: "An art foundation built by renowned architect, Tadao Ando. This beautiful space offers artist residencies as well as social programs for the community.\n\nYou can visit Casa Wabi on guided tours only. Check the website above for available times and to reserve for total donation price of $66",
+                  price: 66.00,
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Puerto Escondido, Oaxaca",
+                  notes: "Guided tours only, total donation price $66",
+                  images: [
+                    {
+                      url: "/oaxaca/images/Fundación Casa Wabi.jpeg",
+                      alt: "Fundación Casa Wabi"
                     }
                   ]
                 }
@@ -2269,12 +2326,27 @@ export default function TeaserPage() {
                 <div
                   key={hotelKey}
                   onClick={() => setSelectedHotelOaxacaReturn(hotelKey)}
-                  className={`rounded-xl overflow-hidden shadow-lg border-2 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
                     isSelected
-                      ? 'border-blue-600 scale-105'
-                      : 'border-gray-200 opacity-60 grayscale-[50%]'
+                      ? "opacity-100 scale-105"
+                      : "opacity-60 grayscale-[50%] hover:opacity-80"
                   }`}
+                  style={{
+                    boxShadow: isSelected
+                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                    border: isSelected ? 'none' : '1px solid #e5e5e5'
+                  }}
                 >
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                    }}>
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+
                   <div className="relative h-48">
                     <img
                       src={hotelImage}
@@ -2290,11 +2362,6 @@ export default function TeaserPage() {
                         {hotel.name}
                       </h3>
                     </div>
-                    {isSelected && (
-                      <div className="absolute top-4 right-4 bg-blue-600 text-white p-2 rounded-full">
-                        <Check className="w-5 h-5" />
-                      </div>
-                    )}
                   </div>
 
                   <div className="bg-white p-6">
