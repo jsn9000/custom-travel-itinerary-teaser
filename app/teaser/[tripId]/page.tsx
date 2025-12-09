@@ -2393,9 +2393,10 @@ export default function TeaserPage() {
                       {/* Food Section - only for customized days */}
                       {foodItems.length > 0 && (
                         <div className="mb-6">
-                          <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                          <h4 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'var(--font-inter)' }}>
                             Food
                           </h4>
+                          <p className="text-sm text-gray-600 mb-4 italic">Unlock all the fun—submit your booking request!</p>
                           <div className="grid md:grid-cols-3 gap-4">
                             {foodItems.map((item: any, foodIdx: number) => {
                               const description = item.description || 'Delicious local cuisine and dining experience';
@@ -2452,9 +2453,10 @@ export default function TeaserPage() {
                       {/* Activities Section */}
                       {activityItems.length > 0 && (
                         <div className="mb-6">
-                          <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
+                          <h4 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'var(--font-inter)' }}>
                             Activities
                           </h4>
+                          <p className="text-sm text-gray-600 mb-4 italic">Unlock all the fun—submit your booking request!</p>
                           <div className="grid md:grid-cols-3 gap-4">
                             {activityItems
                               .filter((item: any) => !(isOaxacaTrip && day.dayNumber === 1 && item.id === 'oaxaca-airport'))
