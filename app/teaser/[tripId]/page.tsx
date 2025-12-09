@@ -604,8 +604,8 @@ export default function TeaserPage() {
                   notes: "From $115 per person, 4.5 star rating with 26 reviews",
                   images: [
                     {
-                      url: "https://images.unsplash.com/photo-1568042972221-99e6379c8f33?w=800&q=80",
-                      alt: "Sunset horseback riding on beach"
+                      url: "/oaxaca/images/sunset-horseback-woman.png",
+                      alt: "Sunset horseback riding on beach with woman"
                     }
                   ]
                 }
