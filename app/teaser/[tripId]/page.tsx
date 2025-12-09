@@ -2424,13 +2424,6 @@ export default function TeaserPage() {
                                     <h5 className="font-bold text-gray-900 mb-2">{item.name}</h5>
                                     <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">{description}</p>
 
-                                    {/* Teaser message when there's only one food item */}
-                                    {foodItems.length === 1 && (
-                                      <div className="text-xs text-gray-500 italic mt-2 pt-2 border-t border-gray-100">
-                                        Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
-                                      </div>
-                                    )}
-
                                     {item.hours && (
                                       <div className="text-xs text-gray-600 mb-1">
                                         <span className="font-semibold">Hours:</span> {item.hours}
@@ -2446,6 +2439,12 @@ export default function TeaserPage() {
                                 </div>
                               );
                             })}
+                          </div>
+                          {/* Teaser message after food section */}
+                          <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
+                            <p className="text-sm text-gray-700 text-center italic">
+                              Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
+                            </p>
                           </div>
                         </div>
                       )}
@@ -2572,13 +2571,6 @@ export default function TeaserPage() {
                                     <div className="text-sm text-gray-600 mb-2">{description}</div>
                                   )}
 
-                                  {/* Teaser message when there's only one activity */}
-                                  {activityItems.length === 1 && (
-                                    <div className="text-xs text-gray-500 italic mt-2 pt-2 border-t border-gray-100">
-                                      Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
-                                    </div>
-                                  )}
-
                                   {/* Details list (for airport info) */}
                                   {item.details && item.details.length > 0 && (
                                     <ul className="text-xs text-gray-600 mb-2 space-y-1">
@@ -2608,6 +2600,12 @@ export default function TeaserPage() {
                               </div>
                             );
                           })}
+                        </div>
+                        {/* Teaser message after activities section */}
+                        <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
+                          <p className="text-sm text-gray-700 text-center italic">
+                            Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
+                          </p>
                         </div>
                       </div>
                       )}
