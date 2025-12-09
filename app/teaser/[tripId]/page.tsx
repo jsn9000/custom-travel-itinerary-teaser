@@ -547,6 +547,24 @@ export default function TeaserPage() {
                       alt: "Sweet Spot Café & Restaurant"
                     }
                   ]
+                },
+                {
+                  id: "omars-sportfishing",
+                  name: "Omar's Sportfishing & boat trips",
+                  type: "activity",
+                  category: "fishing charter",
+                  categoryLabel: "Fishing charter • Adventure sports center",
+                  description: "3hr Dolphin & Whale Watching in Puerto Escondido",
+                  time: "11:00 AM - 2:00 PM",
+                  address: "Puerto Escondido, Oaxaca",
+                  location: "Meeting Point - Puerto Escondido",
+                  notes: "Scheduled: 11:00 AM - 2:00 PM, Dolphin & Whale Watching",
+                  images: [
+                    {
+                      url: "/oaxaca/images/omars-dolphins.jpeg",
+                      alt: "Omar's Sportfishing & boat trips - Dolphin watching"
+                    }
+                  ]
                 }
               ];
             }
