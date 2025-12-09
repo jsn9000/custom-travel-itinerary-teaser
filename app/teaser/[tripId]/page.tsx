@@ -72,6 +72,7 @@ interface TripData {
   wanderlogUrl: string;
   hotels: HotelOption[];
   hotelsOaxaca?: HotelOption[];
+  hotelsOaxacaReturn?: HotelOption[];
   hotelsMexicoCity?: HotelOption[];
   flights: FlightOption[];
   carRentals?: CarRentalOption[];
@@ -112,6 +113,7 @@ export default function TeaserPage() {
   const [selectedHotelOaxacaReturn, setSelectedHotelOaxacaReturn] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
   const [selectedCarRental, setSelectedCarRental] = useState<string>("");
+  const [selectedCarRentalOption, setSelectedCarRentalOption] = useState<number | null>(null);
   const [selectedCarRentalCDW, setSelectedCarRentalCDW] = useState<boolean>(false); // CDW insurance selection
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
