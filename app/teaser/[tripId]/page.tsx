@@ -673,6 +673,24 @@ export default function TeaserPage() {
                       alt: "THAI PEI HUATULCO"
                     }
                   ]
+                },
+                {
+                  id: "santa-cruz-snorkeling",
+                  name: "Santa Cruz Huatulco",
+                  type: "activity",
+                  category: "snorkeling",
+                  categoryLabel: "Shore Excursion • Snorkeling",
+                  description: "3hr Shore Excursion Premium Family Snorkeling Experience. Various times offered but choose your start time based on how long your drive is because this is the meeting place.",
+                  address: "Santa Cruz Huatulco, Oaxaca",
+                  location: "Santa Cruz Huatulco, Oaxaca",
+                  bookingLink: "https://www.viator.com",
+                  notes: "3-hour snorkeling excursion, family-friendly, book via Viator",
+                  images: [
+                    {
+                      url: "/oaxaca/images/santa-cruz-snorkeling.jpeg",
+                      alt: "Santa Cruz Huatulco snorkeling"
+                    }
+                  ]
                 }
               ];
             }
@@ -680,7 +698,7 @@ export default function TeaserPage() {
             // Day 9 override for Oaxaca trip
             const day9 = data.dailySchedule.find((day: any) => day.dayNumber === 9);
             if (day9) {
-              day9.dayTitle = "Saying Goodbye to Oaxaca";
+              day9.dayTitle = "Saying Goodbye to Your Oaxaca Adventure";
               day9.items = [
                 {
                   id: "oaxaca-airport-departure",
