@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Lock, Star, Plane, Building2, Check, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 interface HotelOption {
@@ -736,7 +736,10 @@ export default function TeaserPage() {
           setSelectedHotelMexicoCity(data.hotelsMexicoCity[0].id || 'hotel-mexico-0');
         }
         if (data.flights && data.flights.length > 0) {
-          setSelectedFlight(data.flights[0].id || 'flight-0');
+          // Philippines trip doesn't use flight selection (all flights shown together)
+          if (tripId !== '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
+            setSelectedFlight(data.flights[0].id || 'flight-0');
+          }
         }
         if (data.carRentals && data.carRentals.length > 0) {
           setSelectedCarRental(data.carRentals[0].id || 'car-0');
@@ -803,7 +806,8 @@ export default function TeaserPage() {
   // Get the actual car rental cost based on CDW selection
   const getCarRentalCost = () => {
     if (!selectedCarRentalData) return 0;
-    return selectedCarRentalCDW ? selectedCarRentalData.withCDW : selectedCarRentalData.basePrice;
+    const cost = selectedCarRentalCDW ? selectedCarRentalData.withCDW : selectedCarRentalData.basePrice;
+    return cost || 0; // Ensure we always return a number
   };
 
   const calculateNights = () => {
@@ -828,8 +832,14 @@ export default function TeaserPage() {
     hotelCost = parseFloat(((selectedHotelData?.price || 0) * nights).toFixed(2));
   }
 
-  const flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
-  const carRentalCost = parseFloat(getCarRentalCost().toFixed(2));
+  // Calculate flight cost - Philippines trip shows all flights together
+  let flightCost = 0;
+  if (tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
+    flightCost = 3203.00; // $997 (Ayanna) + $2206 (Parents) = $3203 total
+  } else {
+    flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
+  }
+  const carRentalCost = parseFloat((getCarRentalCost() || 0).toFixed(2));
   const foodBudget = 500.0; // Fixed food budget for the trip
   // Trip cost includes hotels, car rental, and food budget (NOT flights)
   const tripCost = parseFloat((hotelCost + carRentalCost + foodBudget).toFixed(2));
@@ -943,6 +953,44 @@ export default function TeaserPage() {
 
   // Generate descriptive hotel name based on amenities and rating
   const getHotelDescription = (hotel: HotelOption) => {
+    // Special handling for Philippines trip - use generic descriptions based on hotel name
+    if (isPhilippinesTrip) {
+      const hotelName = hotel.name?.toLowerCase() || '';
+
+      // Cebu hotels
+      if (hotelName.includes('sitio looc') || hotelName.includes('waterfalls pool villa')) {
+        return 'Luxury Pool Villa with Entertainment';
+      }
+      if (hotelName.includes('banana residence') || hotelName.includes('4 bedroom townhouse')) {
+        return 'Spacious 4-Bedroom Townhouse';
+      }
+      if (hotelName.includes('one central hotel')) {
+        return 'Central Business Hotel with Breakfast';
+      }
+
+      // Bohol hotels
+      if (hotelName.includes('samadhi') || hotelName.includes('hydrospa')) {
+        return 'Resort with Pool View & Spa';
+      }
+      if (hotelName.includes('casa giuseppe') || hotelName.includes('craze')) {
+        return 'Beachside 4-Bedroom Property';
+      }
+      if (hotelName.includes('concordia') || hotelName.includes('agripina')) {
+        return 'Country Resort Villa';
+      }
+
+      // Dumaguete hotels
+      if (hotelName.includes('yucca villa')) {
+        return 'Stylish City Retreat with Pool';
+      }
+      if (hotelName.includes('luxe villa')) {
+        return 'Luxury Private Pool Villa';
+      }
+      if (hotelName.includes('hotel dumaguete')) {
+        return 'Deluxe Hotel with Breakfast';
+      }
+    }
+
     // Special handling for Oaxaca trip - use custom descriptions based on hotel ID
     if (isOaxacaTrip) {
       const oaxacaDescriptions: { [key: string]: string } = {
@@ -1038,6 +1086,8 @@ export default function TeaserPage() {
 
   // Special handling for Oaxaca trip
   const isOaxacaTrip = tripId === 'bab29d55-7e10-46ed-b702-e0f2a342fcd7';
+  // Special handling for Philippines trip
+  const isPhilippinesTrip = tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b';
 
   // Use database header images from Wanderlog scrape, fallback to destination-specific images
   let bannerImages = tripData.headerImages && tripData.headerImages.length > 0
@@ -1058,6 +1108,18 @@ export default function TeaserPage() {
       '/oaxaca/images/TEATRO MACEDONIO ALCALÁ.jpeg',
       '/oaxaca/images/Museo Nacional de Antropología.jpeg',
       '/oaxaca/images/Basilica of Our Lady of Guadalupe.jpeg',
+    ];
+  }
+
+  // Override with Philippines images for the Philippines trip - VERIFIED PHILIPPINES ONLY
+  if (isPhilippinesTrip) {
+    bannerImages = [
+      'https://images.pexels.com/photos/3225531/pexels-photo-3225531.jpeg?auto=compress&cs=tinysrgb&w=1200', // El Nido Beach, Palawan
+      'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1200', // Chocolate Hills, Bohol - Iconic landscape
+      'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=1200', // White Beach, Boracay
+      'https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1200', // Tropical Beach Philippines
+      'https://images.pexels.com/photos/2422461/pexels-photo-2422461.jpeg?auto=compress&cs=tinysrgb&w=1200', // Philippines Limestone Cliffs
+      'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=1200', // Philippine Beach Landscape
     ];
   }
 
@@ -1300,10 +1362,161 @@ export default function TeaserPage() {
             </p>
           </div>
 
-          {isOaxacaTrip ? (
+          {isPhilippinesTrip ? (
+            // Philippines trip - all flights in one box
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-xl overflow-hidden shadow-lg border-2 border-blue-600">
+                <div className="relative h-48">
+                  <img
+                    src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800"
+                    alt="Flight"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      Your Flight Options
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="bg-white p-8">
+                  {/* Ayanna Flights Section */}
+                  <div className="mb-6">
+                    <h4 className="text-xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      Ayanna Flights
+                    </h4>
+
+                    {/* Ayanna Outbound */}
+                    <div className="mb-4 pb-4 border-b border-gray-200">
+                      <div className="text-sm font-semibold text-gray-700 mb-2">Outbound Flight</div>
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                          <div className="text-xs text-gray-600">From</div>
+                          <div className="font-bold text-gray-900">SFO</div>
+                          <div className="text-xs text-gray-600">Sun, Oct 4 at 12:30am</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-600">To</div>
+                          <div className="font-bold text-gray-900">CEBU</div>
+                          <div className="text-xs text-gray-600">Mon, Oct 5 at 10:35am</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
+                        Economy • click here to book
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-[#1e3a8a]">$363.00</span>
+                      </div>
+                    </div>
+
+                    {/* Ayanna Return */}
+                    <div className="mb-4">
+                      <div className="text-sm font-semibold text-gray-700 mb-2">Return Flight</div>
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                          <div className="text-xs text-gray-600">From</div>
+                          <div className="font-bold text-gray-900">DGT</div>
+                          <div className="text-xs text-gray-600">Wed, Oct 14 at 8:10pm</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-600">To</div>
+                          <div className="font-bold text-gray-900">SFO</div>
+                          <div className="text-xs text-gray-600">Wed, Oct 14 at 9:10pm</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
+                        Economy • click here to book
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-[#1e3a8a]">$634.00</span>
+                      </div>
+                    </div>
+
+                    {/* Ayanna Subtotal */}
+                    <div className="bg-gray-50 p-3 rounded">
+                      <div className="flex justify-between items-center">
+                        <span className="text-base font-bold text-gray-800">Ayanna Total Airfare</span>
+                        <span className="text-xl font-bold text-[#1e3a8a]">$997.00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Parents Flights Section */}
+                  <div className="mb-6">
+                    <h4 className="text-xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                      Parents Flights
+                    </h4>
+
+                    {/* Parents Outbound */}
+                    <div className="mb-4 pb-4 border-b border-gray-200">
+                      <div className="text-sm font-semibold text-gray-700 mb-2">Outbound Flight</div>
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                          <div className="text-xs text-gray-600">From</div>
+                          <div className="font-bold text-gray-900">DFW</div>
+                          <div className="text-xs text-gray-600">Sat, Oct 3 at 10:50pm</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-600">To</div>
+                          <div className="font-bold text-gray-900">CEBU</div>
+                          <div className="text-xs text-gray-600">Mon, Oct 5 at 10:50am</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
+                        Economy • 1 Layover • click here to book
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-[#1e3a8a]">$921.00</span>
+                      </div>
+                    </div>
+
+                    {/* Parents Return */}
+                    <div className="mb-4">
+                      <div className="text-sm font-semibold text-gray-700 mb-2">Return Flight</div>
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                          <div className="text-xs text-gray-600">From</div>
+                          <div className="font-bold text-gray-900">DGT</div>
+                          <div className="text-xs text-gray-600">Wed, Oct 14 at 8:05am</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-600">To</div>
+                          <div className="font-bold text-gray-900">DFW</div>
+                          <div className="text-xs text-gray-600">Wed, Oct 14 at 7:40pm</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
+                        Economy • 2 Layovers • click here to book
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-[#1e3a8a]">$1,285.00</span>
+                      </div>
+                    </div>
+
+                    {/* Parents Subtotal */}
+                    <div className="bg-gray-50 p-3 rounded">
+                      <div className="flex justify-between items-center">
+                        <span className="text-base font-bold text-gray-800">Parents Total Airfare</span>
+                        <span className="text-xl font-bold text-[#1e3a8a]">$2,206.00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Overall Total */}
+                  <div className="pt-6 border-t-2 border-gray-300">
+                    <div className="flex justify-between items-center">
+                      <span className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-cormorant)' }}>Overall Total</span>
+                      <span className="text-3xl font-bold text-[#1e3a8a]">$3,203.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : isOaxacaTrip ? (
             // Selectable flight cards for Oaxaca trip - side by side
             <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-              {tripData.flights.map((flight, flightIdx) => {
+              {tripData.flights?.map((flight, flightIdx) => {
                 const flightKey = flight.id || `flight-${flightIdx}`;
                 const isSelected = selectedFlight === flightKey;
                 const planeImages = [
@@ -1339,7 +1552,7 @@ export default function TeaserPage() {
                       </div>
                       {isSelected && (
                         <div className="absolute top-4 right-4 bg-blue-600 text-white p-2 rounded-full">
-                          <Check className="w-5 h-5" />
+                          
                         </div>
                       )}
                     </div>
@@ -1358,7 +1571,7 @@ export default function TeaserPage() {
                                 </div>
                                 <div className="text-right ml-4">
                                   <div className="text-lg font-bold text-[#1e3a8a]">
-                                    ${leg.price.toFixed(2)}
+                                    ${(leg.price || 0).toFixed(2)}
                                   </div>
                                 </div>
                               </div>
@@ -1390,7 +1603,7 @@ export default function TeaserPage() {
                         <div className="flex justify-between items-center">
                           <span className="text-lg font-bold text-gray-800">Total Airfare</span>
                           <span className="text-2xl font-bold text-[#1e3a8a]">
-                            ${flight.price.toFixed(2)}
+                            ${(flight.price || 0).toFixed(2)}
                           </span>
                         </div>
                         <p className="text-xs text-gray-500 mt-2">For 2 travelers</p>
@@ -1403,14 +1616,13 @@ export default function TeaserPage() {
           ) : (
             // Original selection grid for non-Oaxaca trips
             <div className="grid md:grid-cols-3 gap-5">
-              {tripData.flights.map((flight, flightIdx) => {
+              {tripData.flights?.map((flight, flightIdx) => {
               const flightKey = flight.id || `flight-${flightIdx}`;
               const isSelected = selectedFlight === flightKey;
-              // Use different plane images for each flight
+              // Use different plane images for each flight (commercial aircraft only)
               const planeImages = [
-                'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800',
-                'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=800',
-                'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=800'
+                'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800', // Commercial airplane in flight
+                'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=800', // Airplane at sunset
               ];
               const flightImage = planeImages[flightIdx % planeImages.length];
 
@@ -1435,7 +1647,7 @@ export default function TeaserPage() {
                       background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
                       boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
                     }}>
-                      <Check className="w-4 h-4" />
+                      
                     </div>
                   )}
 
@@ -1456,7 +1668,7 @@ export default function TeaserPage() {
                       <h3 className="text-base font-bold text-gray-900 flex-1">
                         {getFlightClass(flight.price)}
                       </h3>
-                      <Plane className="w-4 h-4 text-blue-600" />
+                      
                     </div>
                     <p className="text-xs text-gray-600 mb-2">
                       {flight.departureAirport} → {flight.arrivalAirport}
@@ -1543,7 +1755,7 @@ export default function TeaserPage() {
                       background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
                       boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
                     }}>
-                      <Check className="w-4 h-4" />
+                      
                     </div>
                   )}
 
@@ -1559,12 +1771,7 @@ export default function TeaserPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div className="absolute bottom-2 left-2 right-2">
                       <div className="flex items-center gap-0.5">
-                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                          />
-                        ))}
+                        {hotel.rating ? hotel.rating.toFixed(1) : '4.0'} stars
                       </div>
                     </div>
                   </div>
@@ -1574,7 +1781,7 @@ export default function TeaserPage() {
                       <h3 className="text-base font-bold text-gray-900 flex-1">
                         {getHotelDescription(hotel)}
                       </h3>
-                      <Building2 className="w-4 h-4 text-blue-600" />
+                      
                     </div>
                     <p className="text-xs text-gray-600 mb-2">
                       {hotel.roomType || "Premium accommodation with modern amenities"}
@@ -1658,7 +1865,7 @@ export default function TeaserPage() {
                       background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
                       boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
                     }}>
-                      <Check className="w-4 h-4" />
+                      
                     </div>
                   )}
 
@@ -1674,12 +1881,7 @@ export default function TeaserPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div className="absolute bottom-2 left-2 right-2">
                       <div className="flex items-center gap-0.5">
-                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                          />
-                        ))}
+                        {hotel.rating ? hotel.rating.toFixed(1) : '4.0'} stars
                       </div>
                     </div>
                   </div>
@@ -1689,7 +1891,7 @@ export default function TeaserPage() {
                       <h3 className="text-base font-bold text-gray-900 flex-1">
                         {getHotelDescription(hotel)}
                       </h3>
-                      <Building2 className="w-4 h-4 text-blue-600" />
+                      
                     </div>
                     <p className="text-xs text-gray-600 mb-2">
                       {hotel.roomType || "Premium accommodation with modern amenities"}
@@ -1772,7 +1974,7 @@ export default function TeaserPage() {
                       background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
                       boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
                     }}>
-                      <Check className="w-4 h-4" />
+                      
                     </div>
                   )}
 
@@ -1795,7 +1997,7 @@ export default function TeaserPage() {
 
                   <div className="bg-white p-6">
                     <div className="flex items-center mb-2">
-                      <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                      
                       <span className="ml-1 text-sm font-semibold text-gray-700">
                         {hotel.rating}
                       </span>
@@ -1831,8 +2033,349 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Old Hotels Section - Keep for non-Oaxaca trips */}
-      {tripData.hotels && tripData.hotels.length > 0 && (
+      {/* Philippines Hotels - Multiple Location Sections */}
+      {isPhilippinesTrip && tripData.hotels && tripData.hotels.length > 0 && (
+        <>
+          {/* Cebu Section */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                Cebu Accommodation (Oct 5-8)
+              </h2>
+              <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+                Choose from our handpicked selection of properties
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              {tripData.hotels?.filter(h => h.address?.includes('Cebu')).map((hotel, hotelIdx) => {
+                const hotelKey = hotel.id || `hotel-cebu-${hotelIdx}`;
+                const isSelected = selectedHotel === hotelKey;
+
+                // Unique images for each Cebu hotel type
+                const cebuHotelImages = [
+                  'https://images.unsplash.com/photo-1602002418816-5c0aeef426aa?w=800', // Luxury pool villa
+                  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800', // Modern townhouse
+                  'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800', // Business hotel
+                ];
+                const hotelImage = (hotel as any).images?.[0] || cebuHotelImages[hotelIdx % cebuHotelImages.length];
+
+                return (
+                  <div
+                    key={hotelKey}
+                    onClick={() => setSelectedHotel(hotelKey)}
+                    className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                      isSelected
+                        ? "opacity-100 scale-105"
+                        : "opacity-60 grayscale-[50%] hover:opacity-80"
+                    }`}
+                    style={{
+                      boxShadow: isSelected
+                        ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                        : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                      border: isSelected ? 'none' : '1px solid #e5e5e5'
+                    }}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                        background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                        boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                      }}>
+
+                      </div>
+                    )}
+
+                    <div className="relative h-32">
+                      <img
+                        src={hotelImage}
+                        alt={hotel.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <div className="flex items-center gap-0.5">
+                          {hotel.rating ? hotel.rating.toFixed(1) : '4.0'} stars
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-3">
+                      <div className="flex items-start justify-between mb-1.5">
+                        <h3 className="text-base font-bold text-gray-900 flex-1">
+                          {hotel.name}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-2">
+                        {hotel.roomType || "Premium accommodation"}
+                      </p>
+                      {hotel.amenities && hotel.amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                            <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                              {amenity}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {hotel.address && hotel.address.includes('click here to book') && (
+                        <div className="mb-2">
+                          <a
+                            href={hotel.address.match(/https?:\/\/[^\s]+/)?.[0] || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            click here to book
+                          </a>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xl font-bold text-[#1e3a8a]">
+                            ${(hotel.price || 0).toFixed(2)}
+                          </span>
+                          <span className="text-xs text-gray-600"> total</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Bohol Section */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                Bohol Accommodation (Oct 8-10)
+              </h2>
+              <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+                Choose from our handpicked selection of properties
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              {tripData.hotels?.filter(h => h.address?.includes('Bohol')).map((hotel, hotelIdx) => {
+                const hotelKey = hotel.id || `hotel-bohol-${hotelIdx}`;
+                const isSelected = selectedHotel === hotelKey;
+
+                // Unique images for each Bohol hotel type
+                const boholHotelImages = [
+                  'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', // Resort with pool and spa
+                  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800', // Beachside property
+                  'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800', // Country resort villa
+                ];
+                const hotelImage = (hotel as any).images?.[0] || boholHotelImages[hotelIdx % boholHotelImages.length];
+
+                return (
+                  <div
+                    key={hotelKey}
+                    onClick={() => setSelectedHotel(hotelKey)}
+                    className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                      isSelected
+                        ? "opacity-100 scale-105"
+                        : "opacity-60 grayscale-[50%] hover:opacity-80"
+                    }`}
+                    style={{
+                      boxShadow: isSelected
+                        ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                        : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                      border: isSelected ? 'none' : '1px solid #e5e5e5'
+                    }}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                        background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                        boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                      }}>
+
+                      </div>
+                    )}
+
+                    <div className="relative h-32">
+                      <img
+                        src={hotelImage}
+                        alt={hotel.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <div className="flex items-center gap-0.5">
+                          {hotel.rating ? hotel.rating.toFixed(1) : '4.0'} stars
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-3">
+                      <div className="flex items-start justify-between mb-1.5">
+                        <h3 className="text-base font-bold text-gray-900 flex-1">
+                          {hotel.name}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-2">
+                        {hotel.roomType || "Premium accommodation"}
+                      </p>
+                      {hotel.amenities && hotel.amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                            <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                              {amenity}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {hotel.address && hotel.address.includes('click here to book') && (
+                        <div className="mb-2">
+                          <a
+                            href={hotel.address.match(/https?:\/\/[^\s]+/)?.[0] || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            click here to book
+                          </a>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xl font-bold text-[#1e3a8a]">
+                            ${(hotel.price || 0).toFixed(2)}
+                          </span>
+                          <span className="text-xs text-gray-600"> total</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Dumaguete Section */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                Dumaguete Accommodation (Oct 10-14)
+              </h2>
+              <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+                Choose from our handpicked selection of properties
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              {tripData.hotels?.filter(h => h.address?.includes('Dumaguete')).map((hotel, hotelIdx) => {
+                const hotelKey = hotel.id || `hotel-dumaguete-${hotelIdx}`;
+                const isSelected = selectedHotel === hotelKey;
+
+                // Unique images for each Dumaguete hotel type
+                const dumagueteHotelImages = [
+                  'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800', // Stylish city retreat with pool
+                  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800', // Luxury private pool villa
+                  'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800', // Deluxe hotel with breakfast
+                ];
+                const hotelImage = (hotel as any).images?.[0] || dumagueteHotelImages[hotelIdx % dumagueteHotelImages.length];
+
+                return (
+                  <div
+                    key={hotelKey}
+                    onClick={() => setSelectedHotel(hotelKey)}
+                    className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
+                      isSelected
+                        ? "opacity-100 scale-105"
+                        : "opacity-60 grayscale-[50%] hover:opacity-80"
+                    }`}
+                    style={{
+                      boxShadow: isSelected
+                        ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
+                        : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                      border: isSelected ? 'none' : '1px solid #e5e5e5'
+                    }}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
+                        background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
+                        boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
+                      }}>
+
+                      </div>
+                    )}
+
+                    <div className="relative h-32">
+                      <img
+                        src={hotelImage}
+                        alt={hotel.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <div className="flex items-center gap-0.5">
+                          {hotel.rating ? hotel.rating.toFixed(1) : '4.0'} stars
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-3">
+                      <div className="flex items-start justify-between mb-1.5">
+                        <h3 className="text-base font-bold text-gray-900 flex-1">
+                          {getHotelDescription(hotel)}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-2">
+                        {hotel.roomType || "Premium accommodation"}
+                      </p>
+                      {hotel.amenities && hotel.amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {hotel.amenities.slice(0, 3).map((amenity, idx) => (
+                            <span key={idx} className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                              {amenity}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {hotel.address && hotel.address.includes('click here to book') && (
+                        <div className="mb-2">
+                          <a
+                            href={hotel.address.match(/https?:\/\/[^\s]+/)?.[0] || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            click here to book
+                          </a>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xl font-bold text-[#1e3a8a]">
+                            ${(hotel.price || 0).toFixed(2)}
+                          </span>
+                          <span className="text-xs text-gray-600"> total</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* Old Hotels Section - Keep for non-Philippines/non-Oaxaca trips */}
+      {!isPhilippinesTrip && tripData.hotels && tripData.hotels.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
@@ -1844,7 +2387,7 @@ export default function TeaserPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-5">
-            {tripData.hotels.map((hotel, hotelIdx) => {
+            {tripData.hotels?.map((hotel, hotelIdx) => {
               const hotelKey = hotel.id || `hotel-${hotelIdx}`;
               const isSelected = selectedHotel === hotelKey;
 
@@ -1880,7 +2423,7 @@ export default function TeaserPage() {
                       background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
                       boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
                     }}>
-                      <Check className="w-4 h-4" />
+                      
                     </div>
                   )}
 
@@ -1896,12 +2439,7 @@ export default function TeaserPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div className="absolute bottom-2 left-2 right-2">
                       <div className="flex items-center gap-0.5">
-                        {Array.from({ length: hotel.rating ? Math.round(hotel.rating) : 4 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                          />
-                        ))}
+                        {hotel.rating ? hotel.rating.toFixed(1) : '4.0'} stars
                       </div>
                     </div>
                   </div>
@@ -1911,7 +2449,7 @@ export default function TeaserPage() {
                       <h3 className="text-base font-bold text-gray-900 flex-1">
                         {getHotelDescription(hotel)}
                       </h3>
-                      <Building2 className="w-4 h-4 text-blue-600" />
+
                     </div>
                     <p className="text-xs text-gray-600 mb-2">
                       {hotel.roomType || "Premium accommodation with modern amenities"}
@@ -1925,18 +2463,25 @@ export default function TeaserPage() {
                         ))}
                       </div>
                     )}
+                    {hotel.address && hotel.address.includes('click here to book') && (
+                      <div className="mb-2">
+                        <a
+                          href={hotel.address.match(/https?:\/\/[^\s]+/)?.[0] || '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-800 underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          click here to book
+                        </a>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-xl font-bold text-[#1e3a8a]">
                           ${(hotel.price || 0).toFixed(2)}
                         </span>
-                        <span className="text-xs text-gray-600"> /night</span>
-                      </div>
-                      <div className="text-right text-xs text-gray-500">
-                        {nights} nights
-                        <div className="font-bold text-xs text-gray-900">
-                          ${((hotel.price || 0) * nights).toFixed(2)}
-                        </div>
+                        <span className="text-xs text-gray-600"> total</span>
                       </div>
                     </div>
                   </div>
@@ -1954,13 +2499,34 @@ export default function TeaserPage() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
               Car Rental
             </h2>
-            <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
+            <p className="text-lg mb-4" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
               Choose your transportation option for maximum flexibility
             </p>
+            {isPhilippinesTrip && (
+              <div className="inline-block">
+                <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-200">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'var(--font-cormorant)' }}>
+                    Saferide Dumaguete Car Rental and Motorcycle Rental
+                  </h3>
+                  <a
+                    href="https://www.saferide.ph/locations/dumaguete-car-rental/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-lg mb-3"
+                    style={{ fontFamily: 'var(--font-inter)' }}
+                  >
+                    Book Car Rental →
+                  </a>
+                  <p className="text-sm text-gray-600 mt-3" style={{ fontFamily: 'var(--font-inter)' }}>
+                    Use this business if you want a driver in Dumaguete
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid md:grid-cols-1 gap-6 max-w-3xl mx-auto">
-            {tripData.carRentals.map((carRental, carIdx) => {
+            {tripData.carRentals?.map((carRental, carIdx) => {
               const carKey = carRental.id || `car-${carIdx}`;
               const isSelected = selectedCarRental === carKey;
 
@@ -1985,7 +2551,7 @@ export default function TeaserPage() {
                       background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
                       boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
                     }}>
-                      <Check className="w-4 h-4" />
+                      
                     </div>
                   )}
 
@@ -2036,16 +2602,16 @@ export default function TeaserPage() {
                                 </div>
                               </div>
                               <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
-                                <p>{period.company} Security Deposit: ${period.securityDeposit.toFixed(2)} (refundable)</p>
+                                <p>{period.company} Security Deposit: ${(period.securityDeposit || 0).toFixed(2)} (refundable)</p>
                               </div>
                               <div className="flex justify-between text-sm mt-2 pt-2 border-t border-gray-200">
                                 <div className="flex-1">
                                   <div className="text-gray-600 text-xs">Without CDW:</div>
-                                  <div className="font-bold text-[#1e3a8a]">${period.basePrice.toFixed(2)}</div>
+                                  <div className="font-bold text-[#1e3a8a]">${(period.basePrice || 0).toFixed(2)}</div>
                                 </div>
                                 <div className="flex-1 text-right">
                                   <div className="text-gray-600 text-xs">With CDW:</div>
-                                  <div className="font-semibold text-gray-700">${period.withCDW.toFixed(2)}</div>
+                                  <div className="font-semibold text-gray-700">${(period.withCDW || 0).toFixed(2)}</div>
                                 </div>
                               </div>
                             </div>
@@ -2079,9 +2645,6 @@ export default function TeaserPage() {
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2">
                                       <div className="font-bold text-gray-900">{option.company}</div>
-                                      {isOptionSelected && (
-                                        <Check className="w-4 h-4 text-blue-600" />
-                                      )}
                                     </div>
                                     <div className="text-xs text-gray-600">Rating: {option.rating}</div>
                                     {option.bookingNote && (
@@ -2090,16 +2653,16 @@ export default function TeaserPage() {
                                   </div>
                                 </div>
                                 <div className="text-xs text-gray-600 bg-white p-2 rounded mb-2">
-                                  <p>Security Deposit: ${option.securityDeposit.toFixed(2)} (refundable)</p>
+                                  <p>Security Deposit: ${(option.securityDeposit || 0).toFixed(2)} (refundable)</p>
                                 </div>
                                 <div className="flex justify-between text-sm mt-2 pt-2 border-t border-gray-200">
                                   <div className="flex-1">
                                     <div className="text-gray-600 text-xs">Without CDW:</div>
-                                    <div className="font-bold text-[#1e3a8a]">${option.basePrice.toFixed(2)}</div>
+                                    <div className="font-bold text-[#1e3a8a]">${(option.basePrice || 0).toFixed(2)}</div>
                                   </div>
                                   <div className="flex-1 text-right">
                                     <div className="text-gray-600 text-xs">With CDW:</div>
-                                    <div className="font-semibold text-gray-700">${option.withCDW.toFixed(2)}</div>
+                                    <div className="font-semibold text-gray-700">${(option.withCDW || 0).toFixed(2)}</div>
                                   </div>
                                 </div>
                               </div>
@@ -2112,43 +2675,6 @@ export default function TeaserPage() {
                     <div className="mb-3 text-xs text-gray-600 bg-blue-50 p-3 rounded">
                       <p className="mb-1">{carRental.insuranceIncluded}</p>
                       {carRental.notes && <p className="text-gray-500">{carRental.notes}</p>}
-                    </div>
-
-                    {/* CDW Selection Buttons */}
-                    <div className="pt-3 border-t-2 border-gray-300">
-                      <div className="mb-4">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3 text-center">Choose Insurance Option</h4>
-                        <div className="grid grid-cols-2 gap-3">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedCarRentalCDW(false);
-                            }}
-                            className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                              !selectedCarRentalCDW
-                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
-                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                            }`}
-                          >
-                            <div className="text-sm">Without CDW</div>
-                            <div className="text-xl font-bold">${carRental.basePrice.toFixed(2)}</div>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedCarRentalCDW(true);
-                            }}
-                            className={`px-4 py-3 rounded-lg border-2 transition-all ${
-                              selectedCarRentalCDW
-                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-semibold'
-                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                            }`}
-                          >
-                            <div className="text-sm">With CDW</div>
-                            <div className="text-xl font-bold">${carRental.withCDW.toFixed(2)}</div>
-                          </button>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -2362,7 +2888,7 @@ export default function TeaserPage() {
                                     <div className="font-bold text-gray-900 flex-1">{item.name}</div>
                                     {item.rating && (
                                       <div className="flex items-center ml-2">
-                                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1" />
+                                        
                                         <span className="text-sm font-semibold text-gray-700">{item.rating}</span>
                                       </div>
                                     )}
@@ -2464,10 +2990,30 @@ export default function TeaserPage() {
                             const description = item.description || activityDetails?.description || 'Explore this local attraction and discover what makes it special';
 
                             // Get activity image - check item.images first (for custom days), then fall back to database
-                            // Rotate through images to avoid duplicates across different activity cards
-                            const imageIndex = actIdx % (activityDetails?.images?.length || 1);
+                            // Use a global counter to track which images have been used to avoid duplicates
+                            if (!(window as any).__usedImageIndices) {
+                              (window as any).__usedImageIndices = new Set();
+                            }
+
                             const itemImage = item.images?.[0]?.url; // Custom days have images directly on item
-                            const activityImage = itemImage || activityDetails?.images?.[imageIndex]?.url;
+
+                            // Try to find an unused image from this activity's images
+                            let activityImage = null;
+                            if (activityDetails?.images && activityDetails.images.length > 0) {
+                              // Try to find an image that hasn't been used yet
+                              for (let i = 0; i < activityDetails.images.length; i++) {
+                                const imgUrl = activityDetails.images[i]?.url;
+                                if (imgUrl && !(window as any).__usedImageIndices.has(imgUrl)) {
+                                  activityImage = imgUrl;
+                                  (window as any).__usedImageIndices.add(imgUrl);
+                                  break;
+                                }
+                              }
+                              // If all images from this activity are used, use the first one
+                              if (!activityImage) {
+                                activityImage = activityDetails.images[0]?.url;
+                              }
+                            }
 
                             // Check for Oaxaca-specific images first
                             const oaxacaImage = getOaxacaActivityImage(item.name);
@@ -2497,15 +3043,26 @@ export default function TeaserPage() {
                                 return 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800';
                               }
 
-                              // Generic travel/attraction images
-                              const genericImages = [
-                                'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800',
-                                'https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=800',
-                                'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800',
-                                'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800',
-                                'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+                              // Try to use any unused image from the database first
+                              const allActivityImages = tripData.activities
+                                .filter((a: any) => a.images && a.images.length > 0)
+                                .flatMap((a: any) => a.images.map((img: any) => img.url));
+
+                              // Find an image that hasn't been used yet
+                              for (const imgUrl of allActivityImages) {
+                                if (!(window as any).__usedImageIndices.has(imgUrl)) {
+                                  (window as any).__usedImageIndices.add(imgUrl);
+                                  return imgUrl;
+                                }
+                              }
+
+                              // If all images are used, use a generic tropical/beach image (NO van/desert)
+                              const tropicalFallbacks = [
+                                'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800', // Mountain landscape
+                                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800', // Mountain lake
+                                'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800', // Beach
                               ];
-                              return genericImages[actIdx % genericImages.length];
+                              return tropicalFallbacks[actIdx % tropicalFallbacks.length];
                             };
 
                             const finalImage = oaxacaImage || activityImage || getFallbackImage(item.name);
@@ -2543,7 +3100,7 @@ export default function TeaserPage() {
                                     </div>
                                     {activityDetails?.rating && (
                                       <div className="flex items-center gap-1 ml-2">
-                                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                        
                                         <span className="text-xs font-semibold text-gray-700">{activityDetails.rating}</span>
                                       </div>
                                     )}
@@ -2735,7 +3292,7 @@ export default function TeaserPage() {
                                   </div>
                                   {breakfastVenue.rating && (
                                     <div className="flex items-center gap-1 ml-2">
-                                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                      
                                       <span className="text-xs font-semibold text-gray-700">{breakfastVenue.rating}</span>
                                     </div>
                                   )}
@@ -2784,7 +3341,7 @@ export default function TeaserPage() {
                                   </div>
                                   {lunchVenue.rating && (
                                     <div className="flex items-center gap-1 ml-2">
-                                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                      
                                       <span className="text-xs font-semibold text-gray-700">{lunchVenue.rating}</span>
                                     </div>
                                   )}
@@ -2833,7 +3390,7 @@ export default function TeaserPage() {
                                   </div>
                                   {dinnerVenue.rating && (
                                     <div className="flex items-center gap-1 ml-2">
-                                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                      
                                       <span className="text-xs font-semibold text-gray-700">{dinnerVenue.rating}</span>
                                     </div>
                                   )}
@@ -3017,7 +3574,7 @@ export default function TeaserPage() {
                   boxShadow: '0 4px 15px rgba(193, 105, 79, 0.4)'
                 }}
               >
-                <Lock className="w-4 h-4 inline mr-2" />
+                
                 I love it! Unlock Complete Itinerary
               </button>
 

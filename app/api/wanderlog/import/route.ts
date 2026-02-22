@@ -507,25 +507,92 @@ function parseFirecrawlData(scrapeResult: any, url: string): WanderlogTrip {
     }
   }
 
-  // Extract hotel information
+  // Extract hotel/accommodation information with comprehensive patterns
   const hotels: WanderlogHotel[] = [];
-  const hotelPatterns = [
-    /(?:Hampton Inn|Sandman|Best Western|Hilton|Marriott|Hyatt|Holiday Inn|Sheraton|Radisson|Comfort Inn)[\s\w]+/gi,
-    /(\d+(?:,\d+)?\.\d+)\s*(?:CAD|USD|\$)/gi, // Prices
+
+  console.log('\n\n🏨 ========= EXTRACTING HOTEL INFORMATION =========');
+
+  // Strategy 1: Look for accommodation keywords followed by names
+  const accommodationPatterns = [
+    // Broad accommodation types
+    /(?:Hotel|Resort|Inn|Lodge|Hostel|Guesthouse|Guest House|Airbnb|Apartment|Villa|Cottage|Bungalow|Homestay|B&B|Bed and Breakfast|Motel|Suites?)\s+[A-Z][^\n]{5,80}/gi,
+    // Major hotel chains
+    /(?:Hampton Inn|Sandman|Best Western|Hilton|Marriott|Hyatt|Holiday Inn|Sheraton|Radisson|Comfort Inn|Crowne Plaza|Doubletree|Embassy Suites|Four Seasons|Ritz-Carlton|Westin|Renaissance|Courtyard|Fairfield|SpringHill)[^\n]{0,60}/gi,
   ];
 
-  // Look for hotel names and prices in markdown
-  const hotelNames = markdown.match(/(?:Hampton Inn|Sandman|Best Western|Hilton|Marriott|Hyatt|Holiday Inn|Sheraton|Radisson|Comfort Inn)[^\\n]*/gi) || [];
-  hotelNames.forEach((hotelText: string) => {
-    const priceMatch = hotelText.match(/(\d+(?:,\d+)?\.\d+)\s*(?:CAD|USD|\$)/);
-    const price = priceMatch ? parseFloat(priceMatch[1].replace(',', '')) : undefined;
+  const foundAccommodations = new Set<string>();
 
-    hotels.push({
-      name: hotelText.split(/[\n\r-]/)[0].trim(),
-      price,
-      stars: hotelText.includes('Inn') ? 3 : 4, // Default estimation
+  accommodationPatterns.forEach(pattern => {
+    const matches = markdown.match(pattern) || [];
+    matches.forEach((match: string) => {
+      // Clean up the match
+      const cleanName = match
+        .split(/[\n\r]/)[0]
+        .trim()
+        .replace(/^(Hotel|Resort|Inn|Lodge|Hostel|Guesthouse|Guest House|Airbnb|Apartment|Villa)\s+/i, '$1 ');
+
+      if (cleanName.length > 5 && !foundAccommodations.has(cleanName)) {
+        foundAccommodations.add(cleanName);
+
+        // Try to find price near this accommodation
+        const contextStart = Math.max(0, markdown.indexOf(match) - 200);
+        const contextEnd = Math.min(markdown.length, markdown.indexOf(match) + match.length + 200);
+        const context = markdown.substring(contextStart, contextEnd);
+
+        const priceMatch = context.match(/(?:Total Price|Price|Cost|Rate)?\s*\$?\s*(\d+(?:,\d+)?(?:\.\d{2})?)\s*(?:CAD|USD|\$|per night|\/night)?/i);
+        const price = priceMatch ? parseFloat(priceMatch[1].replace(',', '')) : undefined;
+
+        // Estimate star rating from keywords
+        let stars = 3; // Default
+        if (cleanName.match(/luxury|five star|5[\-\s]star|deluxe|premium|ritz|four seasons/i)) stars = 5;
+        else if (cleanName.match(/four star|4[\-\s]star|upscale/i)) stars = 4;
+        else if (cleanName.match(/hostel|budget|economy/i)) stars = 2;
+
+        console.log(`  Found: ${cleanName} ${price ? `($${price})` : '(no price)'}`);
+
+        hotels.push({
+          name: cleanName.substring(0, 100),
+          price,
+          stars,
+        });
+      }
     });
   });
+
+  // Strategy 2: Look for "Lodging" or "Accommodation" sections
+  const lodgingSectionPattern = /#{2,3}\s*(?:Lodging|Accommodation|Hotels?|Where to Stay)[^\n]*\n([\s\S]{0,1500}?)(?=\n#{2,3}|\n\n\n|$)/gi;
+  const lodgingSections = [...markdown.matchAll(lodgingSectionPattern)];
+
+  lodgingSections.forEach(section => {
+    const sectionContent = section[1];
+    // Look for bullet points or lines with names and prices
+    const lines = sectionContent.split('\n').filter((line: string) => line.trim().length > 10);
+
+    lines.forEach((line: string) => {
+      // Skip if already found
+      if ([...foundAccommodations].some(name => line.includes(name))) return;
+
+      // Look for patterns like "* Hotel Name - $123"
+      const lineMatch = line.match(/[\*\-]\s*([A-Z][^\$\n]{10,80})[\s\-]*\$?\s*(\d+(?:,\d+)?(?:\.\d{2})?)?/);
+      if (lineMatch) {
+        const name = lineMatch[1].trim();
+        const price = lineMatch[2] ? parseFloat(lineMatch[2].replace(',', '')) : undefined;
+
+        if (!foundAccommodations.has(name)) {
+          foundAccommodations.add(name);
+          console.log(`  Found in lodging section: ${name} ${price ? `($${price})` : '(no price)'}`);
+
+          hotels.push({
+            name: name.substring(0, 100),
+            price,
+            stars: 3,
+          });
+        }
+      }
+    });
+  });
+
+  console.log(`✅ Total hotels/accommodations found: ${hotels.length}`);
 
   // Extract flight information with enhanced airport code detection
   const flights: WanderlogFlight[] = [];
