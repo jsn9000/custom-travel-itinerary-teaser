@@ -3014,6 +3014,13 @@ export default function TeaserPage() {
                                     {diningVenue.contact}
                                   </div>
                                 )}
+
+                                {/* Teaser message */}
+                                <div className="mt-4 pt-4 border-t border-orange-100">
+                                  <p className="text-sm text-gray-700 text-center italic">
+                                    Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
