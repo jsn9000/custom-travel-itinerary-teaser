@@ -1570,7 +1570,7 @@ export default function TeaserPage() {
                             ${(flight.price || 0).toFixed(2)}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">For 2 travelers</p>
+                        <p className="text-xs text-gray-500 mt-2">For 5 travelers</p>
                       </div>
                     </div>
                   </div>
@@ -3043,9 +3043,11 @@ export default function TeaserPage() {
                                     {diningVenue.contact}
                                   </div>
                                 )}
+                              </div>
 
-                                {/* Teaser message */}
-                                <div className="mt-4 pt-4 border-t border-orange-100">
+                              {/* Teaser message at bottom of card */}
+                              <div className="px-4 pb-4">
+                                <div className="pt-3 border-t border-orange-100">
                                   <p className="text-sm text-gray-700 text-center italic">
                                     Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
                                   </p>
@@ -3203,7 +3205,7 @@ export default function TeaserPage() {
                     Round-trip Flight
                   </div>
                   <div className="text-blue-100 text-sm">
-                    {selectedFlightData.departureAirport} ↔ {selectedFlightData.arrivalAirport} • 2 travelers
+                    {selectedFlightData.departureAirport} ↔ {selectedFlightData.arrivalAirport} • 5 travelers
                   </div>
                 </div>
                 <div className="text-right">
@@ -3231,7 +3233,7 @@ export default function TeaserPage() {
               <div className="text-base font-semibold">Trip Subtotal</div>
               <div className="text-right">
                 <div className="text-xl font-bold">${tripCost.toFixed(2)}</div>
-                <div className="text-blue-100 text-sm">for 2 travelers</div>
+                <div className="text-blue-100 text-sm">for 5 travelers</div>
               </div>
             </div>
 
