@@ -842,18 +842,20 @@ export default function TeaserPage() {
 
   // Generate descriptive day title
   const generateDayTitle = (day: any) => {
-    // For Oaxaca trip, skip date entirely and just return descriptive title
-    if (isOaxacaTrip) {
+    // For Oaxaca and Philippines trips, skip date entirely and just return descriptive title
+    if (isOaxacaTrip || isPhilippinesTrip) {
       // Generate a title based on activities for this day
       const activities = day.items?.filter((item: any) => item.type === 'activity') || [];
 
       // Generate title based on first day, last day, or activity types
       if (day.dayNumber === 1) {
         return 'Arrival & Getting Started';
-      } else if (day.dayNumber === 9) {
+      } else if (isOaxacaTrip && day.dayNumber === 9) {
         return 'Saying Goodbye to Your Oaxaca Adventure';
+      } else if (isPhilippinesTrip && tripData && day.dayNumber === tripData.dailySchedule.length) {
+        return 'Departure & Farewell';
       } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
-        return 'Saying Goodbye to Your Oaxaca Adventure';
+        return 'Saying Goodbye to Your Adventure';
       } else if (activities.length >= 3) {
         return 'Full Day of Adventures';
       } else if (activities.length >= 2) {
@@ -888,7 +890,7 @@ export default function TeaserPage() {
     if (day.dayNumber === 1) {
       return 'Arrival & Getting Started';
     } else if (tripData && day.dayNumber === tripData.dailySchedule.length) {
-      return 'Saying Goodbye to Your Oaxaca Adventure';
+      return 'Saying Goodbye to Your Adventure';
     } else if (activities.length >= 3) {
       return 'Full Day of Adventures';
     } else if (activities.length >= 2) {
