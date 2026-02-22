@@ -1083,7 +1083,7 @@ export default function TeaserPage() {
       'https://images.pexels.com/photos/3225531/pexels-photo-3225531.jpeg?auto=compress&cs=tinysrgb&w=1200', // El Nido Beach, Palawan
       'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1200', // Chocolate Hills, Bohol - Iconic landscape
       'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=1200', // White Beach, Boracay
-      'https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1200', // Tropical Beach Philippines
+      'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=1200', // Banaue Rice Terraces, Philippines
       'https://images.pexels.com/photos/2422461/pexels-photo-2422461.jpeg?auto=compress&cs=tinysrgb&w=1200', // Philippines Limestone Cliffs
       'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=1200', // Philippine Beach Landscape
     ];
@@ -2480,7 +2480,7 @@ export default function TeaserPage() {
               >
                 <div className="mb-6">
                   <div className="flex flex-col gap-2 mb-2">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center gap-3">
                       <div className="text-white text-xl font-bold px-4 py-2 rounded-full" style={{
                         fontFamily: 'var(--font-cormorant)',
                         background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
@@ -2488,7 +2488,7 @@ export default function TeaserPage() {
                       }}>
                         Day {day.dayNumber}
                       </div>
-                      <span className="text-lg text-gray-600" style={{ fontFamily: 'var(--font-inter)' }}>
+                      <span className="text-xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
                         {(() => {
                           // Philippines trip starts on 2026-10-05
                           if (tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
