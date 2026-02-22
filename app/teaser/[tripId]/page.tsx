@@ -2479,8 +2479,9 @@ export default function TeaserPage() {
                 className="bg-white rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ease-out"
               >
                 <div className="mb-6">
-                  <div className="flex flex-col gap-2 mb-2">
-                    <div className="flex items-center justify-center gap-3">
+                  <div className="flex flex-col gap-3 mb-2">
+                    {/* Day button and date on the left */}
+                    <div className="flex items-center gap-3">
                       <div className="text-white text-xl font-bold px-4 py-2 rounded-full" style={{
                         fontFamily: 'var(--font-cormorant)',
                         background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
@@ -2488,7 +2489,7 @@ export default function TeaserPage() {
                       }}>
                         Day {day.dayNumber}
                       </div>
-                      <span className="text-xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                      <span className="text-2xl md:text-3xl font-bold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
                         {(() => {
                           // Philippines trip starts on 2026-10-05
                           if (tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
@@ -2507,10 +2508,11 @@ export default function TeaserPage() {
                           return '';
                         })()}
                       </span>
-                      <h3 className="text-2xl md:text-3xl font-bold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-                        {generateDayTitle(day)}
-                      </h3>
                     </div>
+                    {/* Title centered */}
+                    <h3 className="text-2xl md:text-3xl font-bold tracking-wide text-center" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
+                      {generateDayTitle(day)}
+                    </h3>
                   </div>
                 </div>
 
