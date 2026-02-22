@@ -2484,7 +2484,18 @@ export default function TeaserPage() {
                         background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
                         boxShadow: '0 2px 8px rgba(26, 95, 122, 0.3)'
                       }}>
-                        Day {day.dayNumber} {(() => {
+                        Day {day.dayNumber}
+                      </div>
+                      <span className="text-lg text-gray-600" style={{ fontFamily: 'var(--font-inter)' }}>
+                        {(() => {
+                          // Philippines trip starts on 2026-10-05
+                          if (tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
+                            const startDate = new Date('2026-10-05T00:00:00');
+                            const dayDate = new Date(startDate);
+                            dayDate.setDate(startDate.getDate() + (day.dayNumber - 1));
+                            return dayDate.toISOString().split('T')[0];
+                          }
+                          // Other trips use their actual start date
                           if (tripData?.startDate) {
                             const startDate = new Date(tripData.startDate + 'T00:00:00');
                             const dayDate = new Date(startDate);
@@ -2493,7 +2504,7 @@ export default function TeaserPage() {
                           }
                           return '';
                         })()}
-                      </div>
+                      </span>
                       <h3 className="text-2xl md:text-3xl font-bold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
                         {generateDayTitle(day)}
                       </h3>
