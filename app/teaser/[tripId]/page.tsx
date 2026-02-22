@@ -804,7 +804,7 @@ export default function TeaserPage() {
   } else {
     flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
   }
-  const foodBudget = 500.0; // Fixed food budget for the trip
+  const foodBudget = 2500.0; // Food budget for 5 people
   // Trip cost includes hotels, flights, and food budget
   const tripCost = parseFloat((hotelCost + flightCost + foodBudget).toFixed(2));
   const unlockFee = 299.0;
@@ -3219,7 +3219,7 @@ export default function TeaserPage() {
                   Food & Dining Budget
                 </div>
                 <div className="text-blue-100 text-sm">
-                  Estimated for entire trip
+                  For 5 people
                 </div>
               </div>
               <div className="text-right">
