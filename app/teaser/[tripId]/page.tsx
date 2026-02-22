@@ -2484,7 +2484,15 @@ export default function TeaserPage() {
                         background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
                         boxShadow: '0 2px 8px rgba(26, 95, 122, 0.3)'
                       }}>
-                        Day {day.dayNumber}
+                        Day {day.dayNumber} {(() => {
+                          if (tripData?.startDate) {
+                            const startDate = new Date(tripData.startDate + 'T00:00:00');
+                            const dayDate = new Date(startDate);
+                            dayDate.setDate(startDate.getDate() + (day.dayNumber - 1));
+                            return dayDate.toISOString().split('T')[0];
+                          }
+                          return '';
+                        })()}
                       </div>
                       <h3 className="text-2xl md:text-3xl font-bold tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
                         {generateDayTitle(day)}
@@ -2919,12 +2927,6 @@ export default function TeaserPage() {
                               </div>
                             );
                           })}
-                        </div>
-                        {/* Teaser message after activities section */}
-                        <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                          <p className="text-sm text-gray-700 text-center italic">
-                            Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
-                          </p>
                         </div>
                       </div>
                       )}
