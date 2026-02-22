@@ -80,6 +80,9 @@ export default function TeaserPage() {
   const [selectedHotelOaxaca, setSelectedHotelOaxaca] = useState<string>("");
   const [selectedHotelMexicoCity, setSelectedHotelMexicoCity] = useState<string>("");
   const [selectedHotelOaxacaReturn, setSelectedHotelOaxacaReturn] = useState<string>("");
+  const [selectedHotelCebu, setSelectedHotelCebu] = useState<string>("");
+  const [selectedHotelBohol, setSelectedHotelBohol] = useState<string>("");
+  const [selectedHotelDumaguete, setSelectedHotelDumaguete] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -674,7 +677,24 @@ export default function TeaserPage() {
 
         // Auto-select first hotel, flight, and car rental if available
         if (data.hotels && data.hotels.length > 0) {
-          setSelectedHotel(data.hotels[0].id || 'hotel-0');
+          // Philippines trip - auto-select first hotel in each location
+          if (tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
+            const cebuHotels = data.hotels.filter((h: any) => h.address?.includes('Cebu'));
+            const boholHotels = data.hotels.filter((h: any) => h.address?.includes('Bohol'));
+            const dumagueteHotels = data.hotels.filter((h: any) => h.address?.includes('Dumaguete'));
+
+            if (cebuHotels.length > 0) {
+              setSelectedHotelCebu(cebuHotels[0].id || 'hotel-cebu-0');
+            }
+            if (boholHotels.length > 0) {
+              setSelectedHotelBohol(boholHotels[0].id || 'hotel-bohol-0');
+            }
+            if (dumagueteHotels.length > 0) {
+              setSelectedHotelDumaguete(dumagueteHotels[0].id || 'hotel-dumaguete-0');
+            }
+          } else {
+            setSelectedHotel(data.hotels[0].id || 'hotel-0');
+          }
         }
         if (data.hotelsOaxaca && data.hotelsOaxaca.length > 0) {
           setSelectedHotelOaxaca(data.hotelsOaxaca[0].id || 'hotel-oaxaca-0');
@@ -744,6 +764,9 @@ export default function TeaserPage() {
   const selectedHotelData = tripData?.hotels.find((h) => h.id === selectedHotel);
   const selectedHotelOaxacaData = tripData?.hotelsOaxaca?.find((h) => h.id === selectedHotelOaxaca);
   const selectedHotelMexicoCityData = tripData?.hotelsMexicoCity?.find((h) => h.id === selectedHotelMexicoCity);
+  const selectedHotelCebuData = tripData?.hotels.find((h) => h.id === selectedHotelCebu);
+  const selectedHotelBoholData = tripData?.hotels.find((h) => h.id === selectedHotelBohol);
+  const selectedHotelDumagueteData = tripData?.hotels.find((h) => h.id === selectedHotelDumaguete);
   const selectedFlightData = tripData?.flights.find((f) => f.id === selectedFlight);
 
   const calculateNights = () => {
@@ -756,9 +779,15 @@ export default function TeaserPage() {
 
   const nights = calculateNights();
 
-  // Calculate hotel costs - handle separate Oaxaca/Mexico City hotels or single hotel
+  // Calculate hotel costs - handle separate hotels by location
   let hotelCost = 0;
-  if (selectedHotelOaxacaData && selectedHotelMexicoCityData) {
+  if (tripId === '7317a480-7173-4a6e-ad9b-a5fb543b0f8b') {
+    // Philippines trip with three separate hotels - prices are already total for entire stay
+    const cebuHotelCost = parseFloat((selectedHotelCebuData?.price || 0).toFixed(2));
+    const boholHotelCost = parseFloat((selectedHotelBoholData?.price || 0).toFixed(2));
+    const dumagueteHotelCost = parseFloat((selectedHotelDumagueteData?.price || 0).toFixed(2));
+    hotelCost = parseFloat((cebuHotelCost + boholHotelCost + dumagueteHotelCost).toFixed(2));
+  } else if (selectedHotelOaxacaData && selectedHotelMexicoCityData) {
     // Oaxaca trip with two separate hotels - prices are already total for entire stay
     const oaxacaHotelCost = parseFloat((selectedHotelOaxacaData.price || 0).toFixed(2));
     const mexicoCityHotelCost = parseFloat((selectedHotelMexicoCityData.price || 0).toFixed(2));
@@ -1985,7 +2014,7 @@ export default function TeaserPage() {
             <div className="grid md:grid-cols-3 gap-5">
               {tripData.hotels?.filter(h => h.address?.includes('Cebu')).map((hotel, hotelIdx) => {
                 const hotelKey = hotel.id || `hotel-cebu-${hotelIdx}`;
-                const isSelected = selectedHotel === hotelKey;
+                const isSelected = selectedHotelCebu === hotelKey;
 
                 // Unique images for each Cebu hotel type
                 const cebuHotelImages = [
@@ -1998,7 +2027,7 @@ export default function TeaserPage() {
                 return (
                   <div
                     key={hotelKey}
-                    onClick={() => setSelectedHotel(hotelKey)}
+                    onClick={() => setSelectedHotelCebu(hotelKey)}
                     className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
                       isSelected
                         ? "opacity-100 scale-105"
@@ -2097,7 +2126,7 @@ export default function TeaserPage() {
             <div className="grid md:grid-cols-3 gap-5">
               {tripData.hotels?.filter(h => h.address?.includes('Bohol')).map((hotel, hotelIdx) => {
                 const hotelKey = hotel.id || `hotel-bohol-${hotelIdx}`;
-                const isSelected = selectedHotel === hotelKey;
+                const isSelected = selectedHotelBohol === hotelKey;
 
                 // Unique images for each Bohol hotel type
                 const boholHotelImages = [
@@ -2110,7 +2139,7 @@ export default function TeaserPage() {
                 return (
                   <div
                     key={hotelKey}
-                    onClick={() => setSelectedHotel(hotelKey)}
+                    onClick={() => setSelectedHotelBohol(hotelKey)}
                     className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
                       isSelected
                         ? "opacity-100 scale-105"
@@ -2209,7 +2238,7 @@ export default function TeaserPage() {
             <div className="grid md:grid-cols-3 gap-5">
               {tripData.hotels?.filter(h => h.address?.includes('Dumaguete')).map((hotel, hotelIdx) => {
                 const hotelKey = hotel.id || `hotel-dumaguete-${hotelIdx}`;
-                const isSelected = selectedHotel === hotelKey;
+                const isSelected = selectedHotelDumaguete === hotelKey;
 
                 // Unique images for each Dumaguete hotel type
                 const dumagueteHotelImages = [
@@ -2222,7 +2251,7 @@ export default function TeaserPage() {
                 return (
                   <div
                     key={hotelKey}
-                    onClick={() => setSelectedHotel(hotelKey)}
+                    onClick={() => setSelectedHotelDumaguete(hotelKey)}
                     className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
                       isSelected
                         ? "opacity-100 scale-105"
@@ -3100,8 +3129,57 @@ export default function TeaserPage() {
               </div>
             )}
 
+            {/* Show separate hotels for Philippines trip */}
+            {selectedHotelCebuData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    {getHotelDescription(selectedHotelCebuData)} (Cebu)
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedHotelCebuData.rating ? `${selectedHotelCebuData.rating} stars` : ""} • Oct 5-8
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${(selectedHotelCebuData.price || 0).toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
+            {selectedHotelBoholData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    {getHotelDescription(selectedHotelBoholData)} (Bohol)
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedHotelBoholData.rating ? `${selectedHotelBoholData.rating} stars` : ""} • Oct 8-10
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${(selectedHotelBoholData.price || 0).toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
+            {selectedHotelDumagueteData && (
+              <div className="flex justify-between items-center pb-3 border-b border-white/30">
+                <div>
+                  <div className="font-semibold text-base">
+                    {getHotelDescription(selectedHotelDumagueteData)} (Dumaguete)
+                  </div>
+                  <div className="text-blue-100 text-sm">
+                    {selectedHotelDumagueteData.rating ? `${selectedHotelDumagueteData.rating} stars` : ""} • Oct 10-14
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold">${(selectedHotelDumagueteData.price || 0).toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+
             {/* Show single hotel for regular trips */}
-            {selectedHotelData && !selectedHotelOaxacaData && !selectedHotelMexicoCityData && (
+            {selectedHotelData && !selectedHotelOaxacaData && !selectedHotelMexicoCityData && !selectedHotelCebuData && (
               <div className="flex justify-between items-center pb-3 border-b border-white/30">
                 <div>
                   <div className="font-semibold text-base">
