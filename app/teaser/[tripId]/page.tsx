@@ -30,36 +30,6 @@ interface FlightOption {
   baggageOptions?: string | null;
 }
 
-interface CarRentalOption {
-  id: string;
-  company: string;
-  pickupLocation: string;
-  dropoffLocation: string;
-  pickupDate: string;
-  dropoffDate: string;
-  basePrice: number;
-  withCDW: number;
-  currency: string;
-  insuranceIncluded: string;
-  securityDeposit: number;
-  notes?: string;
-  periods?: Array<{
-    location: string;
-    dates: string;
-    basePrice: number;
-    withCDW: number;
-    company: string;
-    securityDeposit: number;
-  }>;
-  options?: Array<{
-    company: string;
-    rating: string;
-    bookingNote?: string;
-    basePrice: number;
-    withCDW: number;
-    securityDeposit: number;
-  }>;
-}
 
 interface TripData {
   id: string;
@@ -75,7 +45,6 @@ interface TripData {
   hotelsOaxacaReturn?: HotelOption[];
   hotelsMexicoCity?: HotelOption[];
   flights: FlightOption[];
-  carRentals?: CarRentalOption[];
   activities: {
     id: string;
     name: string;
@@ -112,9 +81,6 @@ export default function TeaserPage() {
   const [selectedHotelMexicoCity, setSelectedHotelMexicoCity] = useState<string>("");
   const [selectedHotelOaxacaReturn, setSelectedHotelOaxacaReturn] = useState<string>("");
   const [selectedFlight, setSelectedFlight] = useState<string>("");
-  const [selectedCarRental, setSelectedCarRental] = useState<string>("");
-  const [selectedCarRentalOption, setSelectedCarRentalOption] = useState<number | null>(null);
-  const [selectedCarRentalCDW, setSelectedCarRentalCDW] = useState<boolean>(false); // CDW insurance selection
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
@@ -259,25 +225,6 @@ export default function TeaserPage() {
 
           // Keep hotels array empty for Oaxaca trip (using separate arrays)
           data.hotels = [];
-
-          // Car rental for Oaxaca trip
-          data.carRentals = [
-            {
-              id: "car-rental-alamo",
-              company: "Alamo",
-              pickupLocation: "OAX",
-              dropoffLocation: "OAX",
-              pickupDate: "Feb 18",
-              dropoffDate: "Feb 26",
-              basePrice: 94,
-              withCDW: 202,
-              currency: "USD",
-              insuranceIncluded: "includes insurance except for CDW (collision damage waiver) insurance but you can find this on credit cards. Adding CDW if you don't have a credit card is $211",
-              securityDeposit: 202,
-              notes: "*They also need a credit card in order to put the security deposit of $202 that is refunded back to you when you return the car",
-              bookingLink: "click here to book on Rentalcars.com"
-            }
-          ];
 
           // Override flights with detailed leg information for Oaxaca trip
           data.flights = [
@@ -741,9 +688,6 @@ export default function TeaserPage() {
             setSelectedFlight(data.flights[0].id || 'flight-0');
           }
         }
-        if (data.carRentals && data.carRentals.length > 0) {
-          setSelectedCarRental(data.carRentals[0].id || 'car-0');
-        }
 
         setError(null);
       } catch (err) {
@@ -801,14 +745,6 @@ export default function TeaserPage() {
   const selectedHotelOaxacaData = tripData?.hotelsOaxaca?.find((h) => h.id === selectedHotelOaxaca);
   const selectedHotelMexicoCityData = tripData?.hotelsMexicoCity?.find((h) => h.id === selectedHotelMexicoCity);
   const selectedFlightData = tripData?.flights.find((f) => f.id === selectedFlight);
-  const selectedCarRentalData = tripData?.carRentals?.find((c) => c.id === selectedCarRental);
-
-  // Get the actual car rental cost based on CDW selection
-  const getCarRentalCost = () => {
-    if (!selectedCarRentalData) return 0;
-    const cost = selectedCarRentalCDW ? selectedCarRentalData.withCDW : selectedCarRentalData.basePrice;
-    return cost || 0; // Ensure we always return a number
-  };
 
   const calculateNights = () => {
     if (!tripData) return 7;
@@ -839,10 +775,9 @@ export default function TeaserPage() {
   } else {
     flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
   }
-  const carRentalCost = parseFloat((getCarRentalCost() || 0).toFixed(2));
   const foodBudget = 500.0; // Fixed food budget for the trip
-  // Trip cost includes hotels, car rental, and food budget (NOT flights)
-  const tripCost = parseFloat((hotelCost + carRentalCost + foodBudget).toFixed(2));
+  // Trip cost includes hotels and food budget (NOT flights)
+  const tripCost = parseFloat((hotelCost + foodBudget).toFixed(2));
   const unlockFee = 299.0;
   const totalCost = parseFloat((tripCost + unlockFee).toFixed(2));
 
@@ -2492,186 +2427,6 @@ export default function TeaserPage() {
         </section>
       )}
 
-      {/* Car Rental Section */}
-      {tripData.carRentals && tripData.carRentals.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              Car Rental
-            </h2>
-            <p className="text-lg mb-4" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
-              Choose your transportation option for maximum flexibility
-            </p>
-            {isPhilippinesTrip && (
-              <div className="inline-block">
-                <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-200">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'var(--font-cormorant)' }}>
-                    Saferide Dumaguete Car Rental and Motorcycle Rental
-                  </h3>
-                  <a
-                    href="https://www.saferide.ph/locations/dumaguete-car-rental/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-lg mb-3"
-                    style={{ fontFamily: 'var(--font-inter)' }}
-                  >
-                    Book Car Rental →
-                  </a>
-                  <p className="text-sm text-gray-600 mt-3" style={{ fontFamily: 'var(--font-inter)' }}>
-                    Use this business if you want a driver in Dumaguete
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="grid md:grid-cols-1 gap-6 max-w-3xl mx-auto">
-            {tripData.carRentals?.map((carRental, carIdx) => {
-              const carKey = carRental.id || `car-${carIdx}`;
-              const isSelected = selectedCarRental === carKey;
-
-              return (
-                <div
-                  key={carKey}
-                  onClick={() => setSelectedCarRental(carKey)}
-                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-1 ${
-                    isSelected
-                      ? "opacity-100 scale-105"
-                      : "opacity-60 grayscale-[50%] hover:opacity-80"
-                  }`}
-                  style={{
-                    boxShadow: isSelected
-                      ? `0 8px 30px rgba(193, 105, 79, 0.4), 0 0 0 3px ${colors.accent}`
-                      : '0 4px 15px rgba(0, 0, 0, 0.1)',
-                    border: isSelected ? 'none' : '1px solid #e5e5e5'
-                  }}
-                >
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 z-10 text-white rounded-full p-1.5" style={{
-                      background: `linear-gradient(135deg, ${colors.accent} 0%, #a0522d 100%)`,
-                      boxShadow: '0 2px 8px rgba(193, 105, 79, 0.5)'
-                    }}>
-                      
-                    </div>
-                  )}
-
-                  <div className="bg-white p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">
-                          {carRental.company}
-                        </h3>
-                      </div>
-                    </div>
-
-                    {/* Pickup and Drop-off (for Choice B only) */}
-                    {carRental.options && carRental.options.length > 0 && (
-                      <div className="mb-3">
-                        <div className="flex justify-between text-sm text-gray-700">
-                          <div>
-                            <span className="font-semibold">Pickup:</span> {carRental.pickupLocation}
-                          </div>
-                          <div>
-                            <span className="font-semibold">Drop-off:</span> {carRental.dropoffLocation}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Route Information */}
-                    <div className="mb-4">
-                      <div className="text-sm text-gray-600 text-center">
-                        {carRental.pickupDate} - {carRental.dropoffDate}
-                      </div>
-                    </div>
-
-                    {/* Rental Periods Breakdown (for Choice A) */}
-                    {carRental.periods && carRental.periods.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Rental Periods</h4>
-                        <div className="space-y-3">
-                          {carRental.periods.map((period, periodIdx) => (
-                            <div key={periodIdx} className="bg-gray-50 rounded-lg border border-gray-200 p-3">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex-1">
-                                  <div className="font-bold text-gray-900 mb-1">
-                                    {period.location.includes('Oaxaca') ? 'Oaxaca to Oaxaca (OAX)' : 'Mexico City (MEX) to Mexico City (MEX)'}
-                                  </div>
-                                  <div className="text-xs text-gray-600">{period.company}</div>
-                                  <div className="text-xs text-gray-500 mt-1">{period.dates}</div>
-                                </div>
-                              </div>
-                              <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
-                                <p>{period.company} Security Deposit: ${(period.securityDeposit || 0).toFixed(2)} (refundable)</p>
-                              </div>
-                              <div className="text-right mt-2 pt-2 border-t border-gray-200">
-                                <div className="font-bold text-[#1e3a8a] text-lg">${(period.basePrice || 0).toFixed(2)}</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* One-Way Rental Options (for Choice B) */}
-                    {carRental.options && carRental.options.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Available Options - Select One</h4>
-                        <div className="space-y-3">
-                          {carRental.options.map((option, optionIdx) => {
-                            const isOptionSelected = isSelected && selectedCarRentalOption === optionIdx;
-                            return (
-                              <div
-                                key={optionIdx}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedCarRental(carKey);
-                                  setSelectedCarRentalOption(optionIdx);
-                                }}
-                                className={`cursor-pointer rounded-lg border-2 p-3 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg ${
-                                  isOptionSelected
-                                    ? 'bg-blue-50 border-blue-500 shadow-md'
-                                    : 'bg-gray-50 border-gray-200 hover:border-blue-300'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                      <div className="font-bold text-gray-900">{option.company}</div>
-                                    </div>
-                                    <div className="text-xs text-gray-600">Rating: {option.rating}</div>
-                                    {option.bookingNote && (
-                                      <div className="text-xs text-blue-600 mt-1">({option.bookingNote})</div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="text-xs text-gray-600 bg-white p-2 rounded mb-2">
-                                  <p>Security Deposit: ${(option.securityDeposit || 0).toFixed(2)} (refundable)</p>
-                                </div>
-                                <div className="text-right mt-2 pt-2 border-t border-gray-200">
-                                  <div className="font-bold text-[#1e3a8a] text-lg">${(option.basePrice || 0).toFixed(2)}</div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mb-3 text-xs text-gray-600 bg-blue-50 p-3 rounded">
-                      <p className="mb-1">{carRental.insuranceIncluded}</p>
-                      {carRental.notes && <p className="text-gray-500">{carRental.notes}</p>}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Car Rental Total Summary */}
-        </section>
-      )}
-
       {/* Itinerary Section */}
       {tripData.dailySchedule && tripData.dailySchedule.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -2824,14 +2579,14 @@ export default function TeaserPage() {
                     ? allActivities.filter((item: any) => item.type === 'header')
                     : [];
                   const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
-                    ? allActivities.filter((item: any) => item.type === 'food')
+                    ? allActivities.filter((item: any) => item.type === 'food').slice(0, 1)
                     : [];
                   const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'travel')
                     : [];
                   const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
-                    ? allActivities.filter((item: any) => item.type === 'activity')
-                    : allActivities;
+                    ? allActivities.filter((item: any) => item.type === 'activity').slice(0, 1)
+                    : allActivities.slice(0, 1);
 
                   return (
                     <>
@@ -3200,209 +2955,70 @@ export default function TeaserPage() {
                         return isDining || hasDiningDescription;
                       }));
 
-                      // Pick THREE different dining venues for breakfast, lunch, and dinner
-                      // Ensure they don't repeat within the same day
-                      let breakfastVenue: any;
-                      let lunchVenue: any;
-                      let dinnerVenue: any;
+                      // Pick ONE dining venue per day, rotating through available options
+                      let diningVenue: any;
 
-                      if (allDiningActivities.length >= 3) {
-                        // We have at least 3 venues - pick different ones for each meal
-                        // Use separate rotation for each meal type to ensure variety across days
-                        const venueCount = allDiningActivities.length;
-                        const breakfastIdx = dayIdx % venueCount;
-                        // Offset lunch and dinner to ensure they're different from breakfast
-                        const lunchOffset = Math.floor(venueCount / 3);
-                        const dinnerOffset = Math.floor((venueCount * 2) / 3);
-                        const lunchIdx = (dayIdx + lunchOffset) % venueCount;
-                        const dinnerIdx = (dayIdx + dinnerOffset) % venueCount;
-
-                        breakfastVenue = allDiningActivities[breakfastIdx];
-                        lunchVenue = allDiningActivities[lunchIdx];
-                        dinnerVenue = allDiningActivities[dinnerIdx];
-                      } else if (allDiningActivities.length === 2) {
-                        // Only 2 venues - alternate and create a generic third
-                        const baseIndex = (dayIdx * 2) % 2;
-                        breakfastVenue = allDiningActivities[baseIndex];
-                        lunchVenue = allDiningActivities[(baseIndex + 1) % 2];
-                        dinnerVenue = {
-                          name: 'Local Dining Spot',
-                          description: 'Curated dining experience featuring local cuisine and fresh ingredients',
-                        };
-                      } else if (allDiningActivities.length === 2) {
-                        // Only 2 venues - use both, skip the third meal slot
-                        breakfastVenue = allDiningActivities[0];
-                        lunchVenue = allDiningActivities[1];
-                        dinnerVenue = null;
-                      } else if (allDiningActivities.length === 1) {
-                        // Only 1 venue - use it for breakfast only
-                        breakfastVenue = allDiningActivities[0];
-                        lunchVenue = null;
-                        dinnerVenue = null;
+                      if (allDiningActivities.length > 0) {
+                        // Rotate through all available venues across days
+                        const venueIndex = dayIdx % allDiningActivities.length;
+                        diningVenue = allDiningActivities[venueIndex];
                       } else {
                         // No venues - skip dining section entirely
-                        breakfastVenue = null;
-                        lunchVenue = null;
-                        dinnerVenue = null;
+                        diningVenue = null;
                       }
 
-                      return (
+                      return diningVenue ? (
                         <div className="mb-6">
                           <h4 className="text-lg font-semibold text-gray-800 mb-4" style={{ fontFamily: 'var(--font-inter)' }}>
                             Dining
                           </h4>
 
-                          {/* Single row with Breakfast, Lunch, Dinner - only show actual venues */}
-                          <div className="grid md:grid-cols-3 gap-4">
-                            {/* Breakfast */}
-                            {breakfastVenue && (
+                          {/* Single dining venue */}
+                          <div className="max-w-md mx-auto">
                             <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
-                              <div className="relative h-32">
+                              <div className="relative h-40">
                                 <img
-                                  src={(breakfastVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1533777324565-a040eb52facd?w=800'}
-                                  alt={breakfastVenue.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1533777324565-a040eb52facd?w=800';
-                                  }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-orange-600/80 px-2 py-1 rounded">
-                                  Breakfast
-                                </div>
-                              </div>
-                              <div className="p-4">
-                                <div className="flex items-start justify-between mb-1">
-                                  <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                    {breakfastVenue.name}
-                                  </div>
-                                  {breakfastVenue.rating && (
-                                    <div className="flex items-center gap-1 ml-2">
-                                      
-                                      <span className="text-xs font-semibold text-gray-700">{breakfastVenue.rating}</span>
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="text-sm text-gray-600 mb-2">
-                                  {breakfastVenue.description || 'Delicious breakfast options to start your day'}
-                                </div>
-                                {breakfastVenue.hours && (
-                                  <div className="text-xs text-gray-600 mb-1">
-                                    <span className="font-semibold">Hours:</span> {breakfastVenue.hours}
-                                  </div>
-                                )}
-                                <div className="text-xs text-gray-500">
-                                  {breakfastVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
-                                </div>
-                                {breakfastVenue.contact && (
-                                  <div className="text-xs text-blue-600 mt-1">
-                                    {breakfastVenue.contact}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            )}
-
-                            {/* Lunch */}
-                            {lunchVenue && (
-                            <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
-                              <div className="relative h-32">
-                                <img
-                                  src={(lunchVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'}
-                                  alt={lunchVenue.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800';
-                                  }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-orange-600/80 px-2 py-1 rounded">
-                                  Lunch
-                                </div>
-                              </div>
-                              <div className="p-4">
-                                <div className="flex items-start justify-between mb-1">
-                                  <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                    {lunchVenue.name}
-                                  </div>
-                                  {lunchVenue.rating && (
-                                    <div className="flex items-center gap-1 ml-2">
-                                      
-                                      <span className="text-xs font-semibold text-gray-700">{lunchVenue.rating}</span>
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="text-sm text-gray-600 mb-2">
-                                  {lunchVenue.description || 'Authentic local flavors for your midday meal'}
-                                </div>
-                                {lunchVenue.hours && (
-                                  <div className="text-xs text-gray-600 mb-1">
-                                    <span className="font-semibold">Hours:</span> {lunchVenue.hours}
-                                  </div>
-                                )}
-                                <div className="text-xs text-gray-500">
-                                  {lunchVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
-                                </div>
-                                {lunchVenue.contact && (
-                                  <div className="text-xs text-blue-600 mt-1">
-                                    {lunchVenue.contact}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            )}
-
-                            {/* Dinner */}
-                            {dinnerVenue && (
-                            <div className="bg-white rounded-xl overflow-hidden border border-orange-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg transform cursor-pointer">
-                              <div className="relative h-32">
-                                <img
-                                  src={(dinnerVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800'}
-                                  alt={dinnerVenue.name}
+                                  src={(diningVenue as any).images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800'}
+                                  alt={diningVenue.name}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
                                     e.currentTarget.src = 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
                                   }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                <div className="absolute top-2 left-2 text-xs font-semibold text-white uppercase tracking-wider bg-orange-600/80 px-2 py-1 rounded">
-                                  Dinner
-                                </div>
                               </div>
                               <div className="p-4">
                                 <div className="flex items-start justify-between mb-1">
                                   <div className="font-bold text-gray-900 flex-1" style={{ fontFamily: 'var(--font-inter)' }}>
-                                    {dinnerVenue.name}
+                                    {diningVenue.name}
                                   </div>
-                                  {dinnerVenue.rating && (
+                                  {diningVenue.rating && (
                                     <div className="flex items-center gap-1 ml-2">
-                                      
-                                      <span className="text-xs font-semibold text-gray-700">{dinnerVenue.rating}</span>
+                                      <span className="text-xs font-semibold text-gray-700">{diningVenue.rating}</span>
                                     </div>
                                   )}
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
-                                  {dinnerVenue.description || 'Evening dining experience with regional specialties'}
+                                  {diningVenue.description || 'Local dining experience'}
                                 </div>
-                                {dinnerVenue.hours && (
+                                {diningVenue.hours && (
                                   <div className="text-xs text-gray-600 mb-1">
-                                    <span className="font-semibold">Hours:</span> {dinnerVenue.hours}
+                                    <span className="font-semibold">Hours:</span> {diningVenue.hours}
                                   </div>
                                 )}
                                 <div className="text-xs text-gray-500">
-                                  {dinnerVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
+                                  {diningVenue.address?.split(',').slice(0, 2).join(',') || 'Local dining area'}
                                 </div>
-                                {dinnerVenue.contact && (
+                                {diningVenue.contact && (
                                   <div className="text-xs text-blue-600 mt-1">
-                                    {dinnerVenue.contact}
+                                    {diningVenue.contact}
                                   </div>
                                 )}
                               </div>
                             </div>
-                            )}
                           </div>
                         </div>
-                      );
+                      ) : null;
                     })()}
 
                 {/* Accommodations */}
@@ -3507,22 +3123,6 @@ export default function TeaserPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-xl font-bold">${flightCost.toFixed(2)}</div>
-                </div>
-              </div>
-            )}
-
-            {selectedCarRentalData && (
-              <div className="flex justify-between items-center pb-3 border-b border-white/30">
-                <div>
-                  <div className="font-semibold text-base">
-                    Car Rental
-                  </div>
-                  <div className="text-blue-100 text-sm">
-                    {selectedCarRentalData.company} • {selectedCarRentalData.pickupDate} - {selectedCarRentalData.dropoffDate}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold">${carRentalCost.toFixed(2)}</div>
                 </div>
               </div>
             )}
