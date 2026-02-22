@@ -3219,7 +3219,7 @@ export default function TeaserPage() {
                   Food & Dining Budget
                 </div>
                 <div className="text-blue-100 text-sm">
-                  For 5 people
+                  For 5 people ($500 budget per person)
                 </div>
               </div>
               <div className="text-right">
