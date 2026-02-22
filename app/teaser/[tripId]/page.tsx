@@ -2920,12 +2920,6 @@ export default function TeaserPage() {
                             );
                           })}
                         </div>
-                        {/* Teaser message after activities section */}
-                        <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                          <p className="text-sm text-gray-700 text-center italic">
-                            Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
-                          </p>
-                        </div>
                       </div>
                       )}
 
