@@ -805,8 +805,9 @@ export default function TeaserPage() {
     flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
   }
   const foodBudget = 2500.0; // Food budget for 5 people
-  // Trip cost includes hotels, flights, and food budget
-  const tripCost = parseFloat((hotelCost + flightCost + foodBudget).toFixed(2));
+  const activitiesAndTransportation = 2883.0; // Activities and transportation budget
+  // Trip subtotal includes hotels + food budget + activities/transportation (NOT flights per CLAUDE.md)
+  const tripCost = parseFloat((hotelCost + foodBudget + activitiesAndTransportation).toFixed(2));
   const unlockFee = 299.0;
   const totalCost = parseFloat((tripCost + unlockFee).toFixed(2));
 
@@ -2463,7 +2464,7 @@ export default function TeaserPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide" style={{ fontFamily: 'var(--font-cormorant)', color: colors.primary }}>
-              Your {tripData.dailySchedule.length}-Day Itinerary Preview
+              Your {isPhilippinesTrip ? '10' : tripData.dailySchedule.length}-day Itinerary Preview
             </h2>
             <p className="text-lg" style={{ fontFamily: 'var(--font-inter)', color: '#5a5a5a' }}>
               A glimpse of the unforgettable experiences awaiting you
@@ -3243,6 +3244,21 @@ export default function TeaserPage() {
               </div>
               <div className="text-right">
                 <div className="text-xl font-bold">${foodBudget.toFixed(2)}</div>
+              </div>
+            </div>
+
+            {/* Activities and Transportation */}
+            <div className="flex justify-between items-center pb-3 border-b border-white/30">
+              <div>
+                <div className="font-semibold text-base">
+                  Activities and Transportation
+                </div>
+                <div className="text-blue-100 text-sm">
+                  Local tours, excursions, and ground transport
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xl font-bold">${activitiesAndTransportation.toFixed(2)}</div>
               </div>
             </div>
 
