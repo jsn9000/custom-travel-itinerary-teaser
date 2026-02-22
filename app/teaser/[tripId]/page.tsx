@@ -805,8 +805,8 @@ export default function TeaserPage() {
     flightCost = parseFloat((selectedFlightData?.price || 0).toFixed(2));
   }
   const foodBudget = 500.0; // Fixed food budget for the trip
-  // Trip cost includes hotels and food budget (NOT flights)
-  const tripCost = parseFloat((hotelCost + foodBudget).toFixed(2));
+  // Trip cost includes hotels, flights, and food budget
+  const tripCost = parseFloat((hotelCost + flightCost + foodBudget).toFixed(2));
   const unlockFee = 299.0;
   const totalCost = parseFloat((tripCost + unlockFee).toFixed(2));
 
