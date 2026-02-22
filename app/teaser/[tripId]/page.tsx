@@ -2490,6 +2490,21 @@ export default function TeaserPage() {
                         {generateDayTitle(day)}
                       </h3>
                     </div>
+                    {(() => {
+                      // Calculate actual date for this day
+                      if (tripData?.startDate) {
+                        const startDate = new Date(tripData.startDate + 'T00:00:00');
+                        const dayDate = new Date(startDate);
+                        dayDate.setDate(startDate.getDate() + (day.dayNumber - 1));
+                        const dateString = dayDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+                        return (
+                          <p className="text-sm text-gray-600 ml-2" style={{ fontFamily: 'var(--font-inter)' }}>
+                            {dateString}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                 </div>
 
@@ -2919,12 +2934,6 @@ export default function TeaserPage() {
                               </div>
                             );
                           })}
-                        </div>
-                        {/* Teaser message after activities section */}
-                        <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                          <p className="text-sm text-gray-700 text-center italic">
-                            Want the complete itinerary? Submit your booking request to reveal all restaurants and activities planned for your trip.
-                          </p>
                         </div>
                       </div>
                       )}
