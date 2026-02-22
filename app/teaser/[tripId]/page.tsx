@@ -2604,15 +2604,8 @@ export default function TeaserPage() {
                               <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded mb-2">
                                 <p>{period.company} Security Deposit: ${(period.securityDeposit || 0).toFixed(2)} (refundable)</p>
                               </div>
-                              <div className="flex justify-between text-sm mt-2 pt-2 border-t border-gray-200">
-                                <div className="flex-1">
-                                  <div className="text-gray-600 text-xs">Without CDW:</div>
-                                  <div className="font-bold text-[#1e3a8a]">${(period.basePrice || 0).toFixed(2)}</div>
-                                </div>
-                                <div className="flex-1 text-right">
-                                  <div className="text-gray-600 text-xs">With CDW:</div>
-                                  <div className="font-semibold text-gray-700">${(period.withCDW || 0).toFixed(2)}</div>
-                                </div>
+                              <div className="text-right mt-2 pt-2 border-t border-gray-200">
+                                <div className="font-bold text-[#1e3a8a] text-lg">${(period.basePrice || 0).toFixed(2)}</div>
                               </div>
                             </div>
                           ))}
@@ -2655,15 +2648,8 @@ export default function TeaserPage() {
                                 <div className="text-xs text-gray-600 bg-white p-2 rounded mb-2">
                                   <p>Security Deposit: ${(option.securityDeposit || 0).toFixed(2)} (refundable)</p>
                                 </div>
-                                <div className="flex justify-between text-sm mt-2 pt-2 border-t border-gray-200">
-                                  <div className="flex-1">
-                                    <div className="text-gray-600 text-xs">Without CDW:</div>
-                                    <div className="font-bold text-[#1e3a8a]">${(option.basePrice || 0).toFixed(2)}</div>
-                                  </div>
-                                  <div className="flex-1 text-right">
-                                    <div className="text-gray-600 text-xs">With CDW:</div>
-                                    <div className="font-semibold text-gray-700">${(option.withCDW || 0).toFixed(2)}</div>
-                                  </div>
+                                <div className="text-right mt-2 pt-2 border-t border-gray-200">
+                                  <div className="font-bold text-[#1e3a8a] text-lg">${(option.basePrice || 0).toFixed(2)}</div>
                                 </div>
                               </div>
                             );
