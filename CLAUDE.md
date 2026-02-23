@@ -99,6 +99,13 @@ When adding or updating images for activities, dining venues, or other trip elem
 - Never use the same image for different activities, different restaurants, or different venues
 - Ensure complete image variety across all cards on the page
 
+**BANNED IMAGES - NEVER USE:**
+- **ABSOLUTELY NO yellow bus/van pictures in mountains or deserts**
+- NO generic vehicle images (buses, vans, cars) unless the activity is specifically about transportation
+- NO desert landscapes for beach activities
+- NO mountain/rocky terrain for ocean/beach activities
+- These types of images are completely inappropriate and must never appear
+
 **Activity Images:**
 - Activity images should be displayed WITHOUT blur effect - they should be clear and crisp
 - Each activity card must use a unique image - rotate through available database images to avoid duplicates
