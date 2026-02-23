@@ -2549,9 +2549,13 @@ export default function TeaserPage() {
 
                   // Filter activities (exclude hotels, dining, airports) - EXCEPT for customized days
                   let allActivities = day.items.filter((item: any) => {
-                    // For Day 1, 2, 3, 4, 5, 6, 7, 8, 9 on Oaxaca trip, show activity, food, travel, and header items
+                    // For Day 1-9 on Oaxaca trip, show activity, food, travel, and header items
                     if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) {
                       return item.type === 'activity' || item.type === 'food' || item.type === 'travel' || item.type === 'header';
+                    }
+                    // For Day 1-10 on Philippines trip, show activity and food items
+                    if (isPhilippinesTrip && (day.dayNumber >= 1 && day.dayNumber <= 10)) {
+                      return item.type === 'activity' || item.type === 'food';
                     }
 
                     if (item.type !== 'activity') return false;
@@ -2633,17 +2637,17 @@ export default function TeaserPage() {
 
                   if (allActivities.length === 0) return null;
 
-                  // For customized Oaxaca days, separate food, activities, travel, and headers
+                  // For customized Oaxaca days and Philippines days, separate food, activities, travel, and headers
                   const headerItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'header')
                     : [];
-                  const foodItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
+                  const foodItems = ((isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) || (isPhilippinesTrip && (day.dayNumber >= 1 && day.dayNumber <= 10)))
                     ? allActivities.filter((item: any) => item.type === 'food').slice(0, 1)
                     : [];
                   const travelItems = (isOaxacaTrip && (day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 9))
                     ? allActivities.filter((item: any) => item.type === 'travel')
                     : [];
-                  const activityItems = (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))
+                  const activityItems = ((isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) || (isPhilippinesTrip && (day.dayNumber >= 1 && day.dayNumber <= 10)))
                     ? allActivities.filter((item: any) => item.type === 'activity').slice(0, 2)
                     : allActivities.slice(0, 2);
 
@@ -2724,8 +2728,12 @@ export default function TeaserPage() {
                           </h4>
                           <div className={`grid gap-4 ${foodItems.length === 1 ? 'md:grid-cols-1 max-w-md mx-auto' : 'md:grid-cols-3'}`}>
                             {foodItems.map((item: any, foodIdx: number) => {
-                              const description = item.description || 'Delicious local cuisine and dining experience';
+                              // Get full restaurant details from activities
+                              const restaurantDetails = tripData.activities.find((act: any) => act.id === item.id || act.name === item.name);
+                              const description = item.description || restaurantDetails?.description || 'Delicious local cuisine and dining experience';
                               const foodImage = item.images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
+                              const hours = item.hours || restaurantDetails?.hours;
+                              const location = item.location || restaurantDetails?.address;
 
                               return (
                                 <div
@@ -2749,15 +2757,15 @@ export default function TeaserPage() {
                                     <h5 className="font-bold text-gray-900 mb-2">{item.name}</h5>
                                     <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">{description}</p>
 
-                                    {item.hours && (
+                                    {hours && (
                                       <div className="text-xs text-gray-600 mb-1">
-                                        <span className="font-semibold">Hours:</span> {item.hours}
+                                        <span className="font-semibold">Hours:</span> {hours}
                                       </div>
                                     )}
 
-                                    {item.location && (
+                                    {location && (
                                       <div className="text-xs text-gray-500">
-                                        {item.location}
+                                        {location}
                                       </div>
                                     )}
                                   </div>
