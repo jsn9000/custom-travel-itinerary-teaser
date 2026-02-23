@@ -68,6 +68,30 @@ The active import system uses Firecrawl MCP and extracts flights using multiple 
 3. The banner/header should ALWAYS default to using images scraped from the current Wanderlog trip
 4. All images are stored in the `wanderlog_images` Supabase table after scraping
 
+**Image Selection Logic:**
+When adding or updating images for activities, dining venues, or other trip elements:
+
+1. **First Priority - Wanderlog Images**:
+   - Check if images exist in the `wanderlog_images` table for the activity
+   - Verify that the Wanderlog images match the description and location of the activity
+   - If Wanderlog images are appropriate and relevant, use them
+
+2. **Second Priority - Reasoning for Appropriate Alternatives**:
+   - If Wanderlog images don't exist OR don't match the description/place, use reasoning to select appropriate images
+   - Consider the activity type, location, and description to choose contextually relevant images
+   - Examples of reasoning:
+     - "Whale shark watching" → Images showing whale sharks underwater, snorkeling with whale sharks, ocean wildlife
+     - "Taoist Temple" → Images showing Chinese temple architecture, red pillars, traditional Asian temples (NOT underwater scenes, NOT clubbing)
+     - "Beach resort" → Images showing tropical beach, white sand, palm trees (NOT desert landscapes, NOT yellow vans)
+     - "Spa and massage" → Images showing spa treatments, massage stones, tranquil spa atmosphere (NOT unrelated activities)
+   - Use high-quality stock images from Unsplash or similar sources that accurately represent the activity
+   - NEVER use images that are clearly unrelated or misleading (e.g., desert van for whale shark watching)
+
+3. **Image Validation**:
+   - Before adding any image, verify it matches the activity description
+   - Check that the image depicts the correct type of location, activity, or venue
+   - Ensure images are contextually appropriate for the destination and activity
+
 **Activity Images:**
 - Activity images should be displayed WITHOUT blur effect - they should be clear and crisp
 - Each activity card must use a unique image - rotate through available database images to avoid duplicates

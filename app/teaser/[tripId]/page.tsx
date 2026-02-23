@@ -112,7 +112,12 @@ export default function TeaserPage() {
 
       try {
         setLoading(true);
-        const response = await fetch(`/api/trips/${tripId}`);
+        const response = await fetch(`/api/trips/${tripId}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch trip data");
@@ -2595,8 +2600,8 @@ export default function TeaserPage() {
                     return true;
                   });
 
-                  // Deduplicate activities before displaying (skip for customized Oaxaca days)
-                  if (isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) {
+                  // Deduplicate activities before displaying (skip for customized Oaxaca days and Philippines days)
+                  if ((isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) || (isPhilippinesTrip && (day.dayNumber >= 1 && day.dayNumber <= 10))) {
                     // For customized days, use the items as-is without looking them up in activities database
                     allActivities = allActivities;
                   } else {
@@ -2606,8 +2611,8 @@ export default function TeaserPage() {
                   }
 
                   // Ensure minimum 3 activities per day - if fewer, pull from full activities list
-                  // Skip this for customized Oaxaca days
-                  if (allActivities.length < 3 && !(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9))) {
+                  // Skip this for customized Oaxaca days and Philippines days
+                  if (allActivities.length < 3 && !(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) && !(isPhilippinesTrip && (day.dayNumber >= 1 && day.dayNumber <= 10))) {
                     const allNonDiningActivities = deduplicateActivities(tripData.activities.filter((act: any) => {
                       // Exclude dining
                       const diningKeywords = ['restaurant', 'cafe', 'bistro', 'bar', 'grill', 'eatery', 'diner', 'pizzeria', 'steakhouse', 'sushi', 'tavern', 'pub', 'kitchen', 'tea house', 'teahouse'];
@@ -2998,8 +3003,8 @@ export default function TeaserPage() {
                   );
                 })()}
 
-                    {/* Dining Section - Skip for customized Oaxaca days */}
-                    {!(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) && (() => {
+                    {/* Dining Section - Skip for customized Oaxaca days and Philippines days with explicit food items */}
+                    {!(isOaxacaTrip && (day.dayNumber === 1 || day.dayNumber === 2 || day.dayNumber === 3 || day.dayNumber === 4 || day.dayNumber === 5 || day.dayNumber === 6 || day.dayNumber === 7 || day.dayNumber === 8 || day.dayNumber === 9)) && !(isPhilippinesTrip && (day.dayNumber >= 1 && day.dayNumber <= 10)) && (() => {
                       // Get deduplicate function from window
                       const deduplicateActivities = (window as any).__deduplicateActivities;
                       // Get all dining venues from activities (deduplicated)

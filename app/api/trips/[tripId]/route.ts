@@ -135,7 +135,14 @@ export async function GET(
       })) || [],
     };
 
-    return NextResponse.json(response);
+    const jsonResponse = NextResponse.json(response);
+
+    // Disable all caching
+    jsonResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    jsonResponse.headers.set('Pragma', 'no-cache');
+    jsonResponse.headers.set('Expires', '0');
+
+    return jsonResponse;
   } catch (error) {
     console.error('Error fetching trip:', error);
     return NextResponse.json(
