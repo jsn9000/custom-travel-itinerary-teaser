@@ -92,17 +92,26 @@ When adding or updating images for activities, dining venues, or other trip elem
    - Check that the image depicts the correct type of location, activity, or venue
    - Ensure images are contextually appropriate for the destination and activity
 
+**CRITICAL - No Duplicate Images:**
+- **DO NOT repeat any pictures on the teaser page unless the food or activity spot is exactly the same**
+- Each unique activity or dining venue must have distinct, non-repeating images
+- If showing the same restaurant/activity multiple times (e.g., different days), it's acceptable to reuse that specific venue's images
+- Never use the same image for different activities, different restaurants, or different venues
+- Ensure complete image variety across all cards on the page
+
 **Activity Images:**
 - Activity images should be displayed WITHOUT blur effect - they should be clear and crisp
 - Each activity card must use a unique image - rotate through available database images to avoid duplicates
 - If an activity has multiple images, use different images for different cards
 - Include 6 diverse fallback images for activities without database images (only used when Wanderlog has no images)
 - Images should be pulled from `wanderlog_images` table with `associated_section: 'activity'`
+- **IMPORTANT**: Never reuse the same image for different activities - each activity must have its own distinct images
 
 **Dining Images:**
 - Dining venue images should be displayed WITHOUT blur effect - they should be clear and crisp, just like activity images
 - Use database images from associated dining activities
 - Include meal-specific fallback images (breakfast, lunch, dinner) only when Wanderlog images are unavailable
+- **IMPORTANT**: Never reuse the same image for different restaurants - each dining venue must have its own distinct images
 
 **Hotel/Flight Images:**
 - Hotel and flight images should have a blur effect to maintain the teaser/paywalled aesthetic
