@@ -2736,7 +2736,7 @@ export default function TeaserPage() {
                               // Get full restaurant details from activities
                               const restaurantDetails = tripData.activities.find((act: any) => act.id === item.id || act.name === item.name);
                               const description = item.description || restaurantDetails?.description || 'Delicious local cuisine and dining experience';
-                              const foodImage = item.images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
+                              const foodImage = restaurantDetails?.images?.[0]?.url || item.images?.[0]?.url || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800';
                               const hours = item.hours || restaurantDetails?.hours;
                               const location = item.location || restaurantDetails?.address;
 
