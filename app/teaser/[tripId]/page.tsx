@@ -2473,7 +2473,13 @@ export default function TeaserPage() {
 
           <div className="space-y-8">
             {tripData.dailySchedule
-              .filter((day: any) => !(isOaxacaTrip && day.dayNumber === 10))
+              .filter((day: any) => {
+                // Oaxaca trip: exclude day 10
+                if (isOaxacaTrip && day.dayNumber === 10) return false;
+                // Philippines trip: only show days 1-10
+                if (isPhilippinesTrip && day.dayNumber > 10) return false;
+                return true;
+              })
               .map((day, dayIdx) => (
               <div
                 key={`day-${day.dayNumber}-${dayIdx}`}
